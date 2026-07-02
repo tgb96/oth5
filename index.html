@@ -7,12 +7,29 @@
 
   <script>
     (function () {
-      const isStandalone =
-        window.matchMedia("(display-mode: standalone)").matches ||
-        window.navigator.standalone === true ||
-        document.referrer.startsWith("android-app://");
+      function isIOSDevice() {
+        const ua = window.navigator.userAgent || "";
+        const platform = window.navigator.platform || "";
 
-      if (isStandalone) {
+        return (
+          /iPhone|iPad|iPod/i.test(ua) ||
+          (platform === "MacIntel" && window.navigator.maxTouchPoints > 1)
+        );
+      }
+
+      function isStandaloneMode() {
+        return (
+          window.matchMedia("(display-mode: standalone)").matches ||
+          window.navigator.standalone === true ||
+          document.referrer.startsWith("android-app://")
+        );
+      }
+
+      if (isIOSDevice()) {
+        document.documentElement.classList.add("is-ios-device");
+      }
+
+      if (isStandaloneMode()) {
         document.documentElement.classList.add("is-standalone-app");
       }
     })();
@@ -46,6 +63,18 @@
 
     .is-standalone-app #installPromptCard {
       display: none !important;
+    }
+
+    .is-ios-device:not(.is-standalone-app) #installActionBtn {
+      display: none !important;
+    }
+
+    .is-ios-device:not(.is-standalone-app) .v5-install-card {
+      grid-template-columns: auto 1fr !important;
+    }
+
+    .is-ios-device:not(.is-standalone-app) .v5-install-copy p {
+      line-height: 1.25;
     }
 
     .is-standalone-app body.index-page {
@@ -152,8 +181,8 @@
       <img src="assets/img/logo-open-tennis.png" alt="Open Tennis Huechuraba">
 
       <div class="v5-install-copy">
-        <h2>Agregar al inicio</h2>
-        <p id="installHelpText">Android: toca instalar. iPhone: compartir → agregar a pantalla de inicio.</p>
+        <h2 id="installCardTitle">Agregar al inicio</h2>
+        <p id="installHelpText">Android: toca Instalar para agregar la app a tu pantalla de inicio.</p>
       </div>
 
       <button id="installActionBtn" class="v5-install-action" type="button">Instalar</button>
@@ -189,6 +218,16 @@
 
   <script>
     (function () {
+      function isIOSDevice() {
+        const ua = window.navigator.userAgent || "";
+        const platform = window.navigator.platform || "";
+
+        return (
+          /iPhone|iPad|iPod/i.test(ua) ||
+          (platform === "MacIntel" && window.navigator.maxTouchPoints > 1)
+        );
+      }
+
       function isStandaloneMode() {
         return (
           window.matchMedia("(display-mode: standalone)").matches ||
@@ -197,34 +236,76 @@
         );
       }
 
-      function applyStandaloneHomeFix() {
-        if (!isStandaloneMode()) return;
-
-        document.documentElement.classList.add("is-standalone-app");
-
+      function configureInstallCard() {
         const installCard = document.getElementById("installPromptCard");
+        const installTitle = document.getElementById("installCardTitle");
+        const installText = document.getElementById("installHelpText");
+        const installButton = document.getElementById("installActionBtn");
 
-        if (installCard) {
-          installCard.hidden = true;
-          installCard.style.display = "none";
-          installCard.setAttribute("aria-hidden", "true");
+        if (isIOSDevice()) {
+          document.documentElement.classList.add("is-ios-device");
         }
 
-        document.body.style.overflow = "hidden";
-        document.body.style.height = "100dvh";
-        document.body.style.minHeight = "100dvh";
-        document.body.style.maxHeight = "100dvh";
+        if (isStandaloneMode()) {
+          document.documentElement.classList.add("is-standalone-app");
+
+          if (installCard) {
+            installCard.hidden = true;
+            installCard.style.display = "none";
+            installCard.setAttribute("aria-hidden", "true");
+          }
+
+          document.body.style.overflow = "hidden";
+          document.body.style.height = "100dvh";
+          document.body.style.minHeight = "100dvh";
+          document.body.style.maxHeight = "100dvh";
+
+          return;
+        }
+
+        if (isIOSDevice()) {
+          if (installTitle) {
+            installTitle.textContent = "Agregar en iPhone";
+          }
+
+          if (installText) {
+            installText.textContent = "Toca Compartir y elige Agregar a pantalla de inicio.";
+          }
+
+          if (installButton) {
+            installButton.hidden = true;
+            installButton.style.display = "none";
+            installButton.setAttribute("aria-hidden", "true");
+          }
+
+          return;
+        }
+
+        if (installTitle) {
+          installTitle.textContent = "Agregar al inicio";
+        }
+
+        if (installText) {
+          installText.textContent = "Android: toca Instalar para agregar la app a tu pantalla de inicio.";
+        }
+
+        if (installButton) {
+          installButton.hidden = false;
+          installButton.style.display = "";
+          installButton.removeAttribute("aria-hidden");
+          installButton.textContent = "Instalar";
+        }
       }
 
-      applyStandaloneHomeFix();
+      configureInstallCard();
 
-      document.addEventListener("DOMContentLoaded", applyStandaloneHomeFix);
-      window.addEventListener("load", applyStandaloneHomeFix);
-      window.addEventListener("resize", applyStandaloneHomeFix);
+      document.addEventListener("DOMContentLoaded", configureInstallCard);
+      window.addEventListener("load", configureInstallCard);
+      window.addEventListener("resize", configureInstallCard);
 
-      setTimeout(applyStandaloneHomeFix, 300);
-      setTimeout(applyStandaloneHomeFix, 1000);
-      setTimeout(applyStandaloneHomeFix, 2000);
+      setTimeout(configureInstallCard, 300);
+      setTimeout(configureInstallCard, 1000);
+      setTimeout(configureInstallCard, 2000);
     })();
   </script>
 </body>
