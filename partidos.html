@@ -161,6 +161,37 @@ td:first-child {
   text-align: left;
 }
 
+.separador-semana-proxima td {
+  background: linear-gradient(135deg, #8f3f2f 0%, #c56f48 45%, #e7a85e 100%) !important;
+  color: #fffaf0;
+  border-color: #8f3f2f;
+  box-shadow: inset 0 0 0 2px rgba(255, 250, 240, 0.28);
+  letter-spacing: 0.01em;
+}
+
+.semana-label-destacada {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(11, 47, 37, 0.88);
+  color: #fffaf0;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
+.fila-semana-proxima td {
+  background: #fff3df;
+}
+
+.fila-semana-proxima td:first-child {
+  border-left: 5px solid #c56f48;
+  color: #7d2c24;
+}
+
 .estado {
   display: inline-block;
   min-width: auto;
@@ -268,6 +299,27 @@ td:first-child {
   box-shadow: 0 2px 7px rgba(0,0,0,0.08);
 }
 
+.card-partido.semana-proxima-card {
+  border-color: #d9955f;
+  border-left-color: #c56f48;
+  background: #fff7ea;
+  box-shadow: 0 4px 13px rgba(143, 63, 47, 0.18);
+}
+
+.card-partido.semana-proxima-card::before {
+  content: "Este sábado";
+  display: inline-block;
+  margin-bottom: 7px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #0b2f25;
+  color: #fffaf0;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .card-top {
   font-weight: 800;
   color: #333;
@@ -294,6 +346,20 @@ td:first-child {
   overflow: hidden;
   background: white;
   box-shadow: 0 3px 9px rgba(0,0,0,0.07);
+}
+
+.semana-box.semana-proxima-box {
+  border-color: #c56f48;
+  box-shadow: 0 6px 17px rgba(143, 63, 47, 0.22);
+}
+
+.semana-box.semana-proxima-box .semana-btn {
+  background: linear-gradient(135deg, #8f3f2f 0%, #c56f48 48%, #e7a85e 100%);
+  color: #fffaf0;
+}
+
+.semana-box.semana-proxima-box .semana-contenido {
+  background: #fff7ea;
 }
 
 .semana-box.pendientes-box {
@@ -372,11 +438,29 @@ td:first-child {
   gap: 10px;
 }
 
-.semana-btn span {
+.semana-btn-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.semana-toggle {
   float: none;
   flex-shrink: 0;
   font-size: 20px;
   line-height: 1;
+}
+
+.semana-pill {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(11, 47, 37, 0.9);
+  color: #fffaf0;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .semana-contenido {
@@ -410,6 +494,11 @@ td:first-child {
   padding: 13px 14px;
   border-bottom: 1px solid #e5e5e5;
   background: white;
+}
+
+.partido-linea.semana-proxima-linea {
+  border-left: 5px solid #c56f48;
+  background: #fff7ea;
 }
 
 .partido-linea:last-child {
@@ -508,6 +597,8 @@ const RE_NBSP = /\u00a0/g;
 const RE_ZERO_WIDTH = /[\u200B-\u200D\uFEFF]/g;
 const RE_ESPACIOS = /\s+/g;
 const RE_MARCADOR = /(\d+\s*-\s*\d+(?:\s+\d+\s*-\s*\d+)*)/;
+const SANTIAGO_OFFSET_MINUTOS = -4 * 60;
+const MS_MINUTO = 60 * 1000;
 const normalizarCache = new Map();
 const limpiarCache = new Map();
 const abreviarCache = new Map();
@@ -735,6 +826,90 @@ function extraerNumeroSemana(texto) {
   return match ? match[1] : "";
 }
 
+function parseFechaProgramacionSantiago(fechaTexto) {
+  const texto = String(fechaTexto || "").trim();
+  const match = texto.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+
+  if (!match) return null;
+
+  const dia = Number(match[1]);
+  const mes = Number(match[2]);
+  let anio = Number(match[3]);
+
+  if (!dia || !mes || !anio) return null;
+  if (anio < 100) anio += 2000;
+
+  const fechaUTC = new Date(Date.UTC(anio, mes - 1, dia));
+
+  if (
+    fechaUTC.getUTCFullYear() !== anio ||
+    fechaUTC.getUTCMonth() !== mes - 1 ||
+    fechaUTC.getUTCDate() !== dia
+  ) {
+    return null;
+  }
+
+  return Date.UTC(anio, mes - 1, dia);
+}
+
+function inicioDiaActualSantiagoGMT4() {
+  const ahoraSantiago = new Date(Date.now() + SANTIAGO_OFFSET_MINUTOS * MS_MINUTO);
+
+  return Date.UTC(
+    ahoraSantiago.getUTCFullYear(),
+    ahoraSantiago.getUTCMonth(),
+    ahoraSantiago.getUTCDate()
+  );
+}
+
+function obtenerSemanaProxima(filas) {
+  const hoySantiago = inicioDiaActualSantiagoGMT4();
+  const fechasPorSemana = new Map();
+
+  for (let i = 0; i < filas.length; i++) {
+    const fila = filas[i];
+    const fechaProgramada = parseFechaProgramacionSantiago(fila.fechaSemana);
+
+    if (fechaProgramada === null || fechaProgramada < hoySantiago) continue;
+
+    const semana = String(fila.semana || "").trim();
+
+    if (!semana) continue;
+
+    if (!fechasPorSemana.has(semana) || fechaProgramada < fechasPorSemana.get(semana)) {
+      fechasPorSemana.set(semana, fechaProgramada);
+    }
+  }
+
+  let semanaProxima = "";
+  let fechaMasCercana = Infinity;
+
+  fechasPorSemana.forEach((fecha, semana) => {
+    if (fecha < fechaMasCercana) {
+      fechaMasCercana = fecha;
+      semanaProxima = semana;
+    }
+  });
+
+  return semanaProxima;
+}
+
+function marcarSemanaProxima(filas, semanaProxima) {
+  for (let i = 0; i < filas.length; i++) {
+    filas[i]._esSemanaProxima = Boolean(semanaProxima && filas[i].semana === semanaProxima);
+  }
+}
+
+function semanaProximaEnCanchas(canchas) {
+  for (const filasCancha of canchas.values()) {
+    for (let i = 0; i < filasCancha.length; i++) {
+      if (filasCancha[i]._esSemanaProxima) return true;
+    }
+  }
+
+  return false;
+}
+
 function parseCSVLine(line) {
   const result = [];
   let current = "";
@@ -925,7 +1100,7 @@ function prepararFila(fila, mapaSemanas) {
 
 function crearFilaTablaHTML(fila, mapaSemanas) {
   return `
-    <tr>
+    <tr class="${fila._esSemanaProxima ? "fila-semana-proxima" : ""}">
       <td>${escapeHTML(fila.semana)}</td>
       <td>${escapeHTML(fila.cancha)}</td>
       <td>${escapeHTML(fila.turno)}</td>
@@ -946,6 +1121,10 @@ function crearFilaTabla(fila, mapaSemanas) {
   const tr = document.createElement("tr");
   const estado = estadoFinal(fila);
 
+  if (fila._esSemanaProxima) {
+    tr.className = "fila-semana-proxima";
+  }
+
   tr.innerHTML = `
     <td>${escapeHTML(fila.semana)}</td>
     <td>${escapeHTML(fila.cancha)}</td>
@@ -964,15 +1143,25 @@ function crearFilaTabla(fila, mapaSemanas) {
   return tr;
 }
 
-function crearSeparadorHTML(textoSemana, tipo, mapaSemanas) {
-  const clase = tipo === "verde" ? "separador-verde" : "separador-naranja";
-  return `<tr class="${clase}"><td colspan="8">${escapeHTML(etiquetaSemana(textoSemana, mapaSemanas))}</td></tr>`;
+function crearSeparadorHTML(textoSemana, tipo, mapaSemanas, esSemanaProxima = false) {
+  const claseBase = tipo === "verde" ? "separador-verde" : "separador-naranja";
+  const clase = `${claseBase}${esSemanaProxima ? " separador-semana-proxima" : ""}`;
+  const badge = esSemanaProxima
+    ? `<span class="semana-label-destacada">Este sábado</span>`
+    : "";
+
+  return `<tr class="${clase}"><td colspan="8">${escapeHTML(etiquetaSemana(textoSemana, mapaSemanas))}${badge}</td></tr>`;
 }
 
-function crearSeparador(textoSemana, tipo, mapaSemanas) {
+function crearSeparador(textoSemana, tipo, mapaSemanas, esSemanaProxima = false) {
   const tr = document.createElement("tr");
-  tr.className = tipo === "verde" ? "separador-verde" : "separador-naranja";
-  tr.innerHTML = `<td colspan="8">${escapeHTML(etiquetaSemana(textoSemana, mapaSemanas))}</td>`;
+  tr.className = `${tipo === "verde" ? "separador-verde" : "separador-naranja"}${esSemanaProxima ? " separador-semana-proxima" : ""}`;
+
+  const badge = esSemanaProxima
+    ? `<span class="semana-label-destacada">Este sábado</span>`
+    : "";
+
+  tr.innerHTML = `<td colspan="8">${escapeHTML(etiquetaSemana(textoSemana, mapaSemanas))}${badge}</td>`;
   return tr;
 }
 
@@ -982,7 +1171,7 @@ function jugadoresHTML(j1, j2) {
 
 function crearCardBusquedaHTML(fila, mapaSemanas) {
   return `
-    <div class="card-partido">
+    <div class="card-partido${fila._esSemanaProxima ? " semana-proxima-card" : ""}">
       <div class="card-top">${escapeHTML(fila._semanaLabel || etiquetaSemana(fila.semana, mapaSemanas))} · Cancha ${escapeHTML(fila.cancha)}</div>
       <div class="card-meta">Turno ${escapeHTML(fila.turno)} · Categoría ${escapeHTML(fila.categoria)}</div>
       <div class="card-jugadores">${jugadoresHTML(fila.jugador1, fila.jugador2)}</div>
@@ -998,14 +1187,14 @@ function crearCardBusqueda(fila, mapaSemanas) {
   const card = document.createElement("div");
   card.className = "card-partido";
   card.innerHTML = crearCardBusquedaHTML(fila, mapaSemanas)
-    .replace(/^<div class="card-partido">/, "")
+    .replace(/^<div class="card-partido(?: semana-proxima-card)?">/, "")
     .replace(/<\/div>\s*$/, "");
   return card;
 }
 
 function crearPartidoMovilHTML(fila) {
   return `
-    <div class="partido-linea">
+    <div class="partido-linea${fila._esSemanaProxima ? " semana-proxima-linea" : ""}">
       <div class="partido-turno">Turno ${escapeHTML(fila.turno)} · Categoría ${escapeHTML(fila.categoria)}</div>
       <div class="partido-jugadores">${jugadoresHTML(fila.jugador1, fila.jugador2)}</div>
       <span class="estado ${fila._estadoClase || claseEstado(estadoFinal(fila))}">${escapeHTML(estadoFinal(fila))}</span>
@@ -1018,7 +1207,7 @@ function crearPartidoMovilHTML(fila) {
 
 function crearPartidoPendienteMovilHTML(fila, mapaSemanas) {
   return `
-    <div class="partido-linea">
+    <div class="partido-linea${fila._esSemanaProxima ? " semana-proxima-linea" : ""}">
       <div class="partido-turno pendiente-meta">
         ${escapeHTML(fila._semanaLabel || etiquetaSemana(fila.semana, mapaSemanas))} ·
         Cancha ${escapeHTML(fila.cancha)} ·
@@ -1038,7 +1227,7 @@ function crearPartidoMovil(fila) {
   const div = document.createElement("div");
   div.className = "partido-linea";
   div.innerHTML = crearPartidoMovilHTML(fila)
-    .replace(/^<div class="partido-linea">/, "")
+    .replace(/^<div class="partido-linea(?: semana-proxima-linea)?">/, "")
     .replace(/<\/div>\s*$/, "");
   return div;
 }
@@ -1074,7 +1263,7 @@ function renderBusqueda(filas, mapaSemanas, filtro = "") {
     if (!fila._busqueda.includes(busqueda)) continue;
 
     if (semanaAnterior && fila.semana !== semanaAnterior) {
-      filasHTML += crearSeparadorHTML(fila.semana, "naranja", mapaSemanas);
+      filasHTML += crearSeparadorHTML(fila.semana, "naranja", mapaSemanas, fila._esSemanaProxima);
     }
 
     filasHTML += crearFilaTablaHTML(fila, mapaSemanas);
@@ -1119,12 +1308,13 @@ function renderCompletaDesktop(filas, mapaSemanas) {
   for (let i = 0; i < filas.length; i++) {
     const fila = filas[i];
 
-    if (semanaAnterior && fila.semana !== semanaAnterior) {
+    if (fila.semana !== semanaAnterior) {
       contadorSeparador++;
       html += crearSeparadorHTML(
         fila.semana,
         contadorSeparador % 2 === 0 ? "verde" : "naranja",
-        mapaSemanas
+        mapaSemanas,
+        fila._esSemanaProxima
       );
     }
 
@@ -1145,7 +1335,8 @@ function renderPendientesMobile(filas, mapaSemanas) {
   accordionPendientes.innerHTML = `
     <div class="semana-box pendientes-box">
       <button class="semana-btn" type="button">
-        Pendientes <span>+</span>
+        <span class="semana-btn-text">Pendientes</span>
+        <span class="semana-toggle">+</span>
       </button>
 
       <div class="semana-contenido">
@@ -1183,10 +1374,14 @@ function renderCompletaMobile(filas, mapaSemanas) {
   let html = "";
 
   semanas.forEach((canchas, semana) => {
+    const esSemanaProxima = semanaProximaEnCanchas(canchas);
+
     html += `
-      <div class="semana-box">
+      <div class="semana-box${esSemanaProxima ? " semana-proxima-box activa" : ""}">
         <button class="semana-btn" type="button">
-          ${escapeHTML(etiquetaSemana(semana, mapaSemanas))} <span>+</span>
+          <span class="semana-btn-text">${escapeHTML(etiquetaSemana(semana, mapaSemanas))}</span>
+          ${esSemanaProxima ? `<span class="semana-pill">Este sábado</span>` : ""}
+          <span class="semana-toggle">${esSemanaProxima ? "–" : "+"}</span>
         </button>
 
         <div class="semana-contenido">
@@ -1359,14 +1554,14 @@ function activarAccordionMobile(contenedor = accordionSemanas) {
 
     contenedor.querySelectorAll(".semana-box.activa").forEach(b => {
       b.classList.remove("activa");
-      const span = b.querySelector(".semana-btn span");
+      const span = b.querySelector(".semana-toggle");
       if (span) span.textContent = "+";
     });
 
     if (!activa) {
       box.classList.add("activa");
 
-      const span = btn.querySelector("span");
+      const span = btn.querySelector(".semana-toggle");
       if (span) span.textContent = "–";
 
       requestAnimationFrame(() => {
@@ -1442,6 +1637,7 @@ async function iniciar() {
     const registros = leerRegistro(registroCSV);
 
     cruzarDatos(filas, registros);
+    marcarSemanaProxima(filas, obtenerSemanaProxima(filas));
     prepararFilas(filas, mapaSemanas);
 
     renderBusqueda(filas, mapaSemanas, "");
