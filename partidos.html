@@ -45,6 +45,19 @@
     <div id="cardsBusqueda" class="mobile-view"></div>
   </section>
 
+  <section class="bloque bloque-pendientes">
+    <h2>Partidos pendientes</h2>
+
+    <div class="desktop-view">
+      <table id="tablaPendientes">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div id="accordionPendientes" class="mobile-view"></div>
+  </section>
+
   <section class="bloque">
     <h2>Programación completa</h2>
 
@@ -86,6 +99,10 @@
   font-size: 22px;
   color: #333;
   font-weight: 800;
+}
+
+.bloque-pendientes h2 {
+  color: #7d2c24;
 }
 
 #buscador {
@@ -293,6 +310,18 @@ td:first-child {
   background: #fff7f1;
 }
 
+.semana-box.pendientes-box .partido-linea {
+  margin-bottom: 10px;
+  border: 1px solid #e2b4a4;
+  border-radius: 14px;
+  background: #fffaf5;
+  box-shadow: 0 2px 8px rgba(111, 46, 38, 0.08);
+}
+
+.semana-box.pendientes-box .partido-linea:last-child {
+  margin-bottom: 0;
+}
+
 .pendientes-lista-card {
   border-color: #e2b4a4;
 }
@@ -460,6 +489,10 @@ const buscador = document.getElementById("buscador");
 const tablaBusquedaHead = document.querySelector("#tablaBusqueda thead");
 const tablaBusquedaBody = document.querySelector("#tablaBusqueda tbody");
 const cardsBusqueda = document.getElementById("cardsBusqueda");
+
+const tablaPendientesHead = document.querySelector("#tablaPendientes thead");
+const tablaPendientesBody = document.querySelector("#tablaPendientes tbody");
+const accordionPendientes = document.getElementById("accordionPendientes");
 
 const tablaCompletaHead = document.querySelector("#tablaCompleta thead");
 const tablaCompletaBody = document.querySelector("#tablaCompleta tbody");
@@ -973,6 +1006,23 @@ function renderBusqueda(filas, mapaSemanas, filtro = "") {
   cardsBusqueda.innerHTML = cardsHTML;
 }
 
+function renderPendientesDesktop(filas, mapaSemanas) {
+  const filasPendientes = obtenerFilasPendientes(filas);
+
+  if (filasPendientes.length === 0) {
+    tablaPendientesBody.innerHTML = `
+      <tr>
+        <td colspan="8" class="mensaje">No hay partidos pendientes.</td>
+      </tr>
+    `;
+    return;
+  }
+
+  tablaPendientesBody.innerHTML = filasPendientes
+    .map(fila => crearFilaTablaHTML(fila, mapaSemanas))
+    .join("");
+}
+
 function renderCompletaDesktop(filas, mapaSemanas) {
   let html = "";
   let semanaAnterior = "";
@@ -994,19 +1044,32 @@ function renderCompletaDesktop(filas, mapaSemanas) {
     semanaAnterior = fila.semana;
   }
 
-  const filasPendientes = obtenerFilasPendientes(filas);
-
-  if (filasPendientes.length > 0) {
-    html += `<tr class="separador-pendientes"><td colspan="8">Pendientes</td></tr>`;
-    html += filasPendientes
-      .map(fila => crearFilaTablaHTML(fila, mapaSemanas))
-      .join("");
-  }
-
   tablaCompletaBody.innerHTML = html || `
     <tr>
       <td colspan="8" class="mensaje">No hay programación disponible.</td>
     </tr>
+  `;
+}
+
+function renderPendientesMobile(filas, mapaSemanas) {
+  const filasPendientes = obtenerFilasPendientes(filas);
+
+  accordionPendientes.innerHTML = `
+    <div class="semana-box pendientes-box">
+      <button class="semana-btn" type="button">
+        Pendientes <span>+</span>
+      </button>
+
+      <div class="semana-contenido">
+        ${
+          filasPendientes.length
+            ? filasPendientes
+                .map(fila => crearPartidoPendienteMovilHTML(fila, mapaSemanas))
+                .join("")
+            : `<div class="pendientes-vacio">No hay partidos pendientes.</div>`
+        }
+      </div>
+    </div>
   `;
 }
 
@@ -1055,27 +1118,6 @@ function renderCompletaMobile(filas, mapaSemanas) {
       </div>
     `;
   });
-
-  const filasPendientes = obtenerFilasPendientes(filas);
-
-  html += `
-    <div class="semana-box pendientes-box">
-      <button class="semana-btn" type="button">
-        Pendientes <span>+</span>
-      </button>
-
-      <div class="semana-contenido">
-        ${
-          filasPendientes.length
-            ? `<div class="cancha-card pendientes-lista-card">
-                <div class="cancha-titulo pendientes-titulo-interno">Partidos pendientes</div>
-                ${filasPendientes.map(fila => crearPartidoPendienteMovilHTML(fila, mapaSemanas)).join("")}
-              </div>`
-            : `<div class="pendientes-vacio">No hay partidos pendientes.</div>`
-        }
-      </div>
-    </div>
-  `;
 
   accordionSemanas.innerHTML = html || `<div class="mensaje">No hay programación disponible.</div>`;
 }
@@ -1210,16 +1252,18 @@ function prepararFilas(filas, mapaSemanas) {
   }
 }
 
-function activarAccordionMobile() {
-  accordionSemanas.addEventListener("click", e => {
+function activarAccordionMobile(contenedor = accordionSemanas) {
+  if (!contenedor) return;
+
+  contenedor.addEventListener("click", e => {
     const btn = e.target.closest(".semana-btn");
 
-    if (!btn || !accordionSemanas.contains(btn)) return;
+    if (!btn || !contenedor.contains(btn)) return;
 
     const box = btn.closest(".semana-box");
     const activa = box.classList.contains("activa");
 
-    accordionSemanas.querySelectorAll(".semana-box.activa").forEach(b => {
+    contenedor.querySelectorAll(".semana-box.activa").forEach(b => {
       b.classList.remove("activa");
       const span = b.querySelector(".semana-btn span");
       if (span) span.textContent = "+";
@@ -1274,6 +1318,7 @@ async function textoFetch(url) {
 
 async function iniciar() {
   crearEncabezado(tablaBusquedaHead);
+  crearEncabezado(tablaPendientesHead);
   crearEncabezado(tablaCompletaHead);
 
   mensajeTabla(
@@ -1281,6 +1326,13 @@ async function iniciar() {
     tablaBusquedaBody,
     cardsBusqueda
   );
+
+  tablaPendientesBody.innerHTML = `
+    <tr>
+      <td colspan="8" class="mensaje">Cargando partidos pendientes...</td>
+    </tr>
+  `;
+  accordionPendientes.innerHTML = `<div class="mensaje">Cargando partidos pendientes...</div>`;
 
   tablaCompletaBody.innerHTML = `
     <tr>
@@ -1302,9 +1354,12 @@ async function iniciar() {
     prepararFilas(filas, mapaSemanas);
 
     renderBusqueda(filas, mapaSemanas, "");
+    renderPendientesDesktop(filas, mapaSemanas);
+    renderPendientesMobile(filas, mapaSemanas);
     renderCompletaDesktop(filas, mapaSemanas);
     renderCompletaMobile(filas, mapaSemanas);
-    activarAccordionMobile();
+    activarAccordionMobile(accordionPendientes);
+    activarAccordionMobile(accordionSemanas);
     activarBuscador(filas, mapaSemanas);
   } catch (error) {
     mensajeTabla(
@@ -1312,6 +1367,13 @@ async function iniciar() {
       tablaBusquedaBody,
       cardsBusqueda
     );
+
+    tablaPendientesBody.innerHTML = `
+      <tr>
+        <td colspan="8" class="mensaje">No se pudieron cargar los partidos pendientes.</td>
+      </tr>
+    `;
+    accordionPendientes.innerHTML = `<div class="mensaje">No se pudieron cargar los partidos pendientes.</div>`;
 
     tablaCompletaBody.innerHTML = `
       <tr>
