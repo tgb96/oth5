@@ -1,0 +1,518 @@
+/* =========================================================
+   Open Tennis Huechuraba · V5
+   Inicio compacto + navegación inferior real + desktop ordenado
+   ========================================================= */
+
+:root {
+  --ot-green-950: #05251c;
+  --ot-green-900: #083125;
+  --ot-green-800: #123f31;
+  --ot-green-700: #176044;
+  --ot-clay-900: #8a3318;
+  --ot-clay-800: #ad4722;
+  --ot-clay-700: #d66c38;
+  --ot-cream: #fff7ea;
+  --ot-paper: #fffdf8;
+  --ot-line: #ead8bd;
+  --ot-muted: #756756;
+  --ot-shadow: 0 18px 52px rgba(52, 28, 12, .16);
+}
+
+html,
+body {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+}
+
+body {
+  padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(214,108,56,.20), transparent 30%),
+    radial-gradient(circle at 100% 18%, rgba(8,49,37,.18), transparent 36%),
+    linear-gradient(180deg, #fff8ee 0%, #f1dcc0 58%, #dec096 100%) !important;
+}
+
+*, *::before, *::after { box-sizing: border-box !important; }
+img, svg, canvas, video, iframe { max-width: 100% !important; height: auto !important; }
+
+/* ---------- Corrección definitiva: menú fijo abajo ---------- */
+.nav,
+.app-nav {
+  display: none !important;
+}
+
+#appBottomNav.app-bottom-nav {
+  position: fixed !important;
+  left: 50% !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: max(10px, env(safe-area-inset-bottom)) !important;
+  transform: translate3d(-50%, 0, 0) !important;
+  width: min(760px, calc(100vw - 22px)) !important;
+  height: 74px !important;
+  z-index: 2147483000 !important;
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 7px !important;
+  padding: 8px !important;
+  margin: 0 !important;
+  border-radius: 30px !important;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(214,108,56,.20), transparent 36%),
+    linear-gradient(135deg, rgba(5,37,28,.98), rgba(8,49,37,.96)) !important;
+  border: 1px solid rgba(255,247,234,.18) !important;
+  box-shadow: 0 18px 48px rgba(5,37,28,.42), inset 0 1px 0 rgba(255,255,255,.12) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  contain: layout style paint !important;
+  isolation: isolate !important;
+}
+
+#appBottomNav.app-bottom-nav a {
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 56px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  padding: 6px 2px !important;
+  border-radius: 20px !important;
+  text-decoration: none !important;
+  color: rgba(255,247,234,.78) !important;
+  background: transparent !important;
+  font-family: Inter, Arial, sans-serif !important;
+  font-size: 10.6px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+
+#appBottomNav.app-bottom-nav a.active,
+#appBottomNav.app-bottom-nav a[aria-current="page"],
+#appBottomNav.app-bottom-nav a:hover {
+  color: #fff !important;
+  background: linear-gradient(180deg, var(--ot-clay-700), var(--ot-clay-900)) !important;
+  box-shadow: 0 10px 26px rgba(173,71,34,.38), inset 0 1px 0 rgba(255,255,255,.24) !important;
+}
+
+#appBottomNav .nav-icon {
+  display: block !important;
+  font-size: 19px !important;
+  line-height: 1 !important;
+}
+
+#appBottomNav .nav-label {
+  display: block !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+@media (max-width: 560px) {
+  body { padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important; }
+  #appBottomNav.app-bottom-nav {
+    width: calc(100vw - 14px) !important;
+    height: 70px !important;
+    padding: 7px !important;
+    gap: 4px !important;
+    border-radius: 24px !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+  }
+  #appBottomNav.app-bottom-nav a {
+    height: 54px !important;
+    border-radius: 16px !important;
+    font-size: 9.4px !important;
+  }
+  #appBottomNav .nav-icon { font-size: 18px !important; }
+}
+
+/* ---------- App shell general ---------- */
+.layout,
+.app-shell {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 100dvh !important;
+  padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+}
+
+.main,
+.app-main,
+.app {
+  width: 100% !important;
+  max-width: 1180px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: clamp(14px, 3vw, 36px) !important;
+  padding-right: clamp(14px, 3vw, 36px) !important;
+  overflow-x: hidden !important;
+}
+
+/* Desktop mejor ordenado */
+@media (min-width: 901px) {
+  .app-topbar,
+  .sidebar {
+    min-height: 78px !important;
+  }
+
+  .programacion-app,
+  .rankings-app,
+  .reglamento-app,
+  .score-card,
+  .setup-card,
+  .home-card,
+  .card,
+  .bloque,
+  .categoria-ranking {
+    max-width: 100% !important;
+  }
+
+  .programacion-app .bloque,
+  .rankings-app > section,
+  .reglamento-app .rules-section,
+  .criterios-box {
+    border-radius: 28px !important;
+  }
+
+  .desktop-view table,
+  .tabla-ranking {
+    font-size: 14px !important;
+  }
+}
+
+/* ---------- Inicio V5: sin scroll innecesario ---------- */
+body.index-page {
+  padding-bottom: 0 !important;
+  min-height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+.index-page .layout,
+.index-page .app-shell,
+.index-page .app-topbar,
+.index-page .sidebar,
+.index-page .install-modal,
+.index-page .home-grid,
+.index-page .card.home-card {
+  display: none !important;
+}
+
+.v5-home-main {
+  width: 100% !important;
+  max-width: 1160px !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  margin: 0 auto !important;
+  padding: max(10px, env(safe-area-inset-top)) clamp(10px, 3vw, 28px) calc(92px + env(safe-area-inset-bottom)) !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  gap: clamp(8px, 1.6vh, 14px) !important;
+  overflow: hidden !important;
+}
+
+.v5-hero-card {
+  min-height: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+  position: relative !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  border-radius: clamp(24px, 5vw, 44px) !important;
+  padding: clamp(18px, 4.5vh, 54px) clamp(22px, 6vw, 64px) !important;
+  color: var(--ot-cream) !important;
+  background:
+    radial-gradient(circle at 78% 38%, rgba(214,108,56,.62), transparent 24%),
+    radial-gradient(circle at 3% 104%, rgba(255,247,234,.12), transparent 34%),
+    linear-gradient(135deg, rgba(5,37,28,.98), rgba(18,63,49,.92) 58%, rgba(138,51,24,.88)) !important;
+  border: 1px solid rgba(255,247,234,.20) !important;
+  box-shadow: var(--ot-shadow) !important;
+}
+
+.v5-hero-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(112deg, transparent 0 22%, rgba(255,255,255,.06) 22% 27%, transparent 27% 100%),
+    linear-gradient(118deg, transparent 0 60%, rgba(255,255,255,.08) 60% 65%, transparent 65% 100%);
+  pointer-events: none;
+}
+
+.v5-hero-card::after {
+  content: "";
+  position: absolute;
+  right: -110px;
+  bottom: -150px;
+  width: clamp(220px, 38vw, 460px);
+  height: clamp(220px, 38vw, 460px);
+  border: clamp(26px, 6vw, 58px) solid rgba(255,247,234,.09);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.v5-hero-logo-wrap {
+  position: relative;
+  z-index: 2;
+  width: clamp(76px, 18vw, 170px) !important;
+  margin-bottom: clamp(14px, 3vh, 28px) !important;
+}
+
+.v5-hero-logo {
+  width: 100% !important;
+  display: block !important;
+  filter: drop-shadow(0 16px 24px rgba(0,0,0,.30));
+}
+
+.v5-eyebrow {
+  position: relative;
+  z-index: 2;
+  margin: 0 0 clamp(8px, 1.8vh, 16px) !important;
+  color: rgba(255,247,234,.86) !important;
+  font-family: Inter, Arial, sans-serif !important;
+  font-size: clamp(15px, 3.1vw, 28px) !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .18em !important;
+}
+
+.v5-hero-card h1 {
+  position: relative;
+  z-index: 2;
+  margin: 0 !important;
+  color: #fffaf2 !important;
+  font-family: Oswald, Inter, Arial, sans-serif !important;
+  font-size: clamp(42px, 13vw, 104px) !important;
+  line-height: .90 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .01em !important;
+  text-shadow: 0 14px 24px rgba(0,0,0,.18) !important;
+}
+
+.v5-hero-text {
+  position: relative;
+  z-index: 2;
+  margin: clamp(14px, 2.6vh, 22px) 0 0 !important;
+  max-width: 720px !important;
+  color: rgba(255,247,234,.88) !important;
+  font-size: clamp(15px, 3.2vw, 24px) !important;
+  line-height: 1.42 !important;
+  font-weight: 500 !important;
+}
+
+.v5-hero-actions {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 760px) !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: clamp(10px, 2vw, 14px) !important;
+  margin-top: clamp(18px, 3.6vh, 34px) !important;
+}
+
+.v5-btn,
+.v5-install-action {
+  min-height: clamp(46px, 7vh, 64px) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  padding: 10px 16px !important;
+  color: #fff !important;
+  text-decoration: none !important;
+  font-family: Inter, Arial, sans-serif !important;
+  font-weight: 900 !important;
+  font-size: clamp(14px, 3vw, 20px) !important;
+  text-align: center !important;
+  box-shadow: 0 14px 28px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+.v5-btn-clay,
+.v5-install-action {
+  background: linear-gradient(180deg, var(--ot-clay-700), var(--ot-clay-900)) !important;
+}
+
+.v5-btn-green {
+  background: linear-gradient(180deg, var(--ot-green-700), var(--ot-green-950)) !important;
+}
+
+.v5-install-card {
+  width: 100% !important;
+  min-height: clamp(74px, 12vh, 112px) !important;
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: clamp(10px, 2vw, 18px) !important;
+  padding: clamp(10px, 2vh, 18px) clamp(12px, 3vw, 22px) !important;
+  border-radius: clamp(22px, 5vw, 32px) !important;
+  background: rgba(255,253,248,.94) !important;
+  border: 1px solid var(--ot-line) !important;
+  box-shadow: 0 12px 32px rgba(52,28,12,.12) !important;
+  overflow: hidden !important;
+}
+
+
+.v5-install-card img {
+  width: clamp(42px, 11vw, 72px) !important;
+  height: clamp(42px, 11vw, 72px) !important;
+  object-fit: contain !important;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,.14));
+}
+
+.v5-install-copy {
+  min-width: 0 !important;
+}
+
+.v5-install-copy h2 {
+  margin: 0 0 2px !important;
+  color: var(--ot-green-950) !important;
+  font-family: Oswald, Inter, Arial, sans-serif !important;
+  font-size: clamp(18px, 4vw, 30px) !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+}
+
+.v5-install-copy p {
+  margin: 0 !important;
+  color: var(--ot-muted) !important;
+  font-size: clamp(11px, 2.6vw, 15px) !important;
+  line-height: 1.25 !important;
+}
+
+.v5-install-action {
+  min-height: 44px !important;
+  padding-inline: clamp(12px, 3vw, 20px) !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+}
+
+@media (max-width: 560px) {
+  .v5-home-main {
+    padding: max(9px, env(safe-area-inset-top)) 10px calc(84px + env(safe-area-inset-bottom)) !important;
+    gap: 8px !important;
+  }
+
+  .v5-hero-card {
+    border-radius: 26px !important;
+    padding: 20px 22px !important;
+  }
+
+  .v5-hero-logo-wrap {
+    width: clamp(68px, 20vw, 92px) !important;
+    margin-bottom: 14px !important;
+  }
+
+  .v5-eyebrow {
+    font-size: clamp(13px, 4vw, 16px) !important;
+    margin-bottom: 9px !important;
+  }
+
+  .v5-hero-card h1 {
+    font-size: clamp(48px, 15vw, 64px) !important;
+  }
+
+  .v5-hero-text {
+    font-size: clamp(14px, 4.2vw, 18px) !important;
+    line-height: 1.38 !important;
+    margin-top: 13px !important;
+  }
+
+  .v5-hero-actions {
+    grid-template-columns: 1fr !important;
+    gap: 9px !important;
+    margin-top: 16px !important;
+  }
+
+  .v5-btn,
+  .v5-install-action {
+    min-height: 46px !important;
+    font-size: 14px !important;
+  }
+
+  .v5-install-card {
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+    min-height: 78px !important;
+    padding: 10px 11px !important;
+    gap: 9px !important;
+    border-radius: 22px !important;
+  }
+
+  .v5-install-card img {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .v5-install-copy h2 {
+    font-size: 18px !important;
+  }
+
+  .v5-install-copy p {
+    font-size: 11px !important;
+    max-height: 28px !important;
+    overflow: hidden !important;
+  }
+
+  .v5-install-action {
+    min-height: 40px !important;
+    padding: 9px 12px !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 380px), (max-height: 720px) {
+  .v5-hero-card { padding: 16px 18px !important; }
+  .v5-hero-logo-wrap { width: 58px !important; margin-bottom: 10px !important; }
+  .v5-eyebrow { font-size: 12px !important; margin-bottom: 7px !important; }
+  .v5-hero-card h1 { font-size: 42px !important; }
+  .v5-hero-text { font-size: 13px !important; margin-top: 9px !important; }
+  .v5-hero-actions { margin-top: 12px !important; gap: 7px !important; }
+  .v5-btn { min-height: 40px !important; }
+  .v5-install-card { min-height: 68px !important; }
+  .v5-install-card img { width: 38px !important; height: 38px !important; }
+  .v5-install-copy h2 { font-size: 16px !important; }
+  .v5-install-copy p { font-size: 10px !important; }
+  .v5-install-action { min-height: 36px !important; padding-inline: 10px !important; }
+  #appBottomNav.app-bottom-nav { height: 64px !important; }
+  #appBottomNav.app-bottom-nav a { height: 48px !important; font-size: 8.8px !important; }
+}
+
+/* ---------- Páginas internas: más aire en PC y móvil ---------- */
+body:not(.index-page) .main,
+body:not(.index-page) .app-main,
+body:not(.index-page) .app {
+  padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
+}
+
+@media (min-width: 1000px) {
+  body:not(.index-page) .main,
+  body:not(.index-page) .app-main,
+  body:not(.index-page) .app {
+    padding-top: 32px !important;
+  }
+
+  .page-title {
+    max-width: 1180px !important;
+  }
+
+  .programacion-app,
+  .rankings-app,
+  .reglamento-app {
+    max-width: 1180px !important;
+    margin: 0 auto !important;
+  }
+
+  .bloque,
+  .categoria-ranking,
+  .reglamento-card,
+  .rules-section,
+  .criterios-box {
+    box-shadow: 0 16px 42px rgba(52,28,12,.10) !important;
+  }
+}

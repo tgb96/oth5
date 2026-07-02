@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Marcador Open Tennis</title>
+
+  <style>
+    :root {
+      --club-green: #6aa84f;
+      --club-green-dark: #4f8738;
+      --club-orange: #ff9900;
+      --club-orange-dark: #e68a00;
+      --bg: #f5f7f4;
+      --card: #ffffff;
+      --text: #1f2933;
+      --muted: #6b7280;
+      --line: #d9e2d1;
+      --soft-green: #eaf4e4;
+      --soft-orange: #fff3df;
+      --danger: #c00000;
+      --danger-soft: #fde8e8;
+      --info: #2563eb;
+      --info-soft: #eaf1ff;
+      --shadow: 0 8px 24px rgba(0,0,0,0.10);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 900;
+      color: var(--club-green-dark);
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .setup-card,
+    .score-card,
+    .side-card,
+    .status-card,
+    .final-card,
+    .history-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .setup-card {
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .setup-grid {
+      display: grid;
+      grid-template-columns: 160px 1fr 1fr;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .label {
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 7px;
+      color: #333;
+    }
+
+    select,
+    button {
+      font-family: inherit;
+    }
+
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 13px 12px;
+      font-size: 15px;
+      background: white;
+      outline: none;
+    }
+
+    select:focus {
+      border-color: var(--club-green);
+      box-shadow: 0 0 0 3px rgba(106,168,79,0.16);
+    }
+
+    .score-layout {
+      display: grid;
+      grid-template-columns: 1.35fr 0.85fr;
+      gap: 16px;
+    }
+
+    .score-card {
+      padding: 16px;
+    }
+
+    .match-banner {
+      background: linear-gradient(135deg, var(--club-green), var(--club-green-dark));
+      color: white;
+      border-radius: 20px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .match-banner-title {
+      font-size: 13px;
+      font-weight: 800;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .match-banner-names {
+      font-size: clamp(22px, 4vw, 34px);
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .serve-strip {
+      margin-top: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .big-score {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .player-control {
+      border: 2px solid var(--line);
+      border-radius: 22px;
+      padding: 14px;
+      background: white;
+      transition: 0.2s ease;
+    }
+
+    .player-control.serving {
+      border-color: var(--club-orange);
+      background: var(--soft-orange);
+      box-shadow: 0 0 0 4px rgba(255,153,0,0.15);
+    }
+
+    .player-name {
+      font-size: 18px;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .game-points {
+      font-size: clamp(48px, 9vw, 86px);
+      font-weight: 900;
+      text-align: center;
+      line-height: 1;
+      color: var(--club-green-dark);
+      margin-bottom: 12px;
+    }
+
+    .player-control.serving .game-points {
+      color: var(--club-orange-dark);
+    }
+
+    .point-btn {
+      width: 100%;
+      border: none;
+      background: var(--club-green);
+      color: white;
+      padding: 18px 12px;
+      border-radius: 18px;
+      font-size: 20px;
+      font-weight: 900;
+      cursor: pointer;
+      min-height: 70px;
+    }
+
+    .player-control.serving .point-btn {
+      background: var(--club-orange);
+    }
+
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 13px 14px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.08s ease, opacity 0.2s ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .controls-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .ghost {
+      background: white;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .orange-btn {
+      background: var(--club-orange);
+      color: white;
+    }
+
+    .danger-btn {
+      background: var(--danger);
+      color: white;
+    }
+
+    .sets-table {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .sets-row {
+      display: grid;
+      grid-template-columns: 1.4fr 0.8fr 0.8fr 0.8fr 0.8fr;
+      text-align: center;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sets-row:last-child {
+      border-bottom: none;
+    }
+
+    .sets-head {
+      background: var(--club-green);
+      color: white;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .sets-row > div {
+      padding: 10px 8px;
+      border-right: 1px solid var(--line);
+    }
+
+    .sets-row > div:last-child {
+      border-right: none;
+    }
+
+    .sets-player {
+      text-align: left;
+      font-weight: 900;
+    }
+
+    .sets-number {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .side {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .side-card {
+      padding: 14px;
+    }
+
+    .side-title {
+      font-size: 17px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      color: var(--club-green-dark);
+    }
+
+    .set-mini {
+      display: grid;
+      gap: 10px;
+    }
+
+    .set-box {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: white;
+    }
+
+    .set-box.active {
+      border-color: var(--club-orange);
+      background: var(--soft-orange);
+    }
+
+    .set-box.done {
+      border-color: var(--club-green);
+      background: var(--soft-green);
+    }
+
+    .set-box-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .set-score-line {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin: 5px 0;
+      align-items: center;
+    }
+
+    .set-score-name {
+      font-size: 13px;
+      color: #333;
+      font-weight: 700;
+    }
+
+    .set-score-value {
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      background: #f3f4f6;
+      color: #333;
+      border: 1px solid var(--line);
+    }
+
+    .badge.green {
+      background: var(--soft-green);
+      color: var(--club-green-dark);
+      border-color: #b6d7a8;
+    }
+
+    .badge.orange {
+      background: var(--soft-orange);
+      color: #9a5b00;
+      border-color: #ffd38a;
+    }
+
+    .badge.red {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border-color: #f4aaaa;
+    }
+
+    .badge.blue {
+      background: var(--info-soft);
+      color: var(--info);
+      border-color: #adc7ff;
+    }
+
+    .status-card {
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .status-title {
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      color: var(--club-green-dark);
+    }
+
+    .status-line {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .change-alert {
+      display: none;
+      margin-top: 12px;
+      background: var(--club-orange);
+      color: white;
+      padding: 12px;
+      border-radius: 16px;
+      font-weight: 900;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .change-alert.visible {
+      display: block;
+    }
+
+    .final-card {
+      display: none;
+      padding: 18px;
+      margin-top: 16px;
+      border: 2px solid var(--club-green);
+      background: var(--soft-green);
+      text-align: center;
+    }
+
+    .final-card.visible {
+      display: block;
+    }
+
+    .final-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--club-green-dark);
+      margin-bottom: 8px;
+    }
+
+    .final-winner {
+      font-size: 30px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .final-result {
+      display: inline-block;
+      background: white;
+      border: 1px solid #b6d7a8;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--club-green-dark);
+    }
+
+    .history-card {
+      margin-top: 16px;
+      overflow: hidden;
+    }
+
+    .history-toggle {
+      width: 100%;
+      background: white;
+      color: var(--text);
+      border-radius: 0;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .history-content {
+      display: none;
+      padding: 12px;
+    }
+
+    .history-card.open .history-content {
+      display: block;
+    }
+
+    .log-list {
+      display: grid;
+      gap: 8px;
+      max-height: 260px;
+      overflow: auto;
+    }
+
+    .log-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 9px 10px;
+      background: white;
+      font-size: 13px;
+    }
+
+    .log-item.success {
+      background: var(--soft-green);
+      border-color: #b6d7a8;
+      font-weight: 800;
+    }
+
+    .log-item.warning {
+      background: var(--soft-orange);
+      border-color: #ffd38a;
+      font-weight: 800;
+    }
+
+    .log-item.danger {
+      background: var(--danger-soft);
+      border-color: #f4aaaa;
+      font-weight: 800;
+    }
+
+    .log-item.info {
+      background: #f8fafc;
+    }
+
+    @media (max-width: 900px) {
+      .score-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .side {
+        order: 2;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .app {
+        padding: 12px;
+      }
+
+      .setup-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .big-score {
+        grid-template-columns: 1fr;
+      }
+
+      .controls-row {
+        grid-template-columns: 1fr;
+      }
+
+      .point-btn {
+        min-height: 74px;
+        font-size: 21px;
+      }
+
+      .sets-row {
+        grid-template-columns: 1.4fr 0.7fr 0.7fr 0.7fr 0.7fr;
+        font-size: 13px;
+      }
+
+      .sets-row > div {
+        padding: 8px 5px;
+      }
+
+      .sets-number {
+        font-size: 20px;
+      }
+
+      .final-winner {
+        font-size: 24px;
+      }
+    }
+
+
+    /* App mobile shell - navegación inferior y prevención de scroll horizontal */
+    html,
+    body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    .mobile-appbar {
+      display: none;
+    }
+
+    .bottom-nav {
+      display: none;
+    }
+
+    .app,
+    .score-card,
+    .setup-card,
+    .side-card,
+    .status-card,
+    .final-card,
+    .history-card,
+    .sets-table,
+    .match-banner,
+    .player-control {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .match-banner-names,
+    .player-name,
+    .sets-player,
+    .log-item {
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 820px) {
+      body {
+        padding-bottom: calc(78px + env(safe-area-inset-bottom));
+      }
+
+      .mobile-appbar {
+        position: sticky;
+        top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 54px;
+        padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+        background: rgba(255,255,255,0.96);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid #d9e2d1;
+        box-shadow: 0 5px 18px rgba(0,0,0,0.06);
+        z-index: 150;
+      }
+
+      .appbar-brand {
+        color: #053b2c;
+        text-decoration: none;
+        font-weight: 900;
+        font-size: 20px;
+        line-height: 1;
+      }
+
+      .appbar-section {
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .bottom-nav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: calc(68px + env(safe-area-inset-bottom));
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 5px;
+        padding: 6px 7px calc(6px + env(safe-area-inset-bottom));
+        background: rgba(255,255,255,0.98);
+        border-top: 1px solid #d9e2d1;
+        box-shadow: 0 -8px 24px rgba(0,0,0,0.11);
+        z-index: 250;
+      }
+
+      .bottom-nav a {
+        min-width: 0;
+        width: 100%;
+        height: 56px;
+        padding: 7px 4px 6px;
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
+        text-align: center;
+        color: #2f3b35;
+        font-size: 10.8px;
+        line-height: 1.05;
+        font-weight: 900;
+        text-decoration: none;
+        overflow: hidden;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .bottom-nav a.active {
+        color: white;
+        background: linear-gradient(180deg, var(--club-green), var(--club-green-dark));
+      }
+
+      .bottom-nav .nav-icon {
+        display: block;
+        font-size: 20px;
+        line-height: 1;
+      }
+
+      .bottom-nav .nav-label {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .app {
+        width: 100%;
+        max-width: 720px;
+        padding: 12px 12px 22px;
+      }
+
+      .app > .header {
+        display: none;
+      }
+
+      .setup-card,
+      .score-card,
+      .side-card,
+      .status-card,
+      .final-card,
+      .history-card {
+        border-radius: 18px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      }
+
+      .match-banner {
+        border-radius: 18px;
+        padding: 14px;
+      }
+
+      .sets-table {
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .sets-row {
+        grid-template-columns: minmax(82px, 1.35fr) repeat(4, minmax(42px, 0.75fr));
+      }
+
+      .sets-row > div {
+        min-width: 0;
+      }
+
+      .sets-player {
+        font-size: 12.5px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .bottom-nav a {
+        font-size: 9.8px;
+        border-radius: 14px;
+      }
+
+      .bottom-nav .nav-icon {
+        font-size: 18px;
+      }
+
+      .app {
+        padding-left: 9px;
+        padding-right: 9px;
+      }
+    }
+
+  </style>
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#0b2f25">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Open Tennis">
+  <link rel="stylesheet" href="assets/css/v3.css" />
+  <link rel="stylesheet" href="assets/css/v4.css?v=4.1" />
+  <link rel="stylesheet" href="assets/css/v5.css?v=5" />
+  <script defer src="assets/js/app.js?v=5"></script>
+</head>
+
+<body class="marcador-page v5-page">
+  <aside class="sidebar app-topbar">
+    <a class="brand" href="index.html" aria-label="Open Tennis Huechuraba inicio"><img class="brand-logo" src="assets/img/logo-open-tennis.png" alt="" aria-hidden="true"><span class="brand-text"><span class="brand-main">Open Tennis</span><span class="brand-sub">Huechuraba · 2026</span></span></a>
+  </aside>
+
+  <div class="app marcador-app">
+    <header class="header">
+      <h1>Marcador Open Tennis</h1>
+      <p>Formato: 2 sets normales + super tie-break a 10 puntos en el tercero.</p>
+    </header>
+
+    <section class="setup-card">
+      <div class="setup-grid">
+        <div>
+          <div class="label">Categoría</div>
+          <select id="categorySelect">
+            <option value="A">Categoría A</option>
+            <option value="B">Categoría B</option>
+            <option value="C">Categoría C</option>
+            <option value="D">Categoría D</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="label">Jugador A</div>
+          <select id="playerASelect"></select>
+        </div>
+
+        <div>
+          <div class="label">Jugador B</div>
+          <select id="playerBSelect"></select>
+        </div>
+      </div>
+    </section>
+
+    <main class="score-layout">
+      <section class="score-card">
+        <div class="match-banner">
+          <div class="match-banner-title" id="categoryLabel">Categoría A</div>
+          <div class="match-banner-names">
+            <span id="bannerNameA">Jugador A</span>
+            <span> vs </span>
+            <span id="bannerNameB">Jugador B</span>
+          </div>
+          <div class="serve-strip" id="serveStrip">🎾 Saca Jugador A</div>
+        </div>
+
+        <div class="big-score">
+          <div class="player-control" id="playerBoxA">
+            <div class="player-name" id="playerNameA">Jugador A</div>
+            <div class="game-points" id="gamePointsA">0</div>
+            <button class="point-btn" id="pointA">Punto Jugador A</button>
+          </div>
+
+          <div class="player-control" id="playerBoxB">
+            <div class="player-name" id="playerNameB">Jugador B</div>
+            <div class="game-points" id="gamePointsB">0</div>
+            <button class="point-btn" id="pointB">Punto Jugador B</button>
+          </div>
+        </div>
+
+        <div class="sets-table">
+          <div class="sets-row sets-head">
+            <div>Jugador</div>
+            <div>Set 1</div>
+            <div>Set 2</div>
+            <div>STB</div>
+            <div>Sets</div>
+          </div>
+
+          <div class="sets-row">
+            <div class="sets-player" id="tableNameA">Jugador A</div>
+            <div class="sets-number" id="tableS1A">0</div>
+            <div class="sets-number" id="tableS2A">0</div>
+            <div class="sets-number" id="tableSTBA">0</div>
+            <div class="sets-number" id="tableSetsA">0</div>
+          </div>
+
+          <div class="sets-row">
+            <div class="sets-player" id="tableNameB">Jugador B</div>
+            <div class="sets-number" id="tableS1B">0</div>
+            <div class="sets-number" id="tableS2B">0</div>
+            <div class="sets-number" id="tableSTBB">0</div>
+            <div class="sets-number" id="tableSetsB">0</div>
+          </div>
+        </div>
+
+        <section class="status-card">
+          <div class="status-title">Estado del partido</div>
+          <div class="status-line" id="statusLine"></div>
+          <div class="change-alert" id="changeAlert">🔄 Cambio de lado ahora</div>
+        </section>
+
+        <section class="final-card" id="finalCard">
+          <div class="final-title">Partido finalizado</div>
+          <div class="final-winner" id="finalWinner"></div>
+          <div class="final-result" id="finalResult"></div>
+        </section>
+
+        <div class="controls-row">
+          <button class="ghost" id="undoBtn">Deshacer</button>
+          <button class="orange-btn" id="switchServer">Cambiar sacador</button>
+          <button class="danger-btn" id="resetBtn">Reiniciar</button>
+        </div>
+
+        <section class="history-card" id="historyCard">
+          <button class="history-toggle" id="historyToggle">
+            <span>Historial de puntos</span>
+            <span id="historyIcon">+</span>
+          </button>
+          <div class="history-content">
+            <div class="log-list" id="logList"></div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="side">
+        <section class="side-card">
+          <div class="side-title">Resumen por sets</div>
+
+          <div class="set-mini">
+            <div class="set-box" id="setBox1">
+              <div class="set-box-title">
+                <span>Set 1</span>
+                <span class="badge" id="set1Status">En espera</span>
+              </div>
+              <div class="set-score-line">
+                <span class="set-score-name" id="set1NameA">Jugador A</span>
+                <span class="set-score-value" id="set1A">0</span>
+              </div>
+              <div class="set-score-line">
+                <span class="set-score-name" id="set1NameB">Jugador B</span>
+                <span class="set-score-value" id="set1B">0</span>
+              </div>
+              <div id="tb1Box" class="badge blue" style="display:none; margin-top:8px;"></div>
+            </div>
+
+            <div class="set-box" id="setBox2">
+              <div class="set-box-title">
+                <span>Set 2</span>
+                <span class="badge" id="set2Status">En espera</span>
+              </div>
+              <div class="set-score-line">
+                <span class="set-score-name" id="set2NameA">Jugador A</span>
+                <span class="set-score-value" id="set2A">0</span>
+              </div>
+              <div class="set-score-line">
+                <span class="set-score-name" id="set2NameB">Jugador B</span>
+                <span class="set-score-value" id="set2B">0</span>
+              </div>
+              <div id="tb2Box" class="badge blue" style="display:none; margin-top:8px;"></div>
+            </div>
+
+            <div class="set-box" id="setBox3">
+              <div class="set-box-title">
+                <span>Set 3 · Super tie-break</span>
+                <span class="badge" id="set3Status">En espera</span>
+              </div>
+              <div class="set-score-line">
+                <span class="set-score-name" id="set3NameA">Jugador A</span>
+                <span class="set-score-value" id="set3A">0</span>
+              </div>
+              <div class="set-score-line">
+                <span class="set-score-name" id="set3NameB">Jugador B</span>
+                <span class="set-score-value" id="set3B">0</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </main>
+</div>
+
+  <script>
+    const CLUB_PLAYERS = {
+      A: [
+        "Diego Fossa",
+        "Angelo Basualto",
+        "Claudio Aedo",
+        "Felipe Reyes",
+        "Jose Astete",
+        "Luis Flores",
+        "Marcelo López",
+        "Tomás Gómez",
+        "Nicolás Collao"
+      ],
+      B: [
+        "Gonzalo Barros",
+        "Hernán Bravo",
+        "Cristhian Linares",
+        "Genaro Espinoza",
+        "Daniel Vega",
+        "Javier González",
+        "Diego Cervantes",
+        "Jaime Valdebenito",
+        "Matías Arellano",
+        "Oscar Morales"
+      ],
+      C: [
+        "Aníbal Valenzuela",
+        "César Maturana",
+        "Constanza Núñez",
+        "Hernán Medel",
+        "Juan Muñoz",
+        "Mauricio Bustamante",
+        "Paulo Barrera",
+        "Roy Minda"
+      ],
+      D: [
+        "Catalina Valladares",
+        "Kamila Riquelme",
+        "Loreto Pezoa",
+        "María José Valladares",
+        "Sara Salas"
+      ]
+    };
+
+    const POINT_LABELS = ["0", "15", "30", "40"];
+
+    function clone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function createInitialState() {
+      return {
+        category: "A",
+        players: [CLUB_PLAYERS.A[0], CLUB_PLAYERS.A[1]],
+        sets: [
+          { games: [0, 0], tiebreakPoints: null, winner: null, tiebreakStartServer: null },
+          { games: [0, 0], tiebreakPoints: null, winner: null, tiebreakStartServer: null },
+          { superTiebreakPoints: [0, 0], winner: null, startServer: 0 }
+        ],
+        currentSet: 0,
+        matchWinner: null,
+        points: [0, 0],
+        server: 0,
+        inTiebreak: false,
+        log: [{ text: "Partido iniciado", type: "info" }]
+      };
+    }
+
+    let history = [createInitialState()];
+
+    function getState() {
+      return history[history.length - 1];
+    }
+
+    function pushState(state) {
+      history.push(state);
+      render();
+    }
+
+    function getPlayerLabel(state, index) {
+      return state.players[index] || `Jugador ${index === 0 ? "A" : "B"}`;
+    }
+
+    function addLog(state, text, type = "info") {
+      state.log = [{ text, type }, ...state.log].slice(0, 30);
+    }
+
+    function getSetsWon(state) {
+      const won = [0, 0];
+
+      state.sets.forEach(set => {
+        if (set.winner === 0 || set.winner === 1) {
+          won[set.winner]++;
+        }
+      });
+
+      return won;
+    }
+
+    function formatRegularPoints(points) {
+      const [a, b] = points;
+
+      if (a >= 3 && b >= 3) {
+        if (a === b) return ["40", "40"];
+        if (a === b + 1) return ["AD", "40"];
+        if (b === a + 1) return ["40", "AD"];
+      }
+
+      return [POINT_LABELS[a] || "40", POINT_LABELS[b] || "40"];
+    }
+
+    function getTiebreakServer(startServer, totalPointsPlayed) {
+      if (totalPointsPlayed === 0) return startServer;
+
+      const other = startServer === 0 ? 1 : 0;
+
+      if (totalPointsPlayed === 1) return other;
+
+      const block = Math.floor((totalPointsPlayed - 1) / 2);
+      return block % 2 === 0 ? other : startServer;
+    }
+
+    function getCurrentServer(state) {
+      if (state.currentSet === 2 && state.matchWinner === null) {
+        const set = state.sets[2];
+        const total = set.superTiebreakPoints[0] + set.superTiebreakPoints[1];
+        return getTiebreakServer(set.startServer, total);
+      }
+
+      if (state.inTiebreak) {
+        const set = state.sets[state.currentSet];
+        const total = set.tiebreakPoints[0] + set.tiebreakPoints[1];
+        return getTiebreakServer(set.tiebreakStartServer, total);
+      }
+
+      return state.server;
+    }
+
+    function nextServerForNewGame(state) {
+      state.server = state.server === 0 ? 1 : 0;
+    }
+
+    function getSideChangeMessage(state) {
+      if (state.matchWinner !== null) return "";
+
+      if (state.currentSet === 2) {
+        const pts = state.sets[2].superTiebreakPoints[0] + state.sets[2].superTiebreakPoints[1];
+        if (pts > 0 && pts % 6 === 0) return "Cambio de lado ahora";
+        return "";
+      }
+
+      if (state.inTiebreak) {
+        const tb = state.sets[state.currentSet].tiebreakPoints;
+        const pts = tb[0] + tb[1];
+        if (pts > 0 && pts % 6 === 0) return "Cambio de lado ahora";
+        return "";
+      }
+
+      const games = state.sets[state.currentSet].games;
+      const totalGames = games[0] + games[1];
+
+      if (totalGames > 0 && totalGames % 2 === 1) {
+        return "Cambio de lado ahora";
+      }
+
+      return "";
+    }
+
+    function wouldWinRegularGame(points, player) {
+      const p = [...points];
+      p[player]++;
+
+      return p[player] >= 4 && p[player] - p[player === 0 ? 1 : 0] >= 2;
+    }
+
+    function wouldWinSet(state, player) {
+      if (state.currentSet === 2) {
+        const pts = [...state.sets[2].superTiebreakPoints];
+        pts[player]++;
+
+        return pts[player] >= 10 && pts[player] - pts[player === 0 ? 1 : 0] >= 2;
+      }
+
+      if (state.inTiebreak) {
+        const pts = [...state.sets[state.currentSet].tiebreakPoints];
+        pts[player]++;
+
+        return pts[player] >= 7 && pts[player] - pts[player === 0 ? 1 : 0] >= 2;
+      }
+
+      if (!wouldWinRegularGame(state.points, player)) return false;
+
+      const games = [...state.sets[state.currentSet].games];
+      games[player]++;
+
+      return games[player] >= 6 && games[player] - games[player === 0 ? 1 : 0] >= 2;
+    }
+
+    function wouldWinMatch(state, player) {
+      const won = getSetsWon(state);
+      return won[player] + (wouldWinSet(state, player) ? 1 : 0) >= 2;
+    }
+
+    function getLiveMoments(state) {
+      const moments = [];
+
+      if (state.matchWinner !== null) {
+        moments.push({
+          text: `${getPlayerLabel(state, state.matchWinner)} ganó el partido`,
+          type: "green"
+        });
+        return moments;
+      }
+
+      if (state.currentSet < 2 && !state.inTiebreak) {
+        const [a, b] = state.points;
+
+        if (a >= 3 && b >= 3 && a === b) {
+          moments.push({ text: "Deuce", type: "orange" });
+        }
+
+        if (a >= 3 && b >= 3 && Math.abs(a - b) === 1) {
+          const adv = a > b ? 0 : 1;
+          moments.push({
+            text: `Ventaja ${getPlayerLabel(state, adv)}`,
+            type: "orange"
+          });
+        }
+
+        [0, 1].forEach(player => {
+          if (wouldWinRegularGame(state.points, player)) {
+            const isReceiver = getCurrentServer(state) !== player;
+            moments.push({
+              text: `${isReceiver ? "Break point" : "Game point"} para ${getPlayerLabel(state, player)}`,
+              type: isReceiver ? "red" : "blue"
+            });
+
+            if (wouldWinSet(state, player)) {
+              moments.push({
+                text: `Set point para ${getPlayerLabel(state, player)}`,
+                type: "orange"
+              });
+            }
+
+            if (wouldWinMatch(state, player)) {
+              moments.push({
+                text: `Match point para ${getPlayerLabel(state, player)}`,
+                type: "red"
+              });
+            }
+          }
+        });
+      } else {
+        [0, 1].forEach(player => {
+          if (wouldWinSet(state, player)) {
+            moments.push({
+              text: `Set point para ${getPlayerLabel(state, player)}`,
+              type: "orange"
+            });
+          }
+
+          if (wouldWinMatch(state, player)) {
+            moments.push({
+              text: `Match point para ${getPlayerLabel(state, player)}`,
+              type: "red"
+            });
+          }
+        });
+      }
+
+      return moments;
+    }
+
+    function winSet(state, winner) {
+      const label = getPlayerLabel(state, winner);
+      const set = state.sets[state.currentSet];
+
+      set.winner = winner;
+      state.points = [0, 0];
+      state.inTiebreak = false;
+
+      addLog(state, `${label} gana el Set ${state.currentSet + 1}`, "success");
+
+      const won = getSetsWon(state);
+
+      if (won[winner] === 2) {
+        state.matchWinner = winner;
+        addLog(state, `${label} gana el partido`, "success");
+        return;
+      }
+
+      state.currentSet++;
+
+      if (state.currentSet === 2) {
+        state.sets[2].startServer = state.server;
+        addLog(
+          state,
+          `Comienza super tie-break a 10 puntos. Saca ${getPlayerLabel(state, state.server)}`,
+          "info"
+        );
+      }
+    }
+
+    function winGame(state, winner) {
+      const label = getPlayerLabel(state, winner);
+      const serverBefore = state.server;
+      const set = state.sets[state.currentSet];
+
+      set.games[winner]++;
+      state.points = [0, 0];
+
+      addLog(state, `${label} gana un game (${set.games[0]}-${set.games[1]})`, "success");
+
+      if (winner !== serverBefore) {
+        addLog(state, `Break de ${label}`, "danger");
+      }
+
+      nextServerForNewGame(state);
+
+      const [a, b] = set.games;
+
+      if ((a >= 6 || b >= 6) && Math.abs(a - b) >= 2) {
+        winSet(state, winner);
+        return;
+      }
+
+      if (a === 6 && b === 6) {
+        set.tiebreakPoints = [0, 0];
+        set.tiebreakStartServer = state.server;
+        state.inTiebreak = true;
+
+        addLog(
+          state,
+          `Tie-break del Set ${state.currentSet + 1}. Saca ${getPlayerLabel(state, state.server)}`,
+          "info"
+        );
+      }
+    }
+
+    function pointToPlayer(rawState, winner) {
+      const state = clone(rawState);
+
+      if (state.matchWinner !== null) return state;
+
+      const set = state.sets[state.currentSet];
+      const label = getPlayerLabel(state, winner);
+
+      if (state.currentSet === 2) {
+        set.superTiebreakPoints[winner]++;
+        addLog(state, `Punto STB para ${label} (${set.superTiebreakPoints[0]}-${set.superTiebreakPoints[1]})`, "info");
+
+        const [a, b] = set.superTiebreakPoints;
+
+        if ((a >= 10 || b >= 10) && Math.abs(a - b) >= 2) {
+          winSet(state, winner);
+        }
+
+        return state;
+      }
+
+      if (state.inTiebreak) {
+        set.tiebreakPoints[winner]++;
+        addLog(state, `Punto tie-break para ${label} (${set.tiebreakPoints[0]}-${set.tiebreakPoints[1]})`, "info");
+
+        const [a, b] = set.tiebreakPoints;
+
+        if ((a >= 7 || b >= 7) && Math.abs(a - b) >= 2) {
+          winSet(state, winner);
+        }
+
+        return state;
+      }
+
+      state.points[winner]++;
+
+      const [a, b] = state.points;
+
+      if (a >= 4 || b >= 4) {
+        if (Math.abs(a - b) >= 2) {
+          winGame(state, winner);
+          return state;
+        }
+      }
+
+      if (state.points[winner] === 4 && state.points[winner === 0 ? 1 : 0] <= 2) {
+        winGame(state, winner);
+        return state;
+      }
+
+      addLog(state, `Punto para ${label}`, "info");
+      return state;
+    }
+
+    function generateResultText(state) {
+      if (state.matchWinner === null) return "";
+
+      const winner = state.matchWinner;
+      const label = getPlayerLabel(state, winner);
+      const parts = [];
+
+      for (let i = 0; i < 2; i++) {
+        const g = state.sets[i].games;
+
+        if (g[0] || g[1] || state.sets[i].winner !== null) {
+          parts.push(winner === 0 ? `${g[0]}-${g[1]}` : `${g[1]}-${g[0]}`);
+        }
+      }
+
+      const stb = state.sets[2].superTiebreakPoints;
+
+      if (stb[0] || stb[1]) {
+        parts.push(winner === 0 ? `${stb[0]}-${stb[1]}` : `${stb[1]}-${stb[0]}`);
+      }
+
+      return `Ganador ${label} ${parts.join(" ")}`;
+    }
+
+    function populatePlayers(category) {
+      const playerA = document.getElementById("playerASelect");
+      const playerB = document.getElementById("playerBSelect");
+      const players = CLUB_PLAYERS[category];
+
+      playerA.innerHTML = players.map(p => `<option value="${p}">${p}</option>`).join("");
+      playerB.innerHTML = players.map(p => `<option value="${p}">${p}</option>`).join("");
+
+      playerA.selectedIndex = 0;
+      playerB.selectedIndex = Math.min(1, players.length - 1);
+    }
+
+    function resetMatchWithSetup() {
+      const category = document.getElementById("categorySelect").value;
+      const pA = document.getElementById("playerASelect").value;
+      const pB = document.getElementById("playerBSelect").value;
+
+      const state = createInitialState();
+
+      state.category = category;
+      state.players = [pA, pB];
+      state.log = [{ text: `Partido iniciado: ${pA} vs ${pB}`, type: "info" }];
+
+      history = [state];
+      render();
+    }
+
+    function switchServerManual() {
+      const state = clone(getState());
+
+      if (state.matchWinner !== null) return;
+
+      state.server = state.server === 0 ? 1 : 0;
+
+      if (state.currentSet === 2) {
+        state.sets[2].startServer = state.server;
+      }
+
+      if (state.inTiebreak) {
+        state.sets[state.currentSet].tiebreakStartServer = state.server;
+      }
+
+      addLog(state, `Sacador corregido manualmente: ${getPlayerLabel(state, state.server)}`, "warning");
+      pushState(state);
+    }
+
+    function render() {
+      const state = getState();
+
+      const labelA = getPlayerLabel(state, 0);
+      const labelB = getPlayerLabel(state, 1);
+      const currentServer = getCurrentServer(state);
+      const regularPoints = formatRegularPoints(state.points);
+      const sideMessage = getSideChangeMessage(state);
+      const liveMoments = getLiveMoments(state);
+      const setsWon = getSetsWon(state);
+
+      document.getElementById("categorySelect").value = state.category;
+      document.getElementById("categoryLabel").textContent = `Categoría ${state.category}`;
+
+      document.getElementById("bannerNameA").textContent = labelA;
+      document.getElementById("bannerNameB").textContent = labelB;
+      document.getElementById("serveStrip").textContent = `🎾 Saca ${getPlayerLabel(state, currentServer)}`;
+
+      document.getElementById("playerNameA").textContent = labelA;
+      document.getElementById("playerNameB").textContent = labelB;
+
+      document.getElementById("playerBoxA").classList.toggle("serving", currentServer === 0);
+      document.getElementById("playerBoxB").classList.toggle("serving", currentServer === 1);
+
+      let scoreA = "0";
+      let scoreB = "0";
+
+      if (state.currentSet === 2) {
+        scoreA = String(state.sets[2].superTiebreakPoints[0]);
+        scoreB = String(state.sets[2].superTiebreakPoints[1]);
+      } else if (state.inTiebreak) {
+        scoreA = String(state.sets[state.currentSet].tiebreakPoints[0]);
+        scoreB = String(state.sets[state.currentSet].tiebreakPoints[1]);
+      } else {
+        scoreA = regularPoints[0];
+        scoreB = regularPoints[1];
+      }
+
+      document.getElementById("gamePointsA").textContent = scoreA;
+      document.getElementById("gamePointsB").textContent = scoreB;
+
+      document.getElementById("pointA").textContent = `Punto ${labelA}`;
+      document.getElementById("pointB").textContent = `Punto ${labelB}`;
+
+      document.getElementById("tableNameA").textContent = labelA;
+      document.getElementById("tableNameB").textContent = labelB;
+
+      document.getElementById("tableS1A").textContent = state.sets[0].games[0];
+      document.getElementById("tableS1B").textContent = state.sets[0].games[1];
+
+      document.getElementById("tableS2A").textContent = state.sets[1].games[0];
+      document.getElementById("tableS2B").textContent = state.sets[1].games[1];
+
+      document.getElementById("tableSTBA").textContent = state.sets[2].superTiebreakPoints[0];
+      document.getElementById("tableSTBB").textContent = state.sets[2].superTiebreakPoints[1];
+
+      document.getElementById("tableSetsA").textContent = setsWon[0];
+      document.getElementById("tableSetsB").textContent = setsWon[1];
+
+      for (let i = 0; i < 3; i++) {
+        const box = document.getElementById(`setBox${i + 1}`);
+        const status = document.getElementById(`set${i + 1}Status`);
+
+        box.classList.toggle("active", state.currentSet === i && state.matchWinner === null);
+        box.classList.toggle("done", state.sets[i].winner !== null);
+
+        if (state.sets[i].winner !== null) {
+          status.textContent = `Ganó ${getPlayerLabel(state, state.sets[i].winner)}`;
+          status.className = "badge green";
+        } else if (state.currentSet === i && state.matchWinner === null) {
+          status.textContent = "En juego";
+          status.className = "badge orange";
+        } else {
+          status.textContent = "En espera";
+          status.className = "badge";
+        }
+
+        document.getElementById(`set${i + 1}NameA`).textContent = labelA;
+        document.getElementById(`set${i + 1}NameB`).textContent = labelB;
+      }
+
+      document.getElementById("set1A").textContent = state.sets[0].games[0];
+      document.getElementById("set1B").textContent = state.sets[0].games[1];
+      document.getElementById("set2A").textContent = state.sets[1].games[0];
+      document.getElementById("set2B").textContent = state.sets[1].games[1];
+      document.getElementById("set3A").textContent = state.sets[2].superTiebreakPoints[0];
+      document.getElementById("set3B").textContent = state.sets[2].superTiebreakPoints[1];
+
+      const tb1 = document.getElementById("tb1Box");
+      const tb2 = document.getElementById("tb2Box");
+
+      if (state.sets[0].tiebreakPoints) {
+        tb1.style.display = "inline-block";
+        tb1.textContent = `Tie-break: ${state.sets[0].tiebreakPoints[0]}-${state.sets[0].tiebreakPoints[1]}`;
+      } else {
+        tb1.style.display = "none";
+      }
+
+      if (state.sets[1].tiebreakPoints) {
+        tb2.style.display = "inline-block";
+        tb2.textContent = `Tie-break: ${state.sets[1].tiebreakPoints[0]}-${state.sets[1].tiebreakPoints[1]}`;
+      } else {
+        tb2.style.display = "none";
+      }
+
+      const statusParts = [
+        `<span class="badge green">Set actual: ${state.currentSet + 1}</span>`,
+        `<span class="badge orange">Saca: ${getPlayerLabel(state, currentServer)}</span>`
+      ];
+
+      if (state.inTiebreak) {
+        statusParts.push(`<span class="badge blue">Tie-break activo</span>`);
+      }
+
+      if (state.currentSet === 2 && state.matchWinner === null) {
+        statusParts.push(`<span class="badge blue">Super tie-break activo</span>`);
+      }
+
+      liveMoments.forEach(m => {
+        statusParts.push(`<span class="badge ${m.type}">${m.text}</span>`);
+      });
+
+      document.getElementById("statusLine").innerHTML = statusParts.join("");
+      document.getElementById("changeAlert").classList.toggle("visible", sideMessage === "Cambio de lado ahora");
+
+      const finalCard = document.getElementById("finalCard");
+
+      if (state.matchWinner !== null) {
+        finalCard.classList.add("visible");
+        document.getElementById("finalWinner").textContent = getPlayerLabel(state, state.matchWinner);
+        document.getElementById("finalResult").textContent = generateResultText(state);
+      } else {
+        finalCard.classList.remove("visible");
+      }
+
+      const logHtml = state.log.map(item => `
+        <div class="log-item ${item.type || "info"}">${item.text}</div>
+      `).join("");
+
+      document.getElementById("logList").innerHTML = logHtml;
+
+      document.getElementById("pointA").disabled = state.matchWinner !== null;
+      document.getElementById("pointB").disabled = state.matchWinner !== null;
+      document.getElementById("undoBtn").disabled = history.length <= 1;
+    }
+
+    document.getElementById("categorySelect").addEventListener("change", e => {
+      const category = e.target.value;
+      populatePlayers(category);
+      resetMatchWithSetup();
+    });
+
+    document.getElementById("playerASelect").addEventListener("change", resetMatchWithSetup);
+    document.getElementById("playerBSelect").addEventListener("change", resetMatchWithSetup);
+
+    document.getElementById("pointA").addEventListener("click", () => {
+      pushState(pointToPlayer(getState(), 0));
+    });
+
+    document.getElementById("pointB").addEventListener("click", () => {
+      pushState(pointToPlayer(getState(), 1));
+    });
+
+    document.getElementById("undoBtn").addEventListener("click", () => {
+      if (history.length > 1) {
+        history = history.slice(0, -1);
+        render();
+      }
+    });
+
+    document.getElementById("switchServer").addEventListener("click", switchServerManual);
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      resetMatchWithSetup();
+    });
+
+    document.getElementById("historyToggle").addEventListener("click", () => {
+      const card = document.getElementById("historyCard");
+      const icon = document.getElementById("historyIcon");
+
+      card.classList.toggle("open");
+      icon.textContent = card.classList.contains("open") ? "–" : "+";
+    });
+
+    populatePlayers("A");
+    resetMatchWithSetup();
+  </script>
+  <nav id="appBottomNav" class="app-bottom-nav" aria-label="Navegación principal">
+    <a href="index.html" data-page="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span class="nav-label">Inicio</span></a>
+    <a href="partidos.html" data-page="partidos.html"><span class="nav-icon" aria-hidden="true">🎾</span><span class="nav-label">Partidos</span></a>
+    <a href="tablas.html" data-page="tablas.html"><span class="nav-icon" aria-hidden="true">📊</span><span class="nav-label">Tablas</span></a>
+    <a href="reglas.html" data-page="reglas.html"><span class="nav-icon" aria-hidden="true">📘</span><span class="nav-label">Reglas</span></a>
+    <a href="marcador.html" data-page="marcador.html"><span class="nav-icon" aria-hidden="true">🔢</span><span class="nav-label">Marcador</span></a>
+  </nav>
+</body>
+</html>

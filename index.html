@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Open Tennis Huechuraba</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href="assets/css/v3.css" />
+  <link rel="stylesheet" href="assets/css/v4.css?v=4.1" />
+  <link rel="stylesheet" href="assets/css/v5.css?v=5" />
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#0b2f25">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Open Tennis">
+  <script defer src="assets/js/app.js?v=5"></script>
+  <script defer src="assets/js/pwa-install.js?v=5"></script>
+</head>
+<body class="index-page v5-page">
+  <main class="v5-home-main" aria-label="Inicio Open Tennis Huechuraba">
+    <section class="v5-hero-card">
+      <div class="v5-hero-logo-wrap" aria-hidden="true">
+        <img class="v5-hero-logo" src="assets/img/logo-open-tennis.png" alt="">
+      </div>
+      <p class="v5-eyebrow">Escalerilla 2026</p>
+      <h1>Open Tennis<br>Huechuraba</h1>
+      <p class="v5-hero-text">Sitio oficial para consultar programación, resultados, tablas, reglamento y marcador.</p>
+      <div class="v5-hero-actions" aria-label="Accesos principales">
+        <a class="v5-btn v5-btn-clay" href="partidos.html">Ver programación</a>
+        <a class="v5-btn v5-btn-green" href="tablas.html">Ver tablas</a>
+      </div>
+    </section>
+
+    <section id="installPromptCard" class="v5-install-card" aria-label="Agregar al inicio">
+      <img src="assets/img/logo-open-tennis.png" alt="Open Tennis Huechuraba">
+      <div class="v5-install-copy">
+        <h2>Agregar al inicio</h2>
+        <p id="installHelpText">Android: toca instalar. iPhone: compartir → agregar a pantalla de inicio.</p>
+      </div>
+      <button id="installActionBtn" class="v5-install-action" type="button">Instalar</button>
+    </section>
+  </main>
+
+  <nav id="appBottomNav" class="app-bottom-nav" aria-label="Navegación principal">
+    <a href="index.html" data-page="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span class="nav-label">Inicio</span></a>
+    <a href="partidos.html" data-page="partidos.html"><span class="nav-icon" aria-hidden="true">🎾</span><span class="nav-label">Partidos</span></a>
+    <a href="tablas.html" data-page="tablas.html"><span class="nav-icon" aria-hidden="true">📊</span><span class="nav-label">Tablas</span></a>
+    <a href="reglas.html" data-page="reglas.html"><span class="nav-icon" aria-hidden="true">📘</span><span class="nav-label">Reglas</span></a>
+    <a href="marcador.html" data-page="marcador.html"><span class="nav-icon" aria-hidden="true">🔢</span><span class="nav-label">Marcador</span></a>
+  </nav>
+</body>
+</html>
