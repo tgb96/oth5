@@ -366,10 +366,15 @@ td:first-child {
   font-weight: 800;
   text-align: left;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .semana-btn span {
-  float: right;
+  float: none;
+  flex-shrink: 0;
   font-size: 20px;
   line-height: 1;
 }
@@ -627,6 +632,94 @@ function claveOrdenada(j1, j2) {
   return [limpiarNombre(j1), limpiarNombre(j2)].sort().join("|");
 }
 
+function etiquetaSemanaBase(valor, mapaSemanas) {
+  const texto = String(valor || "").trim();
+  let base = "";
+
+  if (mapaSemanas && mapaSemanas[texto]) {
+    base = String(mapaSemanas[texto] || "").trim();
+  } else if (normalizar(texto).startsWith("semana")) {
+    base = texto;
+  } else {
+    base = "Semana " + texto;
+  }
+
+  return base.split(" · ")[0].trim();
+}
+
+function formatearFechaSemana(fechaTexto) {
+  const texto = String(fechaTexto || "").trim();
+
+  if (!texto) return "";
+
+  const match = texto.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+
+  if (!match) {
+    return texto;
+  }
+
+  const dia = Number(match[1]);
+  const mes = Number(match[2]);
+  let anio = Number(match[3]);
+
+  if (!dia || !mes || !anio) {
+    return texto;
+  }
+
+  if (anio < 100) {
+    anio += 2000;
+  }
+
+  const fecha = new Date(anio, mes - 1, dia);
+
+  if (
+    Number.isNaN(fecha.getTime()) ||
+    fecha.getFullYear() !== anio ||
+    fecha.getMonth() !== mes - 1 ||
+    fecha.getDate() !== dia
+  ) {
+    return texto;
+  }
+
+  const dias = [
+    "Domingo",
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado"
+  ];
+
+  const meses = [
+    "enero",
+    "febrero",
+    "marzo",
+    "abril",
+    "mayo",
+    "junio",
+    "julio",
+    "agosto",
+    "septiembre",
+    "octubre",
+    "noviembre",
+    "diciembre"
+  ];
+
+  const diaSemana = dias[fecha.getDay()];
+  const diaTexto = String(dia).padStart(2, "0");
+  const mesTexto = meses[mes - 1];
+
+  return `${diaSemana} ${diaTexto} de ${mesTexto}`;
+}
+
+function construirEtiquetaSemana(semana, fechaSemana, mapaSemanas) {
+  const base = etiquetaSemanaBase(semana, mapaSemanas);
+  const fecha = formatearFechaSemana(fechaSemana);
+
+  return fecha ? `${base} · ${fecha}` : base;
+}
+
 function etiquetaSemana(valor, mapaSemanas) {
   const texto = String(valor || "").trim();
 
@@ -634,11 +727,7 @@ function etiquetaSemana(valor, mapaSemanas) {
     return mapaSemanas[texto];
   }
 
-  if (normalizar(texto).startsWith("semana")) {
-    return texto;
-  }
-
-  return "Semana " + texto;
+  return etiquetaSemanaBase(texto, mapaSemanas);
 }
 
 function extraerNumeroSemana(texto) {
@@ -1152,8 +1241,13 @@ function leerFixture(csv) {
 
     if (!semana || !turno) continue;
 
-    const estadoFixture = String(cols[6] || "").trim();
-    const observaciones = String(cols[7] || "").trim();
+    const fechaSemana = String(cols[6] || "").trim();
+    const estadoFixture = String(cols[7] || "").trim();
+    const observaciones = String(cols[8] || "").trim();
+
+    if (fechaSemana) {
+      mapaSemanas[semana] = construirEtiquetaSemana(semana, fechaSemana, mapaSemanas);
+    }
 
     const esLibre =
       jugador1 === "-" &&
@@ -1166,6 +1260,7 @@ function leerFixture(csv) {
       categoria,
       jugador1,
       jugador2,
+      fechaSemana,
       estadoFixture,
       observaciones,
       esLibre,
