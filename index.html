@@ -47,6 +47,80 @@
     .is-standalone-app #installPromptCard {
       display: none !important;
     }
+
+    .is-standalone-app body.index-page {
+      height: 100dvh;
+      min-height: 100dvh;
+      max-height: 100dvh;
+      overflow: hidden !important;
+    }
+
+    .is-standalone-app .v5-home-main {
+      height: calc(100dvh - 112px);
+      min-height: auto !important;
+      max-height: calc(100dvh - 112px);
+      overflow: hidden !important;
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0 !important;
+    }
+
+    .is-standalone-app .v5-hero-card {
+      max-height: 100%;
+      margin: 0 !important;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .is-standalone-app .v5-install-card {
+      display: none !important;
+    }
+
+    .is-standalone-app .app-bottom-nav {
+      position: fixed !important;
+      bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    }
+
+    @media (display-mode: standalone) {
+      #installPromptCard {
+        display: none !important;
+      }
+
+      body.index-page {
+        height: 100dvh;
+        min-height: 100dvh;
+        max-height: 100dvh;
+        overflow: hidden !important;
+      }
+
+      .v5-home-main {
+        height: calc(100dvh - 112px);
+        min-height: auto !important;
+        max-height: calc(100dvh - 112px);
+        overflow: hidden !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .v5-hero-card {
+        max-height: 100%;
+        margin: 0 !important;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
   </style>
 
   <script defer src="assets/js/app.js?v=5"></script>
@@ -123,8 +197,10 @@
         );
       }
 
-      function hideInstallCardIfInstalled() {
+      function applyStandaloneHomeFix() {
         if (!isStandaloneMode()) return;
+
+        document.documentElement.classList.add("is-standalone-app");
 
         const installCard = document.getElementById("installPromptCard");
 
@@ -133,15 +209,22 @@
           installCard.style.display = "none";
           installCard.setAttribute("aria-hidden", "true");
         }
+
+        document.body.style.overflow = "hidden";
+        document.body.style.height = "100dvh";
+        document.body.style.minHeight = "100dvh";
+        document.body.style.maxHeight = "100dvh";
       }
 
-      hideInstallCardIfInstalled();
+      applyStandaloneHomeFix();
 
-      document.addEventListener("DOMContentLoaded", hideInstallCardIfInstalled);
-      window.addEventListener("load", hideInstallCardIfInstalled);
+      document.addEventListener("DOMContentLoaded", applyStandaloneHomeFix);
+      window.addEventListener("load", applyStandaloneHomeFix);
+      window.addEventListener("resize", applyStandaloneHomeFix);
 
-      setTimeout(hideInstallCardIfInstalled, 300);
-      setTimeout(hideInstallCardIfInstalled, 1000);
+      setTimeout(applyStandaloneHomeFix, 300);
+      setTimeout(applyStandaloneHomeFix, 1000);
+      setTimeout(applyStandaloneHomeFix, 2000);
     })();
   </script>
 </body>
