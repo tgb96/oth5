@@ -279,6 +279,54 @@ td:first-child {
   box-shadow: 0 3px 9px rgba(0,0,0,0.07);
 }
 
+.semana-box.pendientes-box {
+  border-color: #b85a43;
+  box-shadow: 0 4px 12px rgba(111, 46, 38, 0.16);
+}
+
+.semana-box.pendientes-box .semana-btn {
+  background: linear-gradient(135deg, #9f3a2f 0%, #b85a43 52%, #7d2c24 100%);
+  color: #fffaf0;
+}
+
+.semana-box.pendientes-box .semana-contenido {
+  background: #fff7f1;
+}
+
+.pendientes-lista-card {
+  border-color: #e2b4a4;
+}
+
+.pendientes-titulo-interno {
+  background: #9f3a2f;
+  color: #fffaf0;
+}
+
+.pendiente-meta {
+  color: #7d2c24;
+  font-weight: 800;
+}
+
+.pendientes-vacio {
+  padding: 14px;
+  border: 1px solid #e2b4a4;
+  border-radius: 12px;
+  background: #fff7f1;
+  color: #7d2c24;
+  text-align: center;
+  font-weight: 800;
+}
+
+.separador-pendientes td {
+  background: #9f3a2f;
+  height: 24px;
+  padding: 4px 8px !important;
+  color: #fffaf0;
+  font-weight: 900;
+  text-align: left;
+  letter-spacing: 0.02em;
+}
+
 .semana-btn {
   width: 100%;
   border: none;
@@ -607,6 +655,43 @@ function claseEstado(estado) {
   return "estado-libre";
 }
 
+function esRegistroPendiente(registro) {
+  if (!registro) return false;
+
+  const pendiente = normalizar(registro.pendiente);
+  const observaciones = normalizar(registro.observaciones);
+
+  return (
+    pendiente === "si" ||
+    pendiente === "sí" ||
+    pendiente === "pendiente" ||
+    pendiente.includes("pendiente") ||
+    observaciones.includes("pendiente") ||
+    observaciones.includes("posterg")
+  );
+}
+
+function esPendienteFixture(fila) {
+  if (!fila) return false;
+
+  const estado = normalizar(fila.estadoFixture);
+  const observaciones = normalizar(fila.observaciones);
+
+  return (
+    estado.includes("pendiente") ||
+    estado.includes("posterg") ||
+    observaciones.includes("pendiente") ||
+    observaciones.includes("posterg")
+  );
+}
+
+function obtenerFilasPendientes(filas) {
+  return filas.filter(fila => (
+    !fila.esLibre &&
+    normalizar(estadoFinal(fila)) === "pendiente"
+  ));
+}
+
 function crearEncabezado(thead) {
   thead.innerHTML = `
     <tr>
@@ -623,14 +708,16 @@ function estadoFinal(fila) {
   if (fila._estado !== undefined) return fila._estado;
   if (fila.esLibre) return "Horario libre";
 
-  if (!fila.registro) return "Programado";
-
-  if (normalizar(fila.registro.pendiente) === "si") {
+  if (fila.registro && esRegistroPendiente(fila.registro)) {
     return "Pendiente";
   }
 
-  if (fila.registro.resultadoWeb || fila.registro.ganador) {
+  if (fila.registro && (fila.registro.resultadoWeb || fila.registro.ganador)) {
     return "Jugado";
+  }
+
+  if (esPendienteFixture(fila)) {
+    return "Pendiente";
   }
 
   return "Programado";
@@ -807,6 +894,24 @@ function crearPartidoMovilHTML(fila) {
   `;
 }
 
+function crearPartidoPendienteMovilHTML(fila, mapaSemanas) {
+  return `
+    <div class="partido-linea">
+      <div class="partido-turno pendiente-meta">
+        ${escapeHTML(fila._semanaLabel || etiquetaSemana(fila.semana, mapaSemanas))} ·
+        Cancha ${escapeHTML(fila.cancha)} ·
+        Turno ${escapeHTML(fila.turno)} ·
+        Categoría ${escapeHTML(fila.categoria)}
+      </div>
+      <div class="partido-jugadores">${jugadoresHTML(fila.jugador1, fila.jugador2)}</div>
+      <span class="estado ${fila._estadoClase || claseEstado(estadoFinal(fila))}">${escapeHTML(estadoFinal(fila))}</span>
+      ${fila._resultadoBoxHTML || ""}
+      ${fila._fechaBoxHTML || ""}
+      ${fila._observacionBoxHTML || ""}
+    </div>
+  `;
+}
+
 function crearPartidoMovil(fila) {
   const div = document.createElement("div");
   div.className = "partido-linea";
@@ -889,6 +994,15 @@ function renderCompletaDesktop(filas, mapaSemanas) {
     semanaAnterior = fila.semana;
   }
 
+  const filasPendientes = obtenerFilasPendientes(filas);
+
+  if (filasPendientes.length > 0) {
+    html += `<tr class="separador-pendientes"><td colspan="8">Pendientes</td></tr>`;
+    html += filasPendientes
+      .map(fila => crearFilaTablaHTML(fila, mapaSemanas))
+      .join("");
+  }
+
   tablaCompletaBody.innerHTML = html || `
     <tr>
       <td colspan="8" class="mensaje">No hay programación disponible.</td>
@@ -941,6 +1055,27 @@ function renderCompletaMobile(filas, mapaSemanas) {
       </div>
     `;
   });
+
+  const filasPendientes = obtenerFilasPendientes(filas);
+
+  html += `
+    <div class="semana-box pendientes-box">
+      <button class="semana-btn" type="button">
+        Pendientes <span>+</span>
+      </button>
+
+      <div class="semana-contenido">
+        ${
+          filasPendientes.length
+            ? `<div class="cancha-card pendientes-lista-card">
+                <div class="cancha-titulo pendientes-titulo-interno">Partidos pendientes</div>
+                ${filasPendientes.map(fila => crearPartidoPendienteMovilHTML(fila, mapaSemanas)).join("")}
+              </div>`
+            : `<div class="pendientes-vacio">No hay partidos pendientes.</div>`
+        }
+      </div>
+    </div>
+  `;
 
   accordionSemanas.innerHTML = html || `<div class="mensaje">No hay programación disponible.</div>`;
 }
