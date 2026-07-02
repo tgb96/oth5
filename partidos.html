@@ -968,11 +968,9 @@ function renderBusqueda(filas, mapaSemanas, filtro = "") {
   const busqueda = normalizar(String(filtro || "").trim());
 
   if (busqueda === "") {
-    mensajeTabla(
-      "Escribe el nombre de un jugador para buscar sus partidos.",
-      tablaBusquedaBody,
-      cardsBusqueda
-    );
+    tablaBusquedaHead.innerHTML = "";
+    tablaBusquedaBody.innerHTML = "";
+    cardsBusqueda.innerHTML = "";
     return;
   }
 
@@ -1002,6 +1000,7 @@ function renderBusqueda(filas, mapaSemanas, filtro = "") {
     return;
   }
 
+  crearEncabezado(tablaBusquedaHead);
   tablaBusquedaBody.innerHTML = filasHTML;
   cardsBusqueda.innerHTML = cardsHTML;
 }
@@ -1317,15 +1316,12 @@ async function textoFetch(url) {
 }
 
 async function iniciar() {
-  crearEncabezado(tablaBusquedaHead);
   crearEncabezado(tablaPendientesHead);
   crearEncabezado(tablaCompletaHead);
 
-  mensajeTabla(
-    "Cargando programación...",
-    tablaBusquedaBody,
-    cardsBusqueda
-  );
+  tablaBusquedaHead.innerHTML = "";
+  tablaBusquedaBody.innerHTML = "";
+  cardsBusqueda.innerHTML = "";
 
   tablaPendientesBody.innerHTML = `
     <tr>
