@@ -1933,19 +1933,6 @@
     }
 
 
-
-    /* Bloqueo de scroll solo en marcador activo móvil vertical.
-       No cambia el diseño: congela la vista justo después de alinear el marcador. */
-    html.score-scroll-locked,
-    body.score-scroll-locked {
-      overscroll-behavior: none;
-      scroll-behavior: auto !important;
-    }
-
-    body.score-scroll-locked {
-      overflow: hidden !important;
-    }
-
   </style>
 
   <link rel="manifest" href="manifest.webmanifest">
@@ -2244,147 +2231,6 @@
     let toastTimer = null;
     let wakeLock = null;
     let wakeLockWanted = false;
-    let scoreScrollLocked = false;
-    let scoreScrollY = 0;
-    let scoreScrollLockTimer = null;
-
-    function isMobilePortraitScoreLock() {
-      return Boolean(
-        matchActive &&
-        window.matchMedia("(max-width: 820px) and (orientation: portrait)").matches
-      );
-    }
-
-    function releaseScoreScrollLock() {
-      if (scoreScrollLockTimer) {
-        clearTimeout(scoreScrollLockTimer);
-        scoreScrollLockTimer = null;
-      }
-
-      if (!scoreScrollLocked) return;
-
-      const y = scoreScrollY || 0;
-
-      scoreScrollLocked = false;
-      document.documentElement.classList.remove("score-scroll-locked");
-      document.body.classList.remove("score-scroll-locked");
-
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
-      document.body.style.width = "";
-      document.body.style.overflow = "";
-
-      window.scrollTo(0, y);
-    }
-
-    function alignScoreViewport() {
-      const banner = document.querySelector(".match-banner");
-      const scoreCard = document.getElementById("scoreCard");
-      const target = banner || scoreCard;
-
-      if (!target) return;
-
-      target.scrollIntoView({
-        block: "start",
-        inline: "nearest",
-        behavior: "auto"
-      });
-    }
-
-    function lockScoreScrollAtCurrentPosition() {
-      if (!isMobilePortraitScoreLock()) {
-        releaseScoreScrollLock();
-        return;
-      }
-
-      if (scoreScrollLocked) return;
-
-      scoreScrollY =
-        window.scrollY ||
-        document.documentElement.scrollTop ||
-        document.body.scrollTop ||
-        0;
-
-      document.documentElement.classList.add("score-scroll-locked");
-      document.body.classList.add("score-scroll-locked");
-
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scoreScrollY}px`;
-      document.body.style.left = "0";
-      document.body.style.right = "0";
-      document.body.style.width = "100%";
-      document.body.style.overflow = "hidden";
-
-      scoreScrollLocked = true;
-    }
-
-    function scheduleScoreScrollLock(align = true) {
-      if (scoreScrollLockTimer) {
-        clearTimeout(scoreScrollLockTimer);
-        scoreScrollLockTimer = null;
-      }
-
-      if (!isMobilePortraitScoreLock()) {
-        releaseScoreScrollLock();
-        return;
-      }
-
-      releaseScoreScrollLock();
-
-      scoreScrollLockTimer = setTimeout(() => {
-        requestAnimationFrame(() => {
-          relocateResultForMobilePortrait();
-
-          if (align) {
-            alignScoreViewport();
-          }
-
-          requestAnimationFrame(() => {
-            lockScoreScrollAtCurrentPosition();
-          });
-        });
-      }, 80);
-    }
-
-    function setupScoreScrollLock() {
-      const update = () => {
-        if (isMobilePortraitScoreLock()) {
-          scheduleScoreScrollLock(true);
-        } else {
-          releaseScoreScrollLock();
-        }
-      };
-
-      window.addEventListener("resize", () => setTimeout(update, 120), { passive: true });
-      window.addEventListener("orientationchange", () => setTimeout(update, 180), { passive: true });
-
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener("resize", () => setTimeout(update, 120), { passive: true });
-      }
-
-      document.addEventListener(
-        "touchmove",
-        event => {
-          if (!scoreScrollLocked) return;
-          if (event.target.closest(".modal")) return;
-          event.preventDefault();
-        },
-        { passive: false }
-      );
-
-      document.addEventListener(
-        "wheel",
-        event => {
-          if (!scoreScrollLocked) return;
-          if (event.target.closest(".modal")) return;
-          event.preventDefault();
-        },
-        { passive: false }
-      );
-    }
-
 
     function clone(obj) {
       return JSON.parse(JSON.stringify(obj));
@@ -2419,12 +2265,6 @@
 
       requestAnimationFrame(() => {
         relocateResultForMobilePortrait();
-
-        if (matchActive) {
-          scheduleScoreScrollLock(true);
-        } else {
-          releaseScoreScrollLock();
-        }
       });
     }
 
@@ -3009,7 +2849,10 @@
       saveMatch();
       setMatchActive(true);
       render();
-      scheduleScoreScrollLock(true);
+      requestAnimationFrame(() => {
+        const banner = document.querySelector(".match-banner");
+        if (banner) banner.scrollIntoView({ block: "start" });
+      });
       requestWakeLock();
       showToast("Partido iniciado");
       vibrate(35);
@@ -3697,10 +3540,6 @@
       const update = () => {
         relocateResultForMobilePortrait();
         render();
-
-        if (matchActive) {
-          scheduleScoreScrollLock(true);
-        }
       };
 
       window.addEventListener("resize", update, { passive: true });
@@ -3758,12 +3597,7 @@
       setupWakeLock();
       setupLandscapeMenuMode();
       setupMobilePortraitResultMode();
-      setupScoreScrollLock();
       render();
-
-      if (matchActive) {
-        scheduleScoreScrollLock(true);
-      }
     }
 
     boot();
