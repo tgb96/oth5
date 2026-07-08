@@ -134,8 +134,6 @@
 
     .score-card {
       padding: 16px;
-      scroll-margin-top: 12px;
-      scroll-margin-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
     }
 
     .match-banner {
@@ -776,44 +774,6 @@
       padding: 16px 18px;
       border-top: 1px solid var(--line);
       background: #fafafa;
-    }
-
-    .confirm-dialog {
-      width: min(460px, 100%);
-      max-height: none;
-      overflow: hidden;
-    }
-
-    .confirm-dialog .modal-header {
-      position: static;
-      padding: 18px 18px 10px;
-      border-bottom: 0;
-      background: white;
-    }
-
-    .confirm-dialog .modal-body {
-      padding: 4px 18px 18px;
-    }
-
-    .confirm-message {
-      margin: 0;
-      color: var(--text);
-      font-size: 15px;
-      font-weight: 700;
-      line-height: 1.45;
-    }
-
-    .confirm-dialog .modal-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      padding: 14px 18px 18px;
-      border-top: 0;
-      background: white;
-    }
-
-    .confirm-dialog .modal-actions button {
-      min-height: 46px;
     }
 
     .toast {
@@ -1986,8 +1946,8 @@
   <meta name="apple-mobile-web-app-title" content="Open Tennis">
   <link rel="stylesheet" href="assets/css/v3.css" />
   <link rel="stylesheet" href="assets/css/v4.css?v=4.1" />
-  <link rel="stylesheet" href="assets/css/v5.css?v=19" />
-  <script defer src="assets/js/app.js?v=19"></script>
+  <link rel="stylesheet" href="assets/css/v5.css?v=5" />
+  <script defer src="assets/js/app.js?v=7"></script>
 </head>
 
 <body class="marcador-page v5-page">
@@ -2216,21 +2176,6 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" id="confirmModal" aria-hidden="true">
-    <div class="modal confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage">
-      <div class="modal-header">
-        <div class="modal-title" id="confirmTitle">Confirmar acción</div>
-      </div>
-      <div class="modal-body">
-        <p class="confirm-message" id="confirmMessage"></p>
-      </div>
-      <div class="modal-actions">
-        <button class="ghost" id="confirmCancel" type="button">Cancelar</button>
-        <button class="danger-btn" id="confirmAccept" type="button">Aceptar</button>
-      </div>
-    </div>
-  </div>
-
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -2333,77 +2278,6 @@
       toastTimer = setTimeout(() => {
         toast.classList.remove("visible");
       }, 2300);
-    }
-
-    let pendingConfirmResolve = null;
-
-    function showConfirm(message, options = {}) {
-      const modal = document.getElementById("confirmModal");
-      const title = document.getElementById("confirmTitle");
-      const messageEl = document.getElementById("confirmMessage");
-      const acceptBtn = document.getElementById("confirmAccept");
-      const cancelBtn = document.getElementById("confirmCancel");
-
-      if (!modal || !title || !messageEl || !acceptBtn || !cancelBtn) {
-        return Promise.resolve(false);
-      }
-
-      title.textContent = options.title || "Confirmar acción";
-      messageEl.textContent = message;
-      acceptBtn.textContent = options.acceptText || "Aceptar";
-      cancelBtn.textContent = options.cancelText || "Cancelar";
-      acceptBtn.className = options.acceptClass || "danger-btn";
-
-      modal.classList.add("visible");
-      modal.setAttribute("aria-hidden", "false");
-
-      requestAnimationFrame(() => acceptBtn.focus({ preventScroll: true }));
-
-      return new Promise(resolve => {
-        pendingConfirmResolve = resolve;
-      });
-    }
-
-    function closeConfirmModal(result) {
-      const modal = document.getElementById("confirmModal");
-
-      if (modal) {
-        modal.classList.remove("visible");
-        modal.setAttribute("aria-hidden", "true");
-      }
-
-      if (typeof pendingConfirmResolve === "function") {
-        const resolve = pendingConfirmResolve;
-        pendingConfirmResolve = null;
-        resolve(Boolean(result));
-      }
-    }
-
-    function getBottomNavHeight() {
-      const nav = document.getElementById("appBottomNav");
-      if (!nav) return 0;
-
-      const styles = window.getComputedStyle(nav);
-      if (styles.display === "none" || styles.visibility === "hidden") return 0;
-
-      return Math.ceil(nav.getBoundingClientRect().height || 0);
-    }
-
-    function scrollMatchIntoView() {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          const scoreCard = document.getElementById("scoreCard");
-          if (!scoreCard) return;
-
-          const topGap = 12;
-          const bottomGap = getBottomNavHeight() + 12;
-          const rect = scoreCard.getBoundingClientRect();
-          const targetTop = Math.max(0, window.scrollY + rect.top - topGap);
-
-          document.documentElement.style.scrollPaddingBottom = `${bottomGap}px`;
-          window.scrollTo({ top: targetTop, behavior: "smooth" });
-        });
-      });
     }
 
     function vibrate(pattern = 35) {
@@ -2963,12 +2837,9 @@
       if (options.vibrate !== false) vibrate(35);
     }
 
-    async function startNewMatch() {
+    function startNewMatch() {
       if (matchActive && isMatchDirty()) {
-        const ok = await showConfirm(
-          "¿Seguro que quieres crear un nuevo partido? Se borrará el marcador actual guardado en este celular.",
-          { title: "Nuevo partido", acceptText: "Crear nuevo" }
-        );
+        const ok = confirm("¿Seguro que quieres crear un nuevo partido? Se borrará el marcador actual guardado en este celular.");
         if (!ok) return;
       }
 
@@ -2978,18 +2849,18 @@
       saveMatch();
       setMatchActive(true);
       render();
-      scrollMatchIntoView();
+      requestAnimationFrame(() => {
+        const banner = document.querySelector(".match-banner");
+        if (banner) banner.scrollIntoView({ block: "start" });
+      });
       requestWakeLock();
       showToast("Partido iniciado");
       vibrate(35);
     }
 
-    async function showSetupForNewMatch() {
+    function showSetupForNewMatch() {
       if (matchActive && isMatchDirty()) {
-        const ok = await showConfirm(
-          "¿Seguro que quieres configurar un nuevo partido? Se borrará el marcador actual guardado en este celular.",
-          { title: "Configurar partido", acceptText: "Continuar" }
-        );
+        const ok = confirm("¿Seguro que quieres configurar un nuevo partido? Se borrará el marcador actual guardado en este celular.");
         if (!ok) return;
       }
 
@@ -3002,7 +2873,7 @@
       vibrate(20);
     }
 
-    async function handleSetupChange(type) {
+    function handleSetupChange(type) {
       if (ignoreSetupEvents) return;
 
       if (!matchActive) {
@@ -3020,10 +2891,7 @@
         const selectedCategory = document.getElementById("categorySelect").value;
 
         if (isMatchDirty()) {
-          const ok = await showConfirm(
-            "Cambiar la categoría reiniciará el partido actual. ¿Continuar?",
-            { title: "Cambiar categoría", acceptText: "Cambiar" }
-          );
+          const ok = confirm("Cambiar la categoría reiniciará el partido actual. ¿Continuar?");
           if (!ok) {
             render();
             return;
@@ -3038,10 +2906,7 @@
       ensureDistinctPlayerSelects(type === "playerA" ? "A" : "B");
 
       if (isMatchDirty()) {
-        const ok = await showConfirm(
-          "Cambiar jugadores reiniciará el partido actual. ¿Continuar?",
-          { title: "Cambiar jugadores", acceptText: "Cambiar" }
-        );
+        const ok = confirm("Cambiar jugadores reiniciará el partido actual. ¿Continuar?");
         if (!ok) {
           render();
           return;
@@ -3589,18 +3454,6 @@
       document.getElementById("playerASelect").addEventListener("change", () => handleSetupChange("playerA"));
       document.getElementById("playerBSelect").addEventListener("change", () => handleSetupChange("playerB"));
 
-      document.getElementById("confirmCancel").addEventListener("click", () => closeConfirmModal(false));
-      document.getElementById("confirmAccept").addEventListener("click", () => closeConfirmModal(true));
-      document.getElementById("confirmModal").addEventListener("click", event => {
-        if (event.target.id === "confirmModal") closeConfirmModal(false);
-      });
-      document.addEventListener("keydown", event => {
-        const modal = document.getElementById("confirmModal");
-        if (event.key === "Escape" && modal && modal.classList.contains("visible")) {
-          closeConfirmModal(false);
-        }
-      });
-
       document.getElementById("pointA").addEventListener("click", () => {
         requestWakeLock();
         pushState(pointToPlayer(getState(), 0));
@@ -3623,11 +3476,8 @@
 
       document.getElementById("switchServer").addEventListener("click", switchServerManual);
 
-      document.getElementById("resetBtn").addEventListener("click", async () => {
-        const ok = await showConfirm(
-          "¿Seguro que quieres reiniciar este partido? Se conservarán los mismos jugadores, pero se borrará el marcador actual.",
-          { title: "Reiniciar partido", acceptText: "Reiniciar" }
-        );
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        const ok = confirm("¿Seguro que quieres reiniciar este partido? Se conservarán los mismos jugadores, pero se borrará el marcador actual.");
         if (!ok) return;
 
         resetMatchWithSetup({ toast: "Partido reiniciado" });
@@ -3636,11 +3486,8 @@
       document.getElementById("newMatchBtn").addEventListener("click", startNewMatch);
       document.getElementById("configureNewMatchBtn").addEventListener("click", showSetupForNewMatch);
 
-      document.getElementById("clearSavedBtn").addEventListener("click", async () => {
-        const ok = await showConfirm(
-          "¿Seguro que quieres borrar el marcador guardado en este celular?",
-          { title: "Borrar guardado", acceptText: "Borrar" }
-        );
+      document.getElementById("clearSavedBtn").addEventListener("click", () => {
+        const ok = confirm("¿Seguro que quieres borrar el marcador guardado en este celular?");
         if (!ok) return;
 
         clearSavedMatch();
@@ -3748,12 +3595,9 @@
 
       setupEvents();
       setupWakeLock();
+      setupLandscapeMenuMode();
       setupMobilePortraitResultMode();
       render();
-
-      if (matchActive) {
-        scrollMatchIntoView();
-      }
     }
 
     boot();
@@ -3764,7 +3608,6 @@
     <a href="partidos.html" data-page="partidos.html"><span class="nav-icon" aria-hidden="true">🎾</span><span class="nav-label">Partidos</span></a>
     <a href="tablas.html" data-page="tablas.html"><span class="nav-icon" aria-hidden="true">📊</span><span class="nav-label">Tablas</span></a>
     <a href="reglas.html" data-page="reglas.html"><span class="nav-icon" aria-hidden="true">📘</span><span class="nav-label">Reglas</span></a>
-    <a href="resultados-2025.html" data-page="resultados-2025.html"><span class="nav-icon" aria-hidden="true">🏅</span><span class="nav-label">2025</span></a>
     <a href="marcador.html" data-page="marcador.html"><span class="nav-icon" aria-hidden="true">🔢</span><span class="nav-label">Marcador</span></a>
   </nav>
 </body>
