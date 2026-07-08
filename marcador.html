@@ -30,6 +30,15 @@
       box-sizing: border-box;
     }
 
+    html,
+    body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -67,7 +76,8 @@
     .side-card,
     .status-card,
     .final-card,
-    .history-card {
+    .history-card,
+    .manual-card {
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -81,7 +91,7 @@
 
     .setup-grid {
       display: grid;
-      grid-template-columns: 160px 1fr 1fr;
+      grid-template-columns: 160px 1fr 1fr auto;
       gap: 12px;
       align-items: end;
     }
@@ -94,11 +104,13 @@
     }
 
     select,
+    input,
     button {
       font-family: inherit;
     }
 
-    select {
+    select,
+    input[type="number"] {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 14px;
@@ -108,7 +120,8 @@
       outline: none;
     }
 
-    select:focus {
+    select:focus,
+    input[type="number"]:focus {
       border-color: var(--club-green);
       box-shadow: 0 0 0 3px rgba(106,168,79,0.16);
     }
@@ -130,6 +143,20 @@
       padding: 16px;
       text-align: center;
       margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .match-banner::after {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      right: -70px;
+      top: -85px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      pointer-events: none;
     }
 
     .match-banner-title {
@@ -139,12 +166,16 @@
       text-transform: uppercase;
       letter-spacing: 0.06em;
       margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
     }
 
     .match-banner-names {
       font-size: clamp(22px, 4vw, 34px);
       font-weight: 900;
       line-height: 1.15;
+      position: relative;
+      z-index: 1;
     }
 
     .serve-strip {
@@ -157,6 +188,56 @@
       background: rgba(255,255,255,0.18);
       font-weight: 800;
       font-size: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .wake-strip {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .wake-indicator {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 7px 11px;
+      background: rgba(255,255,255,0.16);
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .wake-indicator.on {
+      background: rgba(255,255,255,0.28);
+    }
+
+    .mini-action {
+      border: 1px solid rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.15);
+      color: white;
+      padding: 8px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      min-height: 0;
+    }
+
+    /*
+      El encabezado queda limpio: solo categoría y jugadores.
+      El sacador y el estado del partido se muestran únicamente
+      en la tarjeta "Estado del partido".
+    */
+    .match-banner .serve-strip,
+    .match-banner .wake-strip {
+      display: none !important;
     }
 
     .big-score {
@@ -172,6 +253,7 @@
       padding: 14px;
       background: white;
       transition: 0.2s ease;
+      min-width: 0;
     }
 
     .player-control.serving {
@@ -224,7 +306,8 @@
       font-size: 15px;
       font-weight: 900;
       cursor: pointer;
-      transition: transform 0.08s ease, opacity 0.2s ease;
+      transition: transform 0.08s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
     }
 
     button:active {
@@ -238,7 +321,7 @@
 
     .controls-row {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 10px;
       margin-top: 14px;
     }
@@ -249,8 +332,38 @@
       color: var(--text);
     }
 
+    .undo-btn {
+      background: #fff7ed;
+      border: 1px solid #f59e0b;
+      color: #92400e;
+    }
+
+    .undo-btn:not(:disabled) {
+      background: #f59e0b;
+      border-color: #d97706;
+      color: white;
+      box-shadow: 0 8px 18px rgba(245, 158, 11, 0.24);
+    }
+
+    .undo-btn:disabled {
+      background: #fef3c7;
+      border-color: #fde68a;
+      color: #a16207;
+      opacity: 0.72;
+    }
+
+    .green-btn {
+      background: var(--club-green);
+      color: white;
+    }
+
     .orange-btn {
       background: var(--club-orange);
+      color: white;
+    }
+
+    .blue-btn {
+      background: var(--info);
       color: white;
     }
 
@@ -311,7 +424,8 @@
       align-content: start;
     }
 
-    .side-card {
+    .side-card,
+    .manual-card {
       padding: 14px;
     }
 
@@ -446,8 +560,19 @@
       padding: 18px;
       margin-top: 16px;
       border: 2px solid var(--club-green);
-      background: var(--soft-green);
+      background: linear-gradient(135deg, #eaf4e4 0%, #ffffff 48%, #fff3df 100%);
       text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .final-card::before {
+      content: "🏆";
+      position: absolute;
+      right: 18px;
+      top: 12px;
+      font-size: 48px;
+      opacity: 0.15;
     }
 
     .final-card.visible {
@@ -462,9 +587,10 @@
     }
 
     .final-winner {
-      font-size: 30px;
+      font-size: clamp(26px, 5vw, 38px);
       font-weight: 900;
       margin-bottom: 8px;
+      letter-spacing: -0.5px;
     }
 
     .final-result {
@@ -472,10 +598,29 @@
       background: white;
       border: 1px solid #b6d7a8;
       border-radius: 999px;
-      padding: 8px 14px;
+      padding: 9px 15px;
       font-size: 16px;
       font-weight: 900;
       color: var(--club-green-dark);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+    }
+
+    .final-actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .final-preview {
+      margin-top: 14px;
+      border: 1px dashed #b6d7a8;
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(255,255,255,0.7);
+      color: #35502c;
+      font-weight: 800;
+      font-size: 13px;
     }
 
     .history-card {
@@ -541,65 +686,119 @@
       background: #f8fafc;
     }
 
-    @media (max-width: 900px) {
-      .score-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .side {
-        order: 2;
-      }
+    .manual-note {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
     }
 
-    @media (max-width: 700px) {
-      .app {
-        padding: 12px;
-      }
-
-      .setup-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .big-score {
-        grid-template-columns: 1fr;
-      }
-
-      .controls-row {
-        grid-template-columns: 1fr;
-      }
-
-      .point-btn {
-        min-height: 74px;
-        font-size: 21px;
-      }
-
-      .sets-row {
-        grid-template-columns: 1.4fr 0.7fr 0.7fr 0.7fr 0.7fr;
-        font-size: 13px;
-      }
-
-      .sets-row > div {
-        padding: 8px 5px;
-      }
-
-      .sets-number {
-        font-size: 20px;
-      }
-
-      .final-winner {
-        font-size: 24px;
-      }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.58);
+      z-index: 9999;
     }
 
+    .modal-backdrop.visible {
+      display: flex;
+    }
 
-    /* App mobile shell - navegación inferior y prevención de scroll horizontal */
-    html,
-    body {
-      width: 100%;
-      max-width: 100%;
-      overflow-x: hidden;
-      -webkit-text-size-adjust: 100%;
-      text-size-adjust: 100%;
+    .modal {
+      width: min(720px, 100%);
+      max-height: min(88vh, 760px);
+      overflow: auto;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .modal-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--club-green-dark);
+    }
+
+    .modal-close {
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      border-radius: 999px;
+    }
+
+    .modal-body {
+      padding: 16px 18px;
+    }
+
+    .correction-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+
+    .correction-grid.head {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      align-items: center;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 16px 18px;
+      border-top: 1px solid var(--line);
+      background: #fafafa;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+      transform: translateX(-50%) translateY(10px);
+      z-index: 10000;
+      width: min(520px, calc(100% - 24px));
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.94);
+      color: white;
+      padding: 12px 16px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.26);
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     .mobile-appbar {
@@ -629,6 +828,25 @@
     .sets-player,
     .log-item {
       overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 900px) {
+      .score-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .side {
+        order: 2;
+      }
+
+      .setup-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .setup-grid > div:first-child,
+      .setup-grid > div:last-child {
+        grid-column: 1 / -1;
+      }
     }
 
     @media (max-width: 820px) {
@@ -736,7 +954,8 @@
       .side-card,
       .status-card,
       .final-card,
-      .history-card {
+      .history-card,
+      .manual-card {
         border-radius: 18px;
         box-shadow: 0 6px 20px rgba(0,0,0,0.08);
       }
@@ -764,6 +983,62 @@
       }
     }
 
+    @media (max-width: 700px) {
+      .app {
+        padding: 12px;
+      }
+
+      .setup-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .big-score {
+        grid-template-columns: 1fr;
+      }
+
+      .controls-row,
+      .final-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .point-btn {
+        min-height: 74px;
+        font-size: 21px;
+      }
+
+      .sets-row {
+        grid-template-columns: 1.4fr 0.7fr 0.7fr 0.7fr 0.7fr;
+        font-size: 13px;
+      }
+
+      .sets-row > div {
+        padding: 8px 5px;
+      }
+
+      .sets-number {
+        font-size: 20px;
+      }
+
+      .final-winner {
+        font-size: 24px;
+      }
+
+      .correction-grid,
+      .correction-grid.head {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .correction-grid > div:first-child,
+      .correction-grid.head > div:first-child {
+        grid-column: 1 / -1;
+      }
+
+      .modal-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 380px) {
       .bottom-nav a {
         font-size: 9.8px;
@@ -780,6 +1055,617 @@
       }
     }
 
+    /* Modo horizontal móvil: pantalla compacta para registrar puntos con más comodidad. */
+    @media (orientation: landscape) and (max-height: 560px) and (max-width: 980px) {
+      body {
+        padding-bottom: 0;
+      }
+
+      .app-topbar,
+      .mobile-appbar,
+      .bottom-nav,
+      .app > .header,
+      .history-card {
+        display: none !important;
+      }
+
+      .app {
+        max-width: none;
+        padding: 6px;
+      }
+
+      .setup-card {
+        padding: 7px;
+        margin-bottom: 6px;
+        border-radius: 14px;
+      }
+
+      .setup-grid {
+        grid-template-columns: 120px 1fr 1fr auto;
+        gap: 7px;
+      }
+
+      .setup-grid > div:first-child,
+      .setup-grid > div:last-child {
+        grid-column: auto;
+      }
+
+      .label {
+        font-size: 10px;
+        margin-bottom: 3px;
+      }
+
+      select,
+      input[type="number"] {
+        padding: 7px 8px;
+        border-radius: 10px;
+        font-size: 12px;
+      }
+
+      button {
+        padding: 8px 9px;
+        border-radius: 12px;
+        font-size: 12px;
+      }
+
+      .score-layout {
+        grid-template-columns: minmax(0, 1.55fr) minmax(230px, 0.72fr);
+        gap: 7px;
+      }
+
+      .score-card,
+      .side-card,
+      .manual-card,
+      .status-card,
+      .final-card {
+        padding: 8px;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      }
+
+      .match-banner {
+        padding: 8px;
+        margin-bottom: 7px;
+        border-radius: 14px;
+      }
+
+      .match-banner-title {
+        font-size: 10px;
+        margin-bottom: 2px;
+      }
+
+      .match-banner-names {
+        font-size: clamp(16px, 3.1vw, 22px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .serve-strip,
+      .wake-strip {
+        margin-top: 5px;
+      }
+
+      .serve-strip,
+      .wake-indicator,
+      .mini-action {
+        padding: 5px 8px;
+        font-size: 10.5px;
+      }
+
+      .big-score {
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+        margin-bottom: 7px;
+      }
+
+      .player-control {
+        padding: 8px;
+        border-radius: 14px;
+      }
+
+      .player-name {
+        font-size: 13px;
+        margin-bottom: 4px;
+        min-height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .game-points {
+        font-size: clamp(42px, 9vh, 60px);
+        margin-bottom: 5px;
+      }
+
+      .point-btn {
+        min-height: 52px;
+        padding: 8px 6px;
+        border-radius: 12px;
+        font-size: 16px;
+      }
+
+      .sets-table {
+        margin-top: 7px;
+        border-radius: 12px;
+      }
+
+      .sets-row > div {
+        padding: 5px 4px;
+      }
+
+      .sets-head {
+        font-size: 10px;
+      }
+
+      .sets-player {
+        font-size: 10.5px;
+      }
+
+      .sets-number {
+        font-size: 16px;
+      }
+
+      .status-card {
+        margin-top: 7px;
+      }
+
+      .status-title {
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+
+      .badge {
+        padding: 4px 6px;
+        font-size: 10px;
+      }
+
+      .change-alert {
+        margin-top: 6px;
+        padding: 7px;
+        font-size: 13px;
+        border-radius: 12px;
+      }
+
+      .controls-row {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 6px;
+        margin-top: 7px;
+      }
+
+      .side {
+        gap: 7px;
+      }
+
+      .side-title {
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+
+      .set-mini {
+        gap: 6px;
+      }
+
+      .set-box {
+        padding: 7px;
+        border-radius: 12px;
+      }
+
+      .set-box-title {
+        margin-bottom: 4px;
+        font-size: 12px;
+      }
+
+      .set-score-line {
+        margin: 2px 0;
+      }
+
+      .set-score-name {
+        font-size: 10.5px;
+      }
+
+      .set-score-value {
+        font-size: 17px;
+      }
+
+      .manual-note {
+        display: none;
+      }
+
+      .final-card {
+        margin-top: 7px;
+      }
+
+      .final-title {
+        font-size: 16px;
+      }
+
+      .final-winner {
+        font-size: 20px;
+      }
+
+      .final-result,
+      .final-preview {
+        font-size: 11px;
+      }
+
+      .final-actions {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+    }
+
+
+    /* Flujo nuevo: configuración inicial separada del marcador. */
+    body:not(.match-active) .score-layout {
+      display: none !important;
+    }
+
+    body.match-active .setup-card {
+      display: none !important;
+    }
+
+    body:not(.match-active) .setup-card {
+      max-width: 720px;
+      margin: 20px auto 0;
+      padding: 22px;
+    }
+
+    body:not(.match-active) .setup-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    body:not(.match-active) .setup-grid > div:first-child,
+    body:not(.match-active) .setup-grid > div:last-child {
+      grid-column: 1 / -1;
+    }
+
+    body:not(.match-active) #newMatchBtn {
+      width: 100%;
+      min-height: 58px;
+      font-size: 17px;
+      border-radius: 18px;
+    }
+
+    body:not(.match-active) .header {
+      max-width: 720px;
+      margin: 18px auto 16px;
+    }
+
+    body:not(.match-active) .header p::after {
+      content: " Selecciona categoría y jugadores para iniciar.";
+    }
+
+    @media (max-width: 700px) {
+      body:not(.match-active) .setup-card {
+        margin-top: 10px;
+        padding: 16px;
+      }
+
+      body:not(.match-active) .setup-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* En horizontal se oculta la barra inferior real de la app para ganar espacio. */
+    @media (orientation: landscape) and (max-height: 560px) and (max-width: 980px) {
+      body {
+        padding-bottom: 0 !important;
+      }
+
+      #appBottomNav,
+      .app-bottom-nav,
+      .bottom-nav {
+        display: none !important;
+      }
+
+      body.match-active .score-layout {
+        display: grid !important;
+      }
+
+      body:not(.match-active) .setup-card {
+        max-width: 760px;
+        margin-top: 6px;
+        padding: 10px;
+      }
+
+      body:not(.match-active) .setup-grid {
+        grid-template-columns: 110px 1fr 1fr auto;
+        gap: 8px;
+      }
+
+      body:not(.match-active) .setup-grid > div:first-child,
+      body:not(.match-active) .setup-grid > div:last-child {
+        grid-column: auto;
+      }
+
+      body:not(.match-active) #newMatchBtn {
+        min-height: 38px;
+        font-size: 12px;
+        border-radius: 12px;
+        white-space: nowrap;
+      }
+    }
+
+    /* Refuerzo: ocultar barra inferior en horizontal aunque el navegador reporte otra altura. */
+    @media screen and (orientation: landscape) and (max-height: 700px),
+           screen and (orientation: landscape) and (pointer: coarse) {
+      html,
+      body,
+      body.match-active {
+        padding-bottom: 0 !important;
+        margin-bottom: 0 !important;
+      }
+
+      #appBottomNav,
+      nav#appBottomNav,
+      .app-bottom-nav,
+      nav.app-bottom-nav,
+      .bottom-nav,
+      nav.bottom-nav {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        max-height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+        overflow: hidden !important;
+        pointer-events: none !important;
+      }
+
+      .app {
+        padding-bottom: 6px !important;
+      }
+    }
+
+    /* Refuerzo por JavaScript: útil si orientation no se actualiza bien en la PWA. */
+    body.is-landscape-mobile,
+    body.is-landscape-mobile.match-active {
+      padding-bottom: 0 !important;
+      margin-bottom: 0 !important;
+    }
+
+    body.is-landscape-mobile #appBottomNav,
+    body.is-landscape-mobile nav#appBottomNav,
+    body.is-landscape-mobile .app-bottom-nav,
+    body.is-landscape-mobile nav.app-bottom-nav,
+    body.is-landscape-mobile .bottom-nav,
+    body.is-landscape-mobile nav.bottom-nav {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      height: 0 !important;
+      min-height: 0 !important;
+      max-height: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border: 0 !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
+    }
+
+    body.is-landscape-mobile .app {
+      padding-bottom: 6px !important;
+    }
+
+
+    /* Modo vertical móvil optimizado: título, puntos, estado y resultado visibles antes de los controles. */
+    @media screen and (max-width: 820px) and (orientation: portrait) {
+      body.match-active {
+        padding-bottom: calc(74px + env(safe-area-inset-bottom)) !important;
+      }
+
+      body.match-active .app {
+        max-width: 560px;
+        padding: 8px 8px calc(84px + env(safe-area-inset-bottom));
+      }
+
+      body.match-active .score-layout {
+        grid-template-columns: 1fr !important;
+        gap: 8px;
+      }
+
+      body.match-active .score-card {
+        padding: 8px;
+        border-radius: 20px;
+        box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+      }
+
+      body.match-active .match-banner {
+        margin-bottom: 8px;
+        padding: 11px 12px;
+        border-radius: 18px;
+      }
+
+      body.match-active .match-banner::after {
+        width: 130px;
+        height: 130px;
+        right: -48px;
+        top: -60px;
+      }
+
+      body.match-active .match-banner-title {
+        font-size: 11px;
+        margin-bottom: 4px;
+      }
+
+      body.match-active .match-banner-names {
+        font-size: clamp(22px, 7.1vw, 32px);
+        line-height: 1.06;
+      }
+
+      body.match-active .big-score {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      body.match-active .player-control {
+        padding: 8px;
+        border-radius: 18px;
+      }
+
+      body.match-active .player-name {
+        min-height: 32px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(12px, 3.5vw, 15px);
+        line-height: 1.08;
+      }
+
+      body.match-active .game-points {
+        margin-bottom: 6px;
+        font-size: clamp(42px, 13vw, 62px);
+      }
+
+      body.match-active .point-btn {
+        min-height: 56px;
+        padding: 8px 5px;
+        border-radius: 14px;
+        font-size: clamp(13px, 3.8vw, 17px);
+        line-height: 1.08;
+      }
+
+      body.match-active .status-card {
+        margin-top: 8px;
+        padding: 11px 12px;
+        border-radius: 18px;
+      }
+
+      body.match-active .status-title {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+
+      body.match-active .status-line {
+        gap: 6px;
+      }
+
+      body.match-active .badge {
+        padding: 5px 8px;
+        font-size: 11px;
+      }
+
+      body.match-active .change-alert {
+        margin-top: 8px;
+        padding: 8px 10px;
+        border-radius: 13px;
+        font-size: 14px;
+      }
+
+      body.match-active #setsResultCard {
+        margin-top: 8px;
+        padding: 10px;
+        border-radius: 18px;
+        box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+      }
+
+      body.match-active #setsResultCard .side-title {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+
+      body.match-active #setsResultCard .set-mini {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      body.match-active #setsResultCard .set-box {
+        padding: 7px;
+        border-radius: 13px;
+      }
+
+      body.match-active #setsResultCard .set-box-title {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 11px;
+        line-height: 1.08;
+      }
+
+      body.match-active #setsResultCard .set-box-title .badge {
+        display: inline-block;
+        margin-top: 4px;
+        padding: 3px 6px;
+        font-size: 9px;
+        max-width: 100%;
+        white-space: normal;
+      }
+
+      body.match-active #setsResultCard .set-score-line {
+        gap: 4px;
+        margin: 2px 0;
+      }
+
+      body.match-active #setsResultCard .set-score-name {
+        min-width: 0;
+        font-size: 9.5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      body.match-active #setsResultCard .set-score-value {
+        font-size: 18px;
+      }
+
+      body.match-active .side {
+        gap: 8px;
+      }
+
+      body.match-active .side .manual-card {
+        display: none !important;
+      }
+
+      body.match-active .controls-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      body.match-active .controls-row button {
+        min-height: 42px;
+        padding: 8px 6px;
+        border-radius: 13px;
+        font-size: 11.5px;
+        line-height: 1.05;
+      }
+
+      body.match-active #clearSavedBtn,
+      body.match-active .history-card {
+        display: none !important;
+      }
+    }
+
+    @media screen and (max-width: 380px) and (orientation: portrait) {
+      body.match-active .app {
+        padding-left: 6px;
+        padding-right: 6px;
+      }
+
+      body.match-active .match-banner-names {
+        font-size: clamp(20px, 6.5vw, 28px);
+      }
+
+      body.match-active .point-btn {
+        font-size: 12.5px;
+      }
+
+      body.match-active #setsResultCard {
+        padding: 8px;
+      }
+
+      body.match-active #setsResultCard .set-box {
+        padding: 6px 5px;
+      }
+    }
+
+
   </style>
 
   <link rel="manifest" href="manifest.webmanifest">
@@ -794,12 +1680,15 @@
   <link rel="stylesheet" href="assets/css/v3.css" />
   <link rel="stylesheet" href="assets/css/v4.css?v=4.1" />
   <link rel="stylesheet" href="assets/css/v5.css?v=5" />
-  <script defer src="assets/js/app.js?v=5"></script>
+  <script defer src="assets/js/app.js?v=7"></script>
 </head>
 
 <body class="marcador-page v5-page">
   <aside class="sidebar app-topbar">
-    <a class="brand" href="index.html" aria-label="Open Tennis Huechuraba inicio"><img class="brand-logo" src="assets/img/logo-open-tennis.png" alt="" aria-hidden="true"><span class="brand-text"><span class="brand-main">Open Tennis</span><span class="brand-sub">Huechuraba · 2026</span></span></a>
+    <a class="brand" href="index.html" aria-label="Open Tennis Huechuraba inicio">
+      <img class="brand-logo" src="assets/img/logo-open-tennis.png" alt="" aria-hidden="true">
+      <span class="brand-text"><span class="brand-main">Open Tennis</span><span class="brand-sub">Huechuraba · 2026</span></span>
+    </a>
   </aside>
 
   <div class="app marcador-app">
@@ -829,11 +1718,15 @@
           <div class="label">Jugador B</div>
           <select id="playerBSelect"></select>
         </div>
+
+        <div>
+          <button class="green-btn" id="newMatchBtn" type="button">Nuevo partido</button>
+        </div>
       </div>
     </section>
 
     <main class="score-layout">
-      <section class="score-card">
+      <section class="score-card" id="scoreCard">
         <div class="match-banner">
           <div class="match-banner-title" id="categoryLabel">Categoría A</div>
           <div class="match-banner-names">
@@ -842,49 +1735,27 @@
             <span id="bannerNameB">Jugador B</span>
           </div>
           <div class="serve-strip" id="serveStrip">🎾 Saca Jugador A</div>
+          <div class="wake-strip">
+            <span class="wake-indicator" id="wakeIndicator">🔒 Pantalla normal</span>
+            <button class="mini-action" id="wakeToggleBtn" type="button">Mantener pantalla activa</button>
+          </div>
         </div>
 
         <div class="big-score">
           <div class="player-control" id="playerBoxA">
             <div class="player-name" id="playerNameA">Jugador A</div>
             <div class="game-points" id="gamePointsA">0</div>
-            <button class="point-btn" id="pointA">Punto Jugador A</button>
+            <button class="point-btn" id="pointA" type="button">Punto Jugador A</button>
           </div>
 
           <div class="player-control" id="playerBoxB">
             <div class="player-name" id="playerNameB">Jugador B</div>
             <div class="game-points" id="gamePointsB">0</div>
-            <button class="point-btn" id="pointB">Punto Jugador B</button>
+            <button class="point-btn" id="pointB" type="button">Punto Jugador B</button>
           </div>
         </div>
 
-        <div class="sets-table">
-          <div class="sets-row sets-head">
-            <div>Jugador</div>
-            <div>Set 1</div>
-            <div>Set 2</div>
-            <div>STB</div>
-            <div>Sets</div>
-          </div>
-
-          <div class="sets-row">
-            <div class="sets-player" id="tableNameA">Jugador A</div>
-            <div class="sets-number" id="tableS1A">0</div>
-            <div class="sets-number" id="tableS2A">0</div>
-            <div class="sets-number" id="tableSTBA">0</div>
-            <div class="sets-number" id="tableSetsA">0</div>
-          </div>
-
-          <div class="sets-row">
-            <div class="sets-player" id="tableNameB">Jugador B</div>
-            <div class="sets-number" id="tableS1B">0</div>
-            <div class="sets-number" id="tableS2B">0</div>
-            <div class="sets-number" id="tableSTBB">0</div>
-            <div class="sets-number" id="tableSetsB">0</div>
-          </div>
-        </div>
-
-        <section class="status-card">
+        <section class="status-card" id="statusCard">
           <div class="status-title">Estado del partido</div>
           <div class="status-line" id="statusLine"></div>
           <div class="change-alert" id="changeAlert">🔄 Cambio de lado ahora</div>
@@ -894,16 +1765,25 @@
           <div class="final-title">Partido finalizado</div>
           <div class="final-winner" id="finalWinner"></div>
           <div class="final-result" id="finalResult"></div>
+          <div class="final-preview" id="finalPreview"></div>
+          <div class="final-actions">
+            <button class="green-btn" id="shareImageBtn" type="button">Compartir imagen</button>
+            <button class="orange-btn" id="shareWhatsAppBtn" type="button">WhatsApp texto</button>
+            <button class="ghost" id="copyResultBtn" type="button">Copiar resultado</button>
+          </div>
         </section>
 
         <div class="controls-row">
-          <button class="ghost" id="undoBtn">Deshacer</button>
-          <button class="orange-btn" id="switchServer">Cambiar sacador</button>
-          <button class="danger-btn" id="resetBtn">Reiniciar</button>
+          <button class="undo-btn" id="undoBtn" type="button">Deshacer</button>
+          <button class="orange-btn" id="switchServer" type="button">Cambiar sacador</button>
+          <button class="blue-btn" id="correctionBtn" type="button">Corregir</button>
+          <button class="danger-btn" id="resetBtn" type="button">Reiniciar</button>
+          <button class="green-btn" id="configureNewMatchBtn" type="button">Nuevo partido</button>
+          <button class="ghost" id="clearSavedBtn" type="button">Borrar guardado</button>
         </div>
 
         <section class="history-card" id="historyCard">
-          <button class="history-toggle" id="historyToggle">
+          <button class="history-toggle" id="historyToggle" type="button">
             <span>Historial de puntos</span>
             <span id="historyIcon">+</span>
           </button>
@@ -914,8 +1794,8 @@
       </section>
 
       <aside class="side">
-        <section class="side-card">
-          <div class="side-title">Resumen por sets</div>
+        <section class="side-card" id="setsResultCard">
+          <div class="side-title">Resultado por sets</div>
 
           <div class="set-mini">
             <div class="set-box" id="setBox1">
@@ -966,9 +1846,70 @@
             </div>
           </div>
         </section>
+
+        <section class="manual-card">
+          <div class="side-title">Corrección rápida</div>
+          <p class="manual-note">Úsalo si te equivocaste en un game, set o super tie-break. La corrección reinicia los puntos del game actual.</p>
+          <button class="blue-btn" id="correctionBtnSide" type="button" style="width:100%;">Corregir game/set</button>
+        </section>
       </aside>
     </main>
-</div>
+  </div>
+
+  <div class="modal-backdrop" id="correctionModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="correctionTitle">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="correctionTitle">Corregir marcador</div>
+          <div style="font-size:12px; color:#6b7280; font-weight:800; margin-top:3px;">Modifica games/sets y guarda la corrección.</div>
+        </div>
+        <button class="ghost modal-close" id="correctionClose" type="button" aria-label="Cerrar">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="correction-grid head">
+          <div>Sección</div>
+          <div id="corrNameAHead">Jugador A</div>
+          <div id="corrNameBHead">Jugador B</div>
+        </div>
+
+        <div class="correction-grid">
+          <div><strong>Set 1 · games</strong></div>
+          <input id="corrS1A" type="number" min="0" max="7" inputmode="numeric">
+          <input id="corrS1B" type="number" min="0" max="7" inputmode="numeric">
+        </div>
+
+        <div class="correction-grid">
+          <div><strong>Set 2 · games</strong></div>
+          <input id="corrS2A" type="number" min="0" max="7" inputmode="numeric">
+          <input id="corrS2B" type="number" min="0" max="7" inputmode="numeric">
+        </div>
+
+        <div class="correction-grid">
+          <div><strong>Super tie-break</strong></div>
+          <input id="corrSTBA" type="number" min="0" max="99" inputmode="numeric">
+          <input id="corrSTBB" type="number" min="0" max="99" inputmode="numeric">
+        </div>
+
+        <div class="correction-grid">
+          <div><strong>Sacador actual</strong></div>
+          <select id="corrServer"></select>
+          <div></div>
+        </div>
+
+        <p class="manual-note" style="margin-top:14px;">
+          Nota: si dejas un set con marcador ganador válido, por ejemplo 6-4 o 7-6, el sistema lo marcará como set terminado. Si el partido queda 1 set a 1, activará automáticamente el super tie-break.
+        </p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="ghost" id="correctionCancel" type="button">Cancelar</button>
+        <button class="blue-btn" id="correctionApply" type="button">Guardar corrección</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
     const CLUB_PLAYERS = {
@@ -1014,7 +1955,15 @@
       ]
     };
 
+    const STORAGE_KEY = "openTennisMarcadorStateV2";
     const POINT_LABELS = ["0", "15", "30", "40"];
+
+    let history = [];
+    let matchActive = false;
+    let ignoreSetupEvents = false;
+    let toastTimer = null;
+    let wakeLock = null;
+    let wakeLockWanted = false;
 
     function clone(obj) {
       return JSON.parse(JSON.stringify(obj));
@@ -1038,15 +1987,85 @@
       };
     }
 
-    let history = [createInitialState()];
-
     function getState() {
       return history[history.length - 1];
     }
 
-    function pushState(state) {
+    function setMatchActive(active) {
+      matchActive = Boolean(active);
+      document.body.classList.toggle("match-active", matchActive);
+      document.body.classList.toggle("setup-active", !matchActive);
+
+      requestAnimationFrame(() => {
+        relocateResultForMobilePortrait();
+      });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+
+      if (toastTimer) clearTimeout(toastTimer);
+
+      toastTimer = setTimeout(() => {
+        toast.classList.remove("visible");
+      }, 2300);
+    }
+
+    function vibrate(pattern = 35) {
+      if (navigator.vibrate) {
+        navigator.vibrate(pattern);
+      }
+    }
+
+    function saveMatch() {
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            version: 2,
+            savedAt: new Date().toISOString(),
+            history
+          })
+        );
+      } catch (error) {
+        console.warn("No se pudo guardar el marcador", error);
+      }
+    }
+
+    function clearSavedMatch() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (error) {}
+    }
+
+    function loadSavedMatch() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+
+        const data = JSON.parse(raw);
+        if (!data || !Array.isArray(data.history) || !data.history.length) return null;
+
+        const savedState = data.history[data.history.length - 1];
+        if (!savedState || !savedState.category || !Array.isArray(savedState.players)) return null;
+        if (!CLUB_PLAYERS[savedState.category]) return null;
+
+        return data.history;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function pushState(state, options = {}) {
       history.push(state);
+      saveMatch();
       render();
+
+      if (options.vibrate !== false) {
+        vibrate(options.pattern || 28);
+      }
     }
 
     function getPlayerLabel(state, index) {
@@ -1054,7 +2073,7 @@
     }
 
     function addLog(state, text, type = "info") {
-      state.log = [{ text, type }, ...state.log].slice(0, 30);
+      state.log = [{ text, type }, ...state.log].slice(0, 40);
     }
 
     function getSetsWon(state) {
@@ -1252,6 +2271,7 @@
       state.inTiebreak = false;
 
       addLog(state, `${label} gana el Set ${state.currentSet + 1}`, "success");
+      vibrate([40, 40, 40]);
 
       const won = getSetsWon(state);
 
@@ -1363,11 +2383,71 @@
       return state;
     }
 
-    function generateResultText(state) {
-      if (state.matchWinner === null) return "";
+    function getSetWinnerFromGames(a, b) {
+      if (a === 7 && (b === 5 || b === 6)) return 0;
+      if (b === 7 && (a === 5 || a === 6)) return 1;
+      if (a >= 6 && a - b >= 2) return 0;
+      if (b >= 6 && b - a >= 2) return 1;
+      return null;
+    }
+
+    function getSTBWinner(a, b) {
+      if ((a >= 10 || b >= 10) && Math.abs(a - b) >= 2) {
+        return a > b ? 0 : 1;
+      }
+      return null;
+    }
+
+    function recalculateMatchFromScore(state) {
+      state.points = [0, 0];
+      state.inTiebreak = false;
+      state.matchWinner = null;
+
+      for (let i = 0; i < 2; i++) {
+        const set = state.sets[i];
+        const [a, b] = set.games;
+        set.winner = getSetWinnerFromGames(a, b);
+
+        if (a === 6 && b === 6 && set.winner === null) {
+          set.tiebreakPoints = set.tiebreakPoints || [0, 0];
+          set.tiebreakStartServer = state.server;
+        } else if (!(a === 7 && b === 6) && !(b === 7 && a === 6)) {
+          set.tiebreakPoints = null;
+        }
+      }
+
+      const stb = state.sets[2].superTiebreakPoints;
+      state.sets[2].winner = getSTBWinner(stb[0], stb[1]);
+
+      const won = getSetsWon(state);
+      if (won[0] >= 2) state.matchWinner = 0;
+      if (won[1] >= 2) state.matchWinner = 1;
+
+      if (state.matchWinner !== null) {
+        state.currentSet = state.sets[2].winner !== null ? 2 : (state.sets[1].winner !== null ? 1 : 0);
+        return;
+      }
+
+      if (state.sets[0].winner === null) {
+        state.currentSet = 0;
+        state.inTiebreak = state.sets[0].games[0] === 6 && state.sets[0].games[1] === 6;
+        return;
+      }
+
+      if (state.sets[1].winner === null) {
+        state.currentSet = 1;
+        state.inTiebreak = state.sets[1].games[0] === 6 && state.sets[1].games[1] === 6;
+        return;
+      }
+
+      state.currentSet = 2;
+      state.sets[2].startServer = state.sets[2].startServer ?? state.server;
+    }
+
+    function getScoreParts(state) {
+      if (state.matchWinner === null) return [];
 
       const winner = state.matchWinner;
-      const label = getPlayerLabel(state, winner);
       const parts = [];
 
       for (let i = 0; i < 2; i++) {
@@ -1384,34 +2464,189 @@
         parts.push(winner === 0 ? `${stb[0]}-${stb[1]}` : `${stb[1]}-${stb[0]}`);
       }
 
-      return `Ganador ${label} ${parts.join(" ")}`;
+      return parts;
     }
 
-    function populatePlayers(category) {
+    function generateResultText(state) {
+      if (state.matchWinner === null) return "";
+
+      const winner = state.matchWinner;
+      const loser = winner === 0 ? 1 : 0;
+      const winnerName = getPlayerLabel(state, winner);
+      const loserName = getPlayerLabel(state, loser);
+      const parts = getScoreParts(state);
+
+      return `${winnerName} ganó a ${loserName} ${parts.join(" ")}`.trim();
+    }
+
+    function generateShareText(state) {
+      if (state.matchWinner === null) return "";
+      return `🎾 Open Tennis Huechuraba 2026\nCategoría ${state.category}\n${generateResultText(state)}`;
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"]/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;"
+      }[char]));
+    }
+
+    function populatePlayers(category, selectedA, selectedB) {
       const playerA = document.getElementById("playerASelect");
       const playerB = document.getElementById("playerBSelect");
       const players = CLUB_PLAYERS[category];
 
-      playerA.innerHTML = players.map(p => `<option value="${p}">${p}</option>`).join("");
-      playerB.innerHTML = players.map(p => `<option value="${p}">${p}</option>`).join("");
+      playerA.innerHTML = players.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+      playerB.innerHTML = players.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
 
-      playerA.selectedIndex = 0;
-      playerB.selectedIndex = Math.min(1, players.length - 1);
+      playerA.value = selectedA && players.includes(selectedA) ? selectedA : players[0];
+      playerB.value = selectedB && players.includes(selectedB) ? selectedB : players[Math.min(1, players.length - 1)];
+
+      ensureDistinctPlayerSelects();
     }
 
-    function resetMatchWithSetup() {
+    function ensureDistinctPlayerSelects(changed = null) {
+      const playerA = document.getElementById("playerASelect");
+      const playerB = document.getElementById("playerBSelect");
+      const category = document.getElementById("categorySelect").value;
+      const players = CLUB_PLAYERS[category];
+
+      if (playerA.value === playerB.value) {
+        const replacement = players.find(p => p !== playerA.value) || players[0];
+
+        if (changed === "A") {
+          playerB.value = replacement;
+        } else {
+          playerA.value = replacement;
+        }
+
+        showToast("No se puede elegir el mismo jugador dos veces. Se corrigió automáticamente.");
+      }
+
+      [...playerA.options].forEach(option => {
+        option.disabled = option.value === playerB.value;
+      });
+
+      [...playerB.options].forEach(option => {
+        option.disabled = option.value === playerA.value;
+      });
+    }
+
+    function isMatchDirty() {
+      const state = getState();
+      if (!state) return false;
+      if (history.length > 1) return true;
+      if (state.matchWinner !== null) return true;
+      return state.sets.some((set, index) => {
+        if (index < 2) {
+          return set.games[0] || set.games[1] || set.winner !== null || set.tiebreakPoints !== null;
+        }
+        return set.superTiebreakPoints[0] || set.superTiebreakPoints[1] || set.winner !== null;
+      }) || state.points[0] || state.points[1];
+    }
+
+    function createMatchFromSetup() {
       const category = document.getElementById("categorySelect").value;
       const pA = document.getElementById("playerASelect").value;
       const pB = document.getElementById("playerBSelect").value;
 
       const state = createInitialState();
-
       state.category = category;
       state.players = [pA, pB];
       state.log = [{ text: `Partido iniciado: ${pA} vs ${pB}`, type: "info" }];
 
-      history = [state];
+      return state;
+    }
+
+    function resetMatchWithSetup(options = {}) {
+      ensureDistinctPlayerSelects();
+      history = [createMatchFromSetup()];
+      saveMatch();
       render();
+
+      if (options.toast) showToast(options.toast);
+      if (options.vibrate !== false) vibrate(35);
+    }
+
+    function startNewMatch() {
+      if (matchActive && isMatchDirty()) {
+        const ok = confirm("¿Seguro que quieres crear un nuevo partido? Se borrará el marcador actual guardado en este celular.");
+        if (!ok) return;
+      }
+
+      ensureDistinctPlayerSelects();
+      clearSavedMatch();
+      history = [createMatchFromSetup()];
+      saveMatch();
+      setMatchActive(true);
+      render();
+      requestAnimationFrame(() => {
+        const banner = document.querySelector(".match-banner");
+        if (banner) banner.scrollIntoView({ block: "start" });
+      });
+      requestWakeLock();
+      showToast("Partido iniciado");
+      vibrate(35);
+    }
+
+    function showSetupForNewMatch() {
+      if (matchActive && isMatchDirty()) {
+        const ok = confirm("¿Seguro que quieres configurar un nuevo partido? Se borrará el marcador actual guardado en este celular.");
+        if (!ok) return;
+      }
+
+      clearSavedMatch();
+      releaseWakeLock();
+      history = [createMatchFromSetup()];
+      setMatchActive(false);
+      render();
+      showToast("Selecciona categoría y jugadores para el nuevo partido");
+      vibrate(20);
+    }
+
+    function handleSetupChange(type) {
+      if (ignoreSetupEvents) return;
+
+      if (!matchActive) {
+        if (type === "category") {
+          const selectedCategory = document.getElementById("categorySelect").value;
+          populatePlayers(selectedCategory);
+        }
+
+        ensureDistinctPlayerSelects(type === "playerA" ? "A" : type === "playerB" ? "B" : null);
+        history = [createMatchFromSetup()];
+        return;
+      }
+
+      if (type === "category") {
+        const selectedCategory = document.getElementById("categorySelect").value;
+
+        if (isMatchDirty()) {
+          const ok = confirm("Cambiar la categoría reiniciará el partido actual. ¿Continuar?");
+          if (!ok) {
+            render();
+            return;
+          }
+        }
+
+        populatePlayers(selectedCategory);
+        resetMatchWithSetup({ toast: "Categoría actualizada" });
+        return;
+      }
+
+      ensureDistinctPlayerSelects(type === "playerA" ? "A" : "B");
+
+      if (isMatchDirty()) {
+        const ok = confirm("Cambiar jugadores reiniciará el partido actual. ¿Continuar?");
+        if (!ok) {
+          render();
+          return;
+        }
+      }
+
+      resetMatchWithSetup({ toast: "Jugadores actualizados" });
     }
 
     function switchServerManual() {
@@ -1430,7 +2665,348 @@
       }
 
       addLog(state, `Sacador corregido manualmente: ${getPlayerLabel(state, state.server)}`, "warning");
-      pushState(state);
+      pushState(state, { pattern: 25 });
+    }
+
+    async function requestWakeLock() {
+      wakeLockWanted = true;
+
+      if (!("wakeLock" in navigator)) {
+        updateWakeUI("unsupported");
+        return;
+      }
+
+      try {
+        wakeLock = await navigator.wakeLock.request("screen");
+        wakeLock.addEventListener("release", () => {
+          wakeLock = null;
+          updateWakeUI();
+        });
+        updateWakeUI();
+      } catch (error) {
+        updateWakeUI("blocked");
+      }
+    }
+
+    async function releaseWakeLock() {
+      wakeLockWanted = false;
+
+      if (wakeLock) {
+        try {
+          await wakeLock.release();
+        } catch (error) {}
+      }
+
+      wakeLock = null;
+      updateWakeUI();
+    }
+
+    function updateWakeUI(status) {
+      const indicator = document.getElementById("wakeIndicator");
+      const btn = document.getElementById("wakeToggleBtn");
+
+      if (!indicator || !btn) return;
+
+      indicator.classList.toggle("on", Boolean(wakeLock));
+
+      if (wakeLock) {
+        indicator.textContent = "💡 Pantalla activa";
+        btn.textContent = "Desactivar";
+        return;
+      }
+
+      if (status === "unsupported") {
+        indicator.textContent = "⚠️ Wake Lock no disponible";
+        btn.textContent = "Reintentar";
+        return;
+      }
+
+      if (status === "blocked") {
+        indicator.textContent = "⚠️ Toca para activar pantalla";
+        btn.textContent = "Activar pantalla";
+        return;
+      }
+
+      indicator.textContent = wakeLockWanted ? "⚠️ Pantalla pendiente" : "🔒 Pantalla normal";
+      btn.textContent = wakeLockWanted ? "Reactivar" : "Mantener pantalla activa";
+    }
+
+    function setupWakeLock() {
+      document.getElementById("wakeToggleBtn").addEventListener("click", () => {
+        if (wakeLock) {
+          releaseWakeLock();
+        } else {
+          requestWakeLock();
+        }
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible" && wakeLockWanted && !wakeLock) {
+          requestWakeLock();
+        }
+      });
+
+      document.addEventListener("pointerdown", () => {
+        if (matchActive && !wakeLock) {
+          requestWakeLock();
+        }
+      }, { passive: true });
+    }
+
+    function drawRoundedRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = String(text).split(" ");
+      let line = "";
+      let currentY = y;
+
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line ? `${line} ${words[n]}` : words[n];
+        const metrics = ctx.measureText(testLine);
+
+        if (metrics.width > maxWidth && n > 0) {
+          ctx.fillText(line, x, currentY);
+          line = words[n];
+          currentY += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+
+      ctx.fillText(line, x, currentY);
+      return currentY;
+    }
+
+    function createResultCanvas(state) {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 1080;
+
+      const ctx = canvas.getContext("2d");
+      const winner = state.matchWinner;
+      const loser = winner === 0 ? 1 : 0;
+      const winnerName = getPlayerLabel(state, winner);
+      const loserName = getPlayerLabel(state, loser);
+      const score = getScoreParts(state).join("  ");
+
+      const gradient = ctx.createLinearGradient(0, 0, 1080, 1080);
+      gradient.addColorStop(0, "#eaf4e4");
+      gradient.addColorStop(0.5, "#ffffff");
+      gradient.addColorStop(1, "#fff3df");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 1080, 1080);
+
+      ctx.fillStyle = "rgba(106, 168, 79, 0.16)";
+      ctx.beginPath();
+      ctx.arc(930, 120, 230, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(255, 153, 0, 0.16)";
+      ctx.beginPath();
+      ctx.arc(130, 950, 250, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      drawRoundedRect(ctx, 70, 70, 940, 940, 54);
+      ctx.fill();
+
+      ctx.strokeStyle = "#b6d7a8";
+      ctx.lineWidth = 6;
+      drawRoundedRect(ctx, 70, 70, 940, 940, 54);
+      ctx.stroke();
+
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#4f8738";
+      ctx.font = "900 48px Arial";
+      ctx.fillText("OPEN TENNIS HUECHURABA", 540, 170);
+
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "800 30px Arial";
+      ctx.fillText(`Categoría ${state.category} · Resultado final`, 540, 220);
+
+      ctx.fillStyle = "#ff9900";
+      ctx.font = "900 88px Arial";
+      ctx.fillText("🏆", 540, 330);
+
+      ctx.fillStyle = "#1f2933";
+      ctx.font = "900 64px Arial";
+      wrapCanvasText(ctx, winnerName, 540, 430, 820, 70);
+
+      ctx.fillStyle = "#4f8738";
+      ctx.font = "900 44px Arial";
+      ctx.fillText("ganó el partido", 540, 545);
+
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "800 34px Arial";
+      ctx.fillText("vs", 540, 615);
+
+      ctx.fillStyle = "#1f2933";
+      ctx.font = "900 48px Arial";
+      wrapCanvasText(ctx, loserName, 540, 680, 820, 56);
+
+      ctx.fillStyle = "#4f8738";
+      drawRoundedRect(ctx, 170, 765, 740, 120, 60);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 58px Arial";
+      ctx.fillText(score, 540, 840);
+
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "700 24px Arial";
+      ctx.fillText("Resultado generado desde el marcador oficial", 540, 945);
+
+      return canvas;
+    }
+
+    function canvasToBlob(canvas) {
+      return new Promise(resolve => {
+        canvas.toBlob(blob => resolve(blob), "image/png", 0.95);
+      });
+    }
+
+    async function copyResult() {
+      const text = generateShareText(getState());
+
+      if (!text) return;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Resultado copiado");
+      } catch (error) {
+        showToast("No se pudo copiar automáticamente. Mantén presionado el resultado para copiarlo.");
+      }
+    }
+
+    async function shareResultImage() {
+      const state = getState();
+      if (state.matchWinner === null) return;
+
+      const text = generateShareText(state);
+      const canvas = createResultCanvas(state);
+      const blob = await canvasToBlob(canvas);
+      const file = new File([blob], "resultado-open-tennis.png", { type: "image/png" });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+        try {
+          await navigator.share({
+            title: "Resultado Open Tennis",
+            text,
+            files: [file]
+          });
+          return;
+        } catch (error) {
+          if (error && error.name === "AbortError") return;
+        }
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "resultado-open-tennis.png";
+      link.click();
+      URL.revokeObjectURL(url);
+
+      showToast("Se descargó la imagen. Envíala por WhatsApp desde tu galería.");
+    }
+
+    function shareWhatsAppText() {
+      const text = generateShareText(getState());
+      if (!text) return;
+
+      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+
+    function openCorrectionModal() {
+      const state = getState();
+      const labelA = getPlayerLabel(state, 0);
+      const labelB = getPlayerLabel(state, 1);
+
+      document.getElementById("corrNameAHead").textContent = labelA;
+      document.getElementById("corrNameBHead").textContent = labelB;
+
+      document.getElementById("corrS1A").value = state.sets[0].games[0];
+      document.getElementById("corrS1B").value = state.sets[0].games[1];
+      document.getElementById("corrS2A").value = state.sets[1].games[0];
+      document.getElementById("corrS2B").value = state.sets[1].games[1];
+      document.getElementById("corrSTBA").value = state.sets[2].superTiebreakPoints[0];
+      document.getElementById("corrSTBB").value = state.sets[2].superTiebreakPoints[1];
+
+      const corrServer = document.getElementById("corrServer");
+      corrServer.innerHTML = `
+        <option value="0">${escapeHtml(labelA)}</option>
+        <option value="1">${escapeHtml(labelB)}</option>
+      `;
+      corrServer.value = String(getCurrentServer(state));
+
+      document.getElementById("correctionModal").classList.add("visible");
+      document.getElementById("correctionModal").setAttribute("aria-hidden", "false");
+    }
+
+    function closeCorrectionModal() {
+      document.getElementById("correctionModal").classList.remove("visible");
+      document.getElementById("correctionModal").setAttribute("aria-hidden", "true");
+    }
+
+    function readNumberInput(id, min, max) {
+      const value = Number(document.getElementById(id).value);
+      if (!Number.isFinite(value)) return min;
+      return Math.max(min, Math.min(max, Math.round(value)));
+    }
+
+    function applyCorrection() {
+      const state = clone(getState());
+
+      state.sets[0].games = [
+        readNumberInput("corrS1A", 0, 7),
+        readNumberInput("corrS1B", 0, 7)
+      ];
+      state.sets[1].games = [
+        readNumberInput("corrS2A", 0, 7),
+        readNumberInput("corrS2B", 0, 7)
+      ];
+      state.sets[2].superTiebreakPoints = [
+        readNumberInput("corrSTBA", 0, 99),
+        readNumberInput("corrSTBB", 0, 99)
+      ];
+
+      state.server = Number(document.getElementById("corrServer").value) || 0;
+      state.sets[2].startServer = state.server;
+      recalculateMatchFromScore(state);
+      addLog(state, "Marcador corregido manualmente", "warning");
+
+      closeCorrectionModal();
+      pushState(state, { pattern: [30, 40, 30] });
+      showToast("Corrección aplicada");
+    }
+
+    function getCompactPlayerName(label) {
+      const clean = String(label || "").trim();
+      if (!clean) return "Jugador";
+
+      const parts = clean.split(/\s+/).filter(Boolean);
+      if (parts.length <= 1) return clean;
+
+      const first = parts[0];
+      const lastInitial = parts[1] ? `${parts[1][0]}.` : "";
+      return `${first} ${lastInitial}`.trim();
+    }
+
+    function shouldUseCompactPointLabels() {
+      return window.matchMedia("(max-width: 820px) and (orientation: portrait)").matches;
     }
 
     function render() {
@@ -1444,18 +3020,27 @@
       const liveMoments = getLiveMoments(state);
       const setsWon = getSetsWon(state);
 
+      ignoreSetupEvents = true;
       document.getElementById("categorySelect").value = state.category;
+      populatePlayers(state.category, labelA, labelB);
+      document.getElementById("playerASelect").value = labelA;
+      document.getElementById("playerBSelect").value = labelB;
+      ensureDistinctPlayerSelects();
+      ignoreSetupEvents = false;
+
       document.getElementById("categoryLabel").textContent = `Categoría ${state.category}`;
 
       document.getElementById("bannerNameA").textContent = labelA;
       document.getElementById("bannerNameB").textContent = labelB;
-      document.getElementById("serveStrip").textContent = `🎾 Saca ${getPlayerLabel(state, currentServer)}`;
+      document.getElementById("serveStrip").textContent = state.matchWinner === null
+        ? `🎾 Saca ${getPlayerLabel(state, currentServer)}`
+        : "✅ Partido terminado";
 
       document.getElementById("playerNameA").textContent = labelA;
       document.getElementById("playerNameB").textContent = labelB;
 
-      document.getElementById("playerBoxA").classList.toggle("serving", currentServer === 0);
-      document.getElementById("playerBoxB").classList.toggle("serving", currentServer === 1);
+      document.getElementById("playerBoxA").classList.toggle("serving", currentServer === 0 && state.matchWinner === null);
+      document.getElementById("playerBoxB").classList.toggle("serving", currentServer === 1 && state.matchWinner === null);
 
       let scoreA = "0";
       let scoreB = "0";
@@ -1474,23 +3059,9 @@
       document.getElementById("gamePointsA").textContent = scoreA;
       document.getElementById("gamePointsB").textContent = scoreB;
 
-      document.getElementById("pointA").textContent = `Punto ${labelA}`;
-      document.getElementById("pointB").textContent = `Punto ${labelB}`;
-
-      document.getElementById("tableNameA").textContent = labelA;
-      document.getElementById("tableNameB").textContent = labelB;
-
-      document.getElementById("tableS1A").textContent = state.sets[0].games[0];
-      document.getElementById("tableS1B").textContent = state.sets[0].games[1];
-
-      document.getElementById("tableS2A").textContent = state.sets[1].games[0];
-      document.getElementById("tableS2B").textContent = state.sets[1].games[1];
-
-      document.getElementById("tableSTBA").textContent = state.sets[2].superTiebreakPoints[0];
-      document.getElementById("tableSTBB").textContent = state.sets[2].superTiebreakPoints[1];
-
-      document.getElementById("tableSetsA").textContent = setsWon[0];
-      document.getElementById("tableSetsB").textContent = setsWon[1];
+      const compactPointLabels = shouldUseCompactPointLabels();
+      document.getElementById("pointA").textContent = `Punto ${compactPointLabels ? getCompactPlayerName(labelA) : labelA}`;
+      document.getElementById("pointB").textContent = `Punto ${compactPointLabels ? getCompactPlayerName(labelB) : labelB}`;
 
       for (let i = 0; i < 3; i++) {
         const box = document.getElementById(`setBox${i + 1}`);
@@ -1540,7 +3111,8 @@
 
       const statusParts = [
         `<span class="badge green">Set actual: ${state.currentSet + 1}</span>`,
-        `<span class="badge orange">Saca: ${getPlayerLabel(state, currentServer)}</span>`
+        `<span class="badge orange">Saca: ${getPlayerLabel(state, currentServer)}</span>`,
+        `<span class="badge blue">Guardado automático</span>`
       ];
 
       if (state.inTiebreak) {
@@ -1552,7 +3124,7 @@
       }
 
       liveMoments.forEach(m => {
-        statusParts.push(`<span class="badge ${m.type}">${m.text}</span>`);
+        statusParts.push(`<span class="badge ${m.type}">${escapeHtml(m.text)}</span>`);
       });
 
       document.getElementById("statusLine").innerHTML = statusParts.join("");
@@ -1564,12 +3136,13 @@
         finalCard.classList.add("visible");
         document.getElementById("finalWinner").textContent = getPlayerLabel(state, state.matchWinner);
         document.getElementById("finalResult").textContent = generateResultText(state);
+        document.getElementById("finalPreview").textContent = "Puedes copiar el resultado o compartir una imagen por WhatsApp usando el menú de compartir del celular.";
       } else {
         finalCard.classList.remove("visible");
       }
 
       const logHtml = state.log.map(item => `
-        <div class="log-item ${item.type || "info"}">${item.text}</div>
+        <div class="log-item ${item.type || "info"}">${escapeHtml(item.text)}</div>
       `).join("");
 
       document.getElementById("logList").innerHTML = logHtml;
@@ -1577,49 +3150,164 @@
       document.getElementById("pointA").disabled = state.matchWinner !== null;
       document.getElementById("pointB").disabled = state.matchWinner !== null;
       document.getElementById("undoBtn").disabled = history.length <= 1;
+      document.getElementById("switchServer").disabled = state.matchWinner !== null;
+      updateWakeUI();
     }
 
-    document.getElementById("categorySelect").addEventListener("change", e => {
-      const category = e.target.value;
-      populatePlayers(category);
-      resetMatchWithSetup();
-    });
+    function setupEvents() {
+      document.getElementById("categorySelect").addEventListener("change", () => handleSetupChange("category"));
+      document.getElementById("playerASelect").addEventListener("change", () => handleSetupChange("playerA"));
+      document.getElementById("playerBSelect").addEventListener("change", () => handleSetupChange("playerB"));
 
-    document.getElementById("playerASelect").addEventListener("change", resetMatchWithSetup);
-    document.getElementById("playerBSelect").addEventListener("change", resetMatchWithSetup);
+      document.getElementById("pointA").addEventListener("click", () => {
+        requestWakeLock();
+        pushState(pointToPlayer(getState(), 0));
+      });
 
-    document.getElementById("pointA").addEventListener("click", () => {
-      pushState(pointToPlayer(getState(), 0));
-    });
+      document.getElementById("pointB").addEventListener("click", () => {
+        requestWakeLock();
+        pushState(pointToPlayer(getState(), 1));
+      });
 
-    document.getElementById("pointB").addEventListener("click", () => {
-      pushState(pointToPlayer(getState(), 1));
-    });
+      document.getElementById("undoBtn").addEventListener("click", () => {
+        if (history.length > 1) {
+          history = history.slice(0, -1);
+          saveMatch();
+          render();
+          vibrate(20);
+          showToast("Última acción deshecha");
+        }
+      });
 
-    document.getElementById("undoBtn").addEventListener("click", () => {
-      if (history.length > 1) {
-        history = history.slice(0, -1);
-        render();
+      document.getElementById("switchServer").addEventListener("click", switchServerManual);
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        const ok = confirm("¿Seguro que quieres reiniciar este partido? Se conservarán los mismos jugadores, pero se borrará el marcador actual.");
+        if (!ok) return;
+
+        resetMatchWithSetup({ toast: "Partido reiniciado" });
+      });
+
+      document.getElementById("newMatchBtn").addEventListener("click", startNewMatch);
+      document.getElementById("configureNewMatchBtn").addEventListener("click", showSetupForNewMatch);
+
+      document.getElementById("clearSavedBtn").addEventListener("click", () => {
+        const ok = confirm("¿Seguro que quieres borrar el marcador guardado en este celular?");
+        if (!ok) return;
+
+        clearSavedMatch();
+        showToast("Marcador guardado eliminado");
+      });
+
+      document.getElementById("correctionBtn").addEventListener("click", openCorrectionModal);
+      document.getElementById("correctionBtnSide").addEventListener("click", openCorrectionModal);
+      document.getElementById("correctionClose").addEventListener("click", closeCorrectionModal);
+      document.getElementById("correctionCancel").addEventListener("click", closeCorrectionModal);
+      document.getElementById("correctionApply").addEventListener("click", applyCorrection);
+
+      document.getElementById("correctionModal").addEventListener("click", event => {
+        if (event.target.id === "correctionModal") closeCorrectionModal();
+      });
+
+      document.getElementById("copyResultBtn").addEventListener("click", copyResult);
+      document.getElementById("shareImageBtn").addEventListener("click", shareResultImage);
+      document.getElementById("shareWhatsAppBtn").addEventListener("click", shareWhatsAppText);
+
+      document.getElementById("historyToggle").addEventListener("click", () => {
+        const card = document.getElementById("historyCard");
+        const icon = document.getElementById("historyIcon");
+
+        card.classList.toggle("open");
+        icon.textContent = card.classList.contains("open") ? "–" : "+";
+      });
+    }
+
+
+    function relocateResultForMobilePortrait() {
+      const resultCard = document.getElementById("setsResultCard");
+      const statusCard = document.getElementById("statusCard");
+      const side = document.querySelector(".side");
+
+      if (!resultCard || !statusCard || !side) return;
+
+      const isPortraitMobile = window.matchMedia("(max-width: 820px) and (orientation: portrait)").matches;
+
+      if (matchActive && isPortraitMobile) {
+        if (resultCard.previousElementSibling !== statusCard) {
+          statusCard.insertAdjacentElement("afterend", resultCard);
+        }
+      } else if (resultCard.parentElement !== side || resultCard !== side.firstElementChild) {
+        side.insertBefore(resultCard, side.firstElementChild);
       }
-    });
+    }
 
-    document.getElementById("switchServer").addEventListener("click", switchServerManual);
+    function setupMobilePortraitResultMode() {
+      const update = () => {
+        relocateResultForMobilePortrait();
+        render();
+      };
 
-    document.getElementById("resetBtn").addEventListener("click", () => {
-      resetMatchWithSetup();
-    });
+      window.addEventListener("resize", update, { passive: true });
+      window.addEventListener("orientationchange", () => setTimeout(update, 160), { passive: true });
 
-    document.getElementById("historyToggle").addEventListener("click", () => {
-      const card = document.getElementById("historyCard");
-      const icon = document.getElementById("historyIcon");
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", update, { passive: true });
+      }
 
-      card.classList.toggle("open");
-      icon.textContent = card.classList.contains("open") ? "–" : "+";
-    });
+      relocateResultForMobilePortrait();
+    }
 
-    populatePlayers("A");
-    resetMatchWithSetup();
+    function setupLandscapeMenuMode() {
+      const update = () => {
+        const isTouchLike =
+          "ontouchstart" in window ||
+          navigator.maxTouchPoints > 0 ||
+          navigator.msMaxTouchPoints > 0;
+
+        const isLandscape = window.innerWidth > window.innerHeight;
+        const isCompactHeight = window.innerHeight <= 760;
+
+        document.body.classList.toggle(
+          "is-landscape-mobile",
+          isTouchLike && isLandscape && isCompactHeight
+        );
+      };
+
+      update();
+      window.addEventListener("resize", update, { passive: true });
+      window.addEventListener("orientationchange", () => setTimeout(update, 120), { passive: true });
+
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", update, { passive: true });
+      }
+    }
+
+    function boot() {
+      populatePlayers("A");
+
+      const savedHistory = loadSavedMatch();
+
+      if (savedHistory) {
+        history = savedHistory;
+        const savedState = getState();
+        populatePlayers(savedState.category, savedState.players[0], savedState.players[1]);
+        setMatchActive(true);
+        showToast("Marcador anterior restaurado");
+      } else {
+        history = [createMatchFromSetup()];
+        setMatchActive(false);
+      }
+
+      setupEvents();
+      setupWakeLock();
+      setupLandscapeMenuMode();
+      setupMobilePortraitResultMode();
+      render();
+    }
+
+    boot();
   </script>
+
   <nav id="appBottomNav" class="app-bottom-nav" aria-label="Navegación principal">
     <a href="index.html" data-page="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span class="nav-label">Inicio</span></a>
     <a href="partidos.html" data-page="partidos.html"><span class="nav-icon" aria-hidden="true">🎾</span><span class="nav-label">Partidos</span></a>
