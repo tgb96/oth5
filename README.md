@@ -11,7 +11,7 @@ Versión tipo app para GitHub Pages.
 - Tema visual elegante inspirado en tenis sobre arcilla: verde profundo, terracota y crema.
 - Reglamento en texto HTML, sin imágenes.
 - Mejor adaptación de escritorio con ancho máximo, tarjetas y espaciado consistente.
-- Cache PWA actualizado a `open-tennis-v5-shell`.
+- Cache PWA actualizado a `open-tennis-v12-shell`.
 
 ## Archivos principales
 
@@ -34,3 +34,10 @@ https://tgb96.github.io/oth4/?v=5
 ```
 
 Si el celular todavía muestra una versión anterior, borra los datos del sitio o abre en incógnito para limpiar el service worker antiguo.
+
+
+## Resultados históricos 2025
+
+- Página: `resultados-2025.html`
+- Datos locales: `data/resultados-2025.json`
+- Contiene las categorías A, B, C y D con sus partidos, posiciones finales, estadísticas, historiales y observaciones de cierre de temporada.

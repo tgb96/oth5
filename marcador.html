@@ -2223,12 +2223,15 @@
     };
 
     const STORAGE_KEY = "openTennisMarcadorStateV2";
+    const MATCH_INACTIVITY_LIMIT_MS = 3 * 60 * 60 * 1000;
     const POINT_LABELS = ["0", "15", "30", "40"];
 
     let history = [];
     let matchActive = false;
     let ignoreSetupEvents = false;
     let toastTimer = null;
+    let inactivityTimer = null;
+    let savedMatchExpiredOnLoad = false;
     let wakeLock = null;
     let wakeLockWanted = false;
 
@@ -2286,25 +2289,102 @@
       }
     }
 
+    function clearInactivityTimer() {
+      if (inactivityTimer !== null) {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = null;
+      }
+    }
+
+    function getSavedAtTimestamp(data) {
+      const timestamp = Date.parse(data && data.savedAt ? data.savedAt : "");
+      return Number.isFinite(timestamp) ? timestamp : null;
+    }
+
+    function isSavedMatchExpired(data, now = Date.now()) {
+      const savedAt = getSavedAtTimestamp(data);
+      return savedAt === null || now - savedAt >= MATCH_INACTIVITY_LIMIT_MS;
+    }
+
+    function scheduleInactivityExpiration(savedAt = Date.now()) {
+      clearInactivityTimer();
+
+      const elapsed = Math.max(0, Date.now() - savedAt);
+      const remaining = MATCH_INACTIVITY_LIMIT_MS - elapsed;
+
+      if (remaining <= 0) {
+        inactivityTimer = window.setTimeout(checkInactivityExpiration, 0);
+        return;
+      }
+
+      inactivityTimer = window.setTimeout(checkInactivityExpiration, remaining);
+    }
+
     function saveMatch() {
       try {
+        const savedAt = new Date();
+
         localStorage.setItem(
           STORAGE_KEY,
           JSON.stringify({
             version: 2,
-            savedAt: new Date().toISOString(),
+            savedAt: savedAt.toISOString(),
             history
           })
         );
+
+        scheduleInactivityExpiration(savedAt.getTime());
       } catch (error) {
         console.warn("No se pudo guardar el marcador", error);
       }
     }
 
     function clearSavedMatch() {
+      clearInactivityTimer();
+
       try {
         localStorage.removeItem(STORAGE_KEY);
       } catch (error) {}
+    }
+
+    function returnToSetupAfterInactivity() {
+      clearSavedMatch();
+      releaseWakeLock();
+      closeCorrectionModal();
+
+      ensureDistinctPlayerSelects();
+      history = [createMatchFromSetup()];
+      setMatchActive(false);
+      render();
+
+      requestAnimationFrame(() => {
+        const setupCard = document.querySelector(".setup-card");
+        if (setupCard) setupCard.scrollIntoView({ block: "start", behavior: "smooth" });
+      });
+
+      showToast("Marcador reiniciado tras 3 horas sin actividad");
+      vibrate(20);
+    }
+
+    function checkInactivityExpiration() {
+      clearInactivityTimer();
+
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+
+        const data = JSON.parse(raw);
+        const savedAt = getSavedAtTimestamp(data);
+
+        if (!isSavedMatchExpired(data)) {
+          scheduleInactivityExpiration(savedAt);
+          return;
+        }
+
+        returnToSetupAfterInactivity();
+      } catch (error) {
+        returnToSetupAfterInactivity();
+      }
     }
 
     function loadSavedMatch() {
@@ -2315,12 +2395,20 @@
         const data = JSON.parse(raw);
         if (!data || !Array.isArray(data.history) || !data.history.length) return null;
 
+        if (isSavedMatchExpired(data)) {
+          savedMatchExpiredOnLoad = true;
+          clearSavedMatch();
+          return null;
+        }
+
         const savedState = data.history[data.history.length - 1];
         if (!savedState || !savedState.category || !Array.isArray(savedState.players)) return null;
         if (!CLUB_PLAYERS[savedState.category]) return null;
 
+        scheduleInactivityExpiration(getSavedAtTimestamp(data));
         return data.history;
       } catch (error) {
+        clearSavedMatch();
         return null;
       }
     }
@@ -3508,6 +3596,12 @@
       document.getElementById("shareImageBtn").addEventListener("click", shareResultImage);
       document.getElementById("shareWhatsAppBtn").addEventListener("click", shareWhatsAppText);
 
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) checkInactivityExpiration();
+      });
+      window.addEventListener("focus", checkInactivityExpiration);
+      window.addEventListener("pageshow", checkInactivityExpiration);
+
       document.getElementById("historyToggle").addEventListener("click", () => {
         const card = document.getElementById("historyCard");
         const icon = document.getElementById("historyIcon");
@@ -3598,6 +3692,10 @@
       setupLandscapeMenuMode();
       setupMobilePortraitResultMode();
       render();
+
+      if (savedMatchExpiredOnLoad) {
+        showToast("Marcador anterior reiniciado tras 3 horas sin actividad");
+      }
     }
 
     boot();
