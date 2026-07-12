@@ -1,4 +1,4 @@
-const CACHE_NAME = 'open-tennis-v15-shell';
+const CACHE_NAME = 'open-tennis-v16-shell';
 
 const CORE_ASSETS = [
   './',
