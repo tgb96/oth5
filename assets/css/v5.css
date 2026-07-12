@@ -343,11 +343,6 @@ body.index-page {
   background: linear-gradient(180deg, var(--ot-green-700), var(--ot-green-950)) !important;
 }
 
-.v5-btn-history {
-  grid-column: 1 / -1 !important;
-  background: linear-gradient(180deg, #35776f 0%, #174f49 100%) !important;
-}
-
 .v5-install-card {
   width: 100% !important;
   min-height: clamp(74px, 12vh, 112px) !important;
