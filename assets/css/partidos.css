@@ -482,3 +482,41 @@ td:first-child {
     width: 100%;
   }
 }
+
+.preferred-player-shortcut {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid #b9d3c7;
+  border-radius: 14px;
+  background: #edf7f2;
+  color: #294a40;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.preferred-player-shortcut button {
+  min-height: 44px;
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: #176b50;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+@media (max-width: 520px) {
+  .preferred-player-shortcut {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .preferred-player-shortcut button {
+    width: 100%;
+  }
+}
