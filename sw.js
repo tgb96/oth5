@@ -1,4 +1,4 @@
-const APP_VERSION = '18';
+const APP_VERSION = '19';
 const SHELL_CACHE = `open-tennis-v${APP_VERSION}-shell`;
 const DATA_CACHE = `open-tennis-v${APP_VERSION}-data`;
 
