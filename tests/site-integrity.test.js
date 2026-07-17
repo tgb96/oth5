@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const vm = require("node:vm");
 
 const root = path.resolve(__dirname, "..");
 const pages = [
@@ -79,15 +80,18 @@ test("los controles críticos tienen nombres accesibles", () => {
   const tablas = read("tablas.html");
   const historico = read("resultados-2025.html");
   const marcador = read("marcador.html");
+  const tablasRuntime = read("assets/js/tablas-page.js");
+  const historicoRuntime = read("assets/js/resultados-2025-page.js");
+  const marcadorRuntime = read("assets/js/marcador-page.js");
 
   assert.match(partidos, /<label[^>]+for="buscador"/);
-  assert.match(tablas, /<button class="categoria-titulo"/);
-  assert.match(tablas, /class="jugador-detalle-btn"/);
-  assert.match(historico, /<button class="categoria-titulo"/);
-  assert.match(historico, /class="jugador-detalle-btn"/);
+  assert.match(tablasRuntime, /<button class="categoria-titulo"/);
+  assert.match(tablasRuntime, /class="jugador-detalle-btn"/);
+  assert.match(historicoRuntime, /<button class="categoria-titulo"/);
+  assert.match(historicoRuntime, /class="jugador-detalle-btn"/);
   assert.match(marcador, /<label class="label" for="categorySelect"/);
   assert.match(marcador, /aria-labelledby="corrS1Label corrNameAHead"/);
-  assert.match(marcador, /Punto para \$\{labelA\}/);
+  assert.match(marcadorRuntime, /Punto para \$\{labelA\}/);
 });
 
 test("el estado de datos aparece al final del contenido", () => {
@@ -123,5 +127,59 @@ test("la interfaz usa el logo optimizado", () => {
 
   for (const page of pages) {
     assert.doesNotMatch(read(page), /assets\/img\/logo-open-tennis\.png/);
+  }
+});
+
+test("las páginas grandes mantienen su código separado", () => {
+  const separatedPages = [
+    "partidos",
+    "tablas",
+    "resultados-2025",
+    "marcador"
+  ];
+
+  for (const page of separatedPages) {
+    const html = read(`${page}.html`);
+    assert.doesNotMatch(html, /<style[\s>]/i, `${page}.html no debe contener CSS incrustado`);
+    assert.doesNotMatch(
+      html,
+      /<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/i,
+      `${page}.html no debe contener JavaScript incrustado`
+    );
+    assert.match(html, new RegExp(`assets/css/${page}\\.css\\?v=\\d+`));
+    assert.match(html, new RegExp(`assets/js/${page}-page\\.js\\?v=\\d+`));
+  }
+});
+
+test("todo el JavaScript local tiene sintaxis válida", () => {
+  const javascriptFiles = [
+    "sw.js",
+    ...fs.readdirSync(path.join(root, "assets", "js"))
+      .filter(file => file.endsWith(".js"))
+      .map(file => path.join("assets", "js", file)),
+  ];
+
+  for (const file of javascriptFiles) {
+    assert.doesNotThrow(
+      () => new vm.Script(read(file), { filename: file }),
+      `${file} debe tener sintaxis JavaScript válida`
+    );
+  }
+});
+
+test("la versión de la aplicación es consistente", () => {
+  const configVersion = read("assets/js/config.js").match(/APP_VERSION:\s*"(\d+)"/)?.[1];
+  const workerVersion = read("sw.js").match(/const APP_VERSION = '(\d+)'/)?.[1];
+  const appFallbackVersion = read("assets/js/app.js").match(/APP_VERSION \|\| '(\d+)'/)?.[1];
+
+  assert.ok(configVersion, "config.js debe declarar una versión");
+  assert.equal(workerVersion, configVersion, "service worker y configuración deben coincidir");
+  assert.equal(appFallbackVersion, configVersion, "app.js y configuración deben coincidir");
+
+  for (const page of pages.filter(page => page !== "offline.html")) {
+    const html = read(page);
+    for (const match of html.matchAll(/assets\/(?:css\/(?:p2|partidos|tablas|resultados-2025|marcador)|js\/(?:config|app|data-client|pwa-install|marcador-rules|partidos-page|tablas-page|resultados-2025-page|marcador-page))\.[a-z]+\?v=(\d+)/g)) {
+      assert.equal(match[1], configVersion, `${page} carga una versión antigua: ${match[0]}`);
+    }
   }
 });
