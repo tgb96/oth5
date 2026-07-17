@@ -215,6 +215,8 @@
     const positionIndex = headerIndex(headers, ["posicion", "pos", "puesto"], -1);
     const pointsIndex = headerIndex(headers, ["puntos", "pts"], -1);
     const playedIndex = headerIndex(headers, ["pj", "partidos jugados"], -1);
+    const winsIndex = headerIndex(headers, ["pg", "partidos ganados", "victorias"], -1);
+    const lossesIndex = headerIndex(headers, ["pp", "partidos perdidos", "derrotas"], -1);
     const categoryIndex = headerIndex(headers, ["categoria"], -1);
 
     if (playerIndex >= 0 && positionIndex >= 0) {
@@ -227,7 +229,9 @@
           position,
           player,
           points: valueAt(row, pointsIndex),
-          played: valueAt(row, playedIndex)
+          played: valueAt(row, playedIndex),
+          wins: valueAt(row, winsIndex),
+          losses: valueAt(row, lossesIndex)
         };
       }).filter(Boolean);
     }
@@ -248,7 +252,9 @@
         position,
         player,
         points: valueAt(row, 2),
-        played: valueAt(row, 3)
+        played: valueAt(row, 3),
+        wins: valueAt(row, 4),
+        losses: valueAt(row, 5)
       });
     });
     return rankings;
@@ -301,6 +307,29 @@
     };
   }
 
+  function sameDay(left, right) {
+    return left instanceof Date && right instanceof Date &&
+      left.getFullYear() === right.getFullYear() &&
+      left.getMonth() === right.getMonth() &&
+      left.getDate() === right.getDate();
+  }
+
+  function getTournamentDay(matches, today = new Date()) {
+    const dayMatches = (matches || []).filter((match) =>
+      !match.isFree && match.date instanceof Date && sameDay(match.date, today)
+    );
+    if (!dayMatches.length) return null;
+    const courts = new Set(dayMatches.map((match) => String(match.court || "").trim()).filter(Boolean));
+    return {
+      date: dayMatches[0].date,
+      week: dayMatches[0].week,
+      matches: dayMatches,
+      courts: courts.size,
+      played: dayMatches.filter((match) => match.status === "jugado").length,
+      pending: dayMatches.filter((match) => match.status !== "jugado").length
+    };
+  }
+
   function getPlayerRanking(rankings, player) {
     const key = normalize(player);
     return rankings.find((entry) => normalize(entry.player) === key) || null;
@@ -337,6 +366,7 @@
     getOpponent,
     getNextMatch,
     getUpcomingWeek,
+    getTournamentDay,
     getPlayerRanking,
     getRecentResults,
     formatDate,

@@ -62,7 +62,7 @@
     });
 
     window.addEventListener('load', async () => {
-      const version = window.OPEN_TENNIS_CONFIG?.APP_VERSION || '27';
+      const version = window.OPEN_TENNIS_CONFIG?.APP_VERSION || '28';
 
       try {
         const registration = await navigator.serviceWorker.register(`./sw.js?v=${version}`);

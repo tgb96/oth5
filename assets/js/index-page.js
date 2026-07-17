@@ -5,8 +5,9 @@
   const dataClient = window.OPEN_TENNIS_DATA;
   const playerPreference = window.OPEN_TENNIS_PLAYER;
   const experience = window.OPEN_TENNIS_INDEX_DATA;
+  const shareTools = window.OPEN_TENNIS_SHARE;
 
-  if (!config || !dataClient || !playerPreference || !experience) return;
+  if (!config || !dataClient || !playerPreference || !experience || !shareTools) return;
 
   const elements = {
     picker: document.getElementById("playerPicker"),
@@ -20,10 +21,16 @@
     matchMeta: document.getElementById("nextMatchMeta"),
     myMatches: document.getElementById("myMatchesLink"),
     share: document.getElementById("shareMatchButton"),
+    calendar: document.getElementById("calendarMatchButton"),
+    matchCard: document.getElementById("matchCardButton"),
     rankingNumber: document.getElementById("rankingNumber"),
     rankingCategory: document.getElementById("rankingCategory"),
     rankingDetail: document.getElementById("rankingDetail"),
     myRanking: document.getElementById("myRankingLink"),
+    myProfile: document.getElementById("myProfileLink"),
+    tournamentDay: document.getElementById("tournamentDayBanner"),
+    tournamentDayTitle: document.getElementById("tournamentDayTitle"),
+    tournamentDaySummary: document.getElementById("tournamentDaySummary"),
     jornadaTitle: document.getElementById("jornadaTitle"),
     jornadaDate: document.getElementById("jornadaDate"),
     jornadaSummary: document.getElementById("jornadaSummary"),
@@ -87,16 +94,31 @@
     elements.jornadaPending.textContent = String(jornada.pending);
   }
 
+  function renderTournamentDay() {
+    const tournamentDay = experience.getTournamentDay(model.matches);
+    document.body.classList.toggle("is-tournament-day", Boolean(tournamentDay));
+    elements.tournamentDay.hidden = !tournamentDay;
+    if (!tournamentDay) return;
+    const week = String(tournamentDay.week || "").trim();
+    elements.tournamentDayTitle.textContent = week
+      ? `${/semana|jornada/i.test(week) ? week : `Semana ${week}`} · Jornada en curso`
+      : "Jornada en curso";
+    elements.tournamentDaySummary.textContent = `${tournamentDay.matches.length} partidos en ${tournamentDay.courts} ${tournamentDay.courts === 1 ? "cancha" : "canchas"} · ${tournamentDay.pending} por jugar.`;
+  }
+
   function renderMatch(player) {
     nextMatch = experience.getNextMatch(model.matches, player);
     elements.matchMeta.replaceChildren();
     elements.myMatches.href = `partidos.html?jugador=${encodeURIComponent(player)}`;
+    elements.myProfile.href = `jugadores.html?jugador=${encodeURIComponent(player)}`;
 
     if (!dataLoaded) {
       elements.matchStatus.textContent = "Cargando programación…";
       elements.opponent.textContent = "Buscando tu próximo partido";
       appendMeta("Consultando los datos del torneo");
       elements.share.hidden = true;
+      elements.calendar.hidden = true;
+      elements.matchCard.hidden = true;
       return;
     }
 
@@ -105,6 +127,8 @@
       elements.opponent.textContent = "No tienes un próximo partido programado";
       appendMeta("Revisa nuevamente cuando se publique otra jornada");
       elements.share.hidden = true;
+      elements.calendar.hidden = true;
+      elements.matchCard.hidden = true;
       return;
     }
 
@@ -119,6 +143,8 @@
       ? (/categor/i.test(nextMatch.category) ? nextMatch.category : `Categoría ${nextMatch.category}`)
       : "");
     elements.share.hidden = false;
+    elements.calendar.hidden = false;
+    elements.matchCard.hidden = false;
   }
 
   function renderRanking(player) {
@@ -189,15 +215,9 @@
     });
   }
 
-  function shareNextMatch() {
+  async function shareNextMatch() {
     if (!nextMatch || !selectedPlayer) return;
-    const details = [
-      `Partido de la Escalerilla Open Tennis: ${selectedPlayer} vs ${nextMatch.opponent}.`,
-      experience.formatDate(nextMatch.date),
-      turnTime(nextMatch.turn),
-      nextMatch.court
-    ].filter(Boolean).join(" · ");
-    window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, "_blank", "noopener,noreferrer");
+    await shareTools.shareText("Próximo partido Open Tennis", shareTools.buildMatchText(nextMatch, selectedPlayer));
   }
 
   function setStatusFromSources(sources) {
@@ -230,12 +250,14 @@
       };
       dataLoaded = true;
       renderJornada();
+      renderTournamentDay();
       renderRecentResults();
       renderPlayer();
       setStatusFromSources({ fixture, registration, rankings });
     } catch (error) {
       dataLoaded = true;
       renderJornada();
+      renderTournamentDay();
       renderRecentResults();
       renderPlayer();
       dataClient.showError(elements.dataStatus, "No pudimos cargar el resumen. Puedes seguir entrando a Partidos y Tablas.");
@@ -261,6 +283,22 @@
   });
 
   elements.share?.addEventListener("click", shareNextMatch);
+  elements.calendar?.addEventListener("click", () => {
+    if (nextMatch && selectedPlayer) shareTools.downloadCalendar(nextMatch, selectedPlayer);
+  });
+  elements.matchCard?.addEventListener("click", async () => {
+    if (!nextMatch || !selectedPlayer) return;
+    elements.matchCard.disabled = true;
+    elements.matchCard.textContent = "Creando…";
+    try {
+      await shareTools.shareMatchCard(nextMatch, selectedPlayer);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      elements.matchCard.disabled = false;
+      elements.matchCard.textContent = "Crear tarjeta";
+    }
+  });
 
   populatePlayerSelect();
   renderPlayer();
