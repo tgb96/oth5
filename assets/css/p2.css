@@ -81,6 +81,126 @@ button.card-jugador-main :where(.card-info, .card-nombre, .card-zona) {
   display: block;
 }
 
+.rules-index {
+  margin: 0 auto 28px;
+  padding: 20px;
+  border: 1px solid rgba(11, 47, 37, 0.14);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(11, 47, 37, 0.08);
+}
+
+.rules-index h2 {
+  margin: 0 0 14px;
+  color: #15382e;
+  font-size: 18px;
+}
+
+.rules-index ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rules-index a {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f1f6f3;
+  color: #176b50;
+  font-weight: 800;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.rules-index a:hover {
+  background: #e3efe8;
+}
+
+.reglamento-section[id] {
+  scroll-margin-top: 92px;
+}
+
+.error-page {
+  min-height: 100vh;
+  background: #f1f6f3;
+}
+
+.error-main {
+  min-height: calc(100vh - 86px);
+  display: grid;
+  place-items: center;
+  padding: 28px 18px 110px;
+}
+
+.error-card {
+  width: min(100%, 560px);
+  padding: 34px 26px;
+  border: 1px solid #cad9d2;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 16px 40px rgba(11, 47, 37, 0.12);
+  text-align: center;
+}
+
+.error-card img {
+  width: 112px;
+  height: 112px;
+  object-fit: contain;
+}
+
+.error-code {
+  margin: 8px 0 0;
+  color: #b65c3d;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.error-card h1 {
+  margin: 10px 0 8px;
+  color: #15382e;
+  font-size: clamp(28px, 6vw, 42px);
+}
+
+.error-card > p:not(.error-code) {
+  margin: 0 auto 22px;
+  max-width: 440px;
+  color: #51645d;
+  line-height: 1.55;
+}
+
+.error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.error-actions a {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 18px;
+  border: 2px solid #176b50;
+  border-radius: 999px;
+  color: #176b50;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.error-actions .primary-action {
+  background: #176b50;
+  color: #ffffff;
+}
+
 :where(a, button, input, select, [tabindex]):focus-visible {
   outline: 3px solid #155eef;
   outline-offset: 3px;
@@ -90,5 +210,13 @@ button.card-jugador-main :where(.card-info, .card-nombre, .card-zona) {
   .data-status {
     flex-direction: column;
     gap: 0;
+  }
+
+  .rules-index ol {
+    grid-template-columns: 1fr;
+  }
+
+  .rules-index {
+    padding: 16px;
   }
 }
