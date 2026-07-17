@@ -1,4 +1,4 @@
-const APP_VERSION = '22';
+const APP_VERSION = '23';
 const SHELL_CACHE = `open-tennis-v${APP_VERSION}-shell`;
 const DATA_CACHE = `open-tennis-v${APP_VERSION}-data`;
 
@@ -65,6 +65,14 @@ async function networkFirst(request, cacheName, fallbackUrl = null) {
   }
 }
 
+async function cacheFirst(request) {
+  const cached = await caches.match(request, { ignoreSearch: true });
+  if (cached) return cached;
+
+  const response = await fetch(request);
+  return putIfValid(SHELL_CACHE, request, response);
+}
+
 async function staleWhileRevalidate(request) {
   const cached = await caches.match(request, { ignoreSearch: true });
   const refresh = fetch(request)
@@ -78,8 +86,13 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(SHELL_CACHE)
       .then(cache => cache.addAll(CORE_ASSETS))
-      .then(() => self.skipWaiting())
   );
+});
+
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    event.waitUntil(self.skipWaiting());
+  }
 });
 
 self.addEventListener('activate', event => {
@@ -108,6 +121,12 @@ self.addEventListener('fetch', event => {
 
   if (request.mode === 'navigate') {
     event.respondWith(networkFirst(request, SHELL_CACHE, './offline.html'));
+    return;
+  }
+
+  const staticDestinations = new Set(['style', 'script', 'image', 'font']);
+  if (staticDestinations.has(request.destination) || url.pathname.endsWith('/manifest.webmanifest')) {
+    event.respondWith(cacheFirst(request));
     return;
   }
 
