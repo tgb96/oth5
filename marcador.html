@@ -1981,13 +1981,14 @@
   <link rel="stylesheet" href="assets/css/v3.css" />
   <link rel="stylesheet" href="assets/css/v4.css?v=4.1" />
   <link rel="stylesheet" href="assets/css/v5.css?v=5" />
-  <script defer src="assets/js/app.js?v=7"></script>
+  <script defer src="assets/js/app.js?v=18"></script>
+  <link rel="stylesheet" href="assets/css/p2.css?v=18" />
 </head>
 
 <body class="marcador-page v5-page">
   <aside class="sidebar app-topbar">
     <a class="brand" href="index.html" aria-label="Open Tennis Huechuraba inicio">
-      <img class="brand-logo" src="assets/img/logo-open-tennis.png" alt="" aria-hidden="true">
+      <img class="brand-logo" src="assets/img/logo-open-tennis-256.svg" alt="" aria-hidden="true" width="256" height="256">
       <span class="brand-text"><span class="brand-main">Open Tennis</span><span class="brand-sub">Huechuraba · 2026</span></span>
     </a>
   </aside>
@@ -2001,7 +2002,7 @@
     <section class="setup-card">
       <div class="setup-grid">
         <div>
-          <div class="label">Categoría</div>
+          <label class="label" for="categorySelect">Categoría</label>
           <select id="categorySelect">
             <option value="A">Categoría A</option>
             <option value="B">Categoría B</option>
@@ -2011,12 +2012,12 @@
         </div>
 
         <div>
-          <div class="label">Jugador A</div>
+          <label class="label" for="playerASelect">Jugador A</label>
           <select id="playerASelect"></select>
         </div>
 
         <div>
-          <div class="label">Jugador B</div>
+          <label class="label" for="playerBSelect">Jugador B</label>
           <select id="playerBSelect"></select>
         </div>
 
@@ -2084,11 +2085,11 @@
         </div>
 
         <section class="history-card" id="historyCard">
-          <button class="history-toggle" id="historyToggle" type="button">
+          <button class="history-toggle" id="historyToggle" type="button" aria-expanded="false" aria-controls="historyContent">
             <span>Historial de puntos</span>
             <span id="historyIcon">+</span>
           </button>
-          <div class="history-content">
+          <div class="history-content" id="historyContent">
             <div class="log-list" id="logList"></div>
           </div>
         </section>
@@ -2175,26 +2176,26 @@
         </div>
 
         <div class="correction-grid">
-          <div><strong>Set 1 · games</strong></div>
-          <input id="corrS1A" type="number" min="0" max="7" inputmode="numeric">
-          <input id="corrS1B" type="number" min="0" max="7" inputmode="numeric">
+          <div id="corrS1Label"><strong>Set 1 · games</strong></div>
+          <input id="corrS1A" type="number" min="0" max="7" inputmode="numeric" aria-labelledby="corrS1Label corrNameAHead">
+          <input id="corrS1B" type="number" min="0" max="7" inputmode="numeric" aria-labelledby="corrS1Label corrNameBHead">
         </div>
 
         <div class="correction-grid">
-          <div><strong>Set 2 · games</strong></div>
-          <input id="corrS2A" type="number" min="0" max="7" inputmode="numeric">
-          <input id="corrS2B" type="number" min="0" max="7" inputmode="numeric">
+          <div id="corrS2Label"><strong>Set 2 · games</strong></div>
+          <input id="corrS2A" type="number" min="0" max="7" inputmode="numeric" aria-labelledby="corrS2Label corrNameAHead">
+          <input id="corrS2B" type="number" min="0" max="7" inputmode="numeric" aria-labelledby="corrS2Label corrNameBHead">
         </div>
 
         <div class="correction-grid">
-          <div><strong>Super tie-break</strong></div>
-          <input id="corrSTBA" type="number" min="0" max="99" inputmode="numeric">
-          <input id="corrSTBB" type="number" min="0" max="99" inputmode="numeric">
+          <div id="corrSTBLabel"><strong>Super tie-break</strong></div>
+          <input id="corrSTBA" type="number" min="0" max="99" inputmode="numeric" aria-labelledby="corrSTBLabel corrNameAHead">
+          <input id="corrSTBB" type="number" min="0" max="99" inputmode="numeric" aria-labelledby="corrSTBLabel corrNameBHead">
         </div>
 
         <div class="correction-grid">
-          <div><strong>Sacador actual</strong></div>
-          <select id="corrServer"></select>
+          <label for="corrServer"><strong>Sacador actual</strong></label>
+          <select id="corrServer" aria-label="Sacador actual"></select>
           <div></div>
         </div>
 
@@ -2232,50 +2233,10 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="assets/js/marcador-rules.js?v=17"></script>
+  <script src="assets/js/config.js?v=18"></script>
+  <script src="assets/js/marcador-rules.js?v=18"></script>
   <script>
-    const CLUB_PLAYERS = {
-      A: [
-        "Diego Fossa",
-        "Angelo Basualto",
-        "Claudio Aedo",
-        "Felipe Reyes",
-        "Jose Astete",
-        "Luis Flores",
-        "Marcelo López",
-        "Tomás Gómez",
-        "Nicolás Collao"
-      ],
-      B: [
-        "Gonzalo Barros",
-        "Hernán Bravo",
-        "Cristhian Linares",
-        "Genaro Espinoza",
-        "Daniel Vega",
-        "Javier González",
-        "Diego Cervantes",
-        "Jaime Valdebenito",
-        "Matías Arellano",
-        "Oscar Morales"
-      ],
-      C: [
-        "Aníbal Valenzuela",
-        "César Maturana",
-        "Constanza Núñez",
-        "Hernán Medel",
-        "Juan Muñoz",
-        "Mauricio Bustamante",
-        "Paulo Barrera",
-        "Roy Minda"
-      ],
-      D: [
-        "Catalina Valladares",
-        "Kamila Riquelme",
-        "Loreto Pezoa",
-        "María José Valladares",
-        "Sara Salas"
-      ]
-    };
+    const CLUB_PLAYERS = window.OPEN_TENNIS_CONFIG.CLUB_PLAYERS;
 
     const STORAGE_KEY = "openTennisMarcadorStateV2";
     const MATCH_INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
@@ -2290,6 +2251,8 @@
     let pendingRecovery = null;
     let wakeLock = null;
     let wakeLockWanted = false;
+    let correctionReturnFocus = null;
+    let recoveryReturnFocus = null;
 
     function clone(obj) {
       return JSON.parse(JSON.stringify(obj));
@@ -2337,6 +2300,39 @@
       toastTimer = setTimeout(() => {
         toast.classList.remove("visible");
       }, 2300);
+    }
+
+    function getModalFocusables(modal) {
+      return Array.from(modal.querySelectorAll(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )).filter(element => !element.hidden && element.offsetParent !== null);
+    }
+
+    function handleModalKeyboard(event) {
+      const visibleModal = document.querySelector(".modal-backdrop.visible");
+      if (!visibleModal) return;
+
+      if (event.key === "Escape" && visibleModal.id === "correctionModal") {
+        event.preventDefault();
+        closeCorrectionModal();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const focusables = getModalFocusables(visibleModal);
+      if (!focusables.length) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
 
     function vibrate(pattern = 35) {
@@ -2426,8 +2422,9 @@
       if (!savedMatch) return;
 
       pendingRecovery = savedMatch;
+      recoveryReturnFocus = document.activeElement;
       releaseWakeLock();
-      closeCorrectionModal();
+      closeCorrectionModal({ restoreFocus: false });
 
       const labelA = getPlayerLabel(savedMatch.savedState, 0);
       const labelB = getPlayerLabel(savedMatch.savedState, 1);
@@ -2442,10 +2439,16 @@
       requestAnimationFrame(() => document.getElementById("recoveryRestore").focus());
     }
 
-    function closeRecoveryModal() {
+    function closeRecoveryModal(options = {}) {
+      const { restoreFocus = true } = options;
       const recoveryModal = document.getElementById("recoveryModal");
       recoveryModal.classList.remove("visible");
       recoveryModal.setAttribute("aria-hidden", "true");
+
+      if (restoreFocus && recoveryReturnFocus?.isConnected) {
+        recoveryReturnFocus.focus();
+      }
+      recoveryReturnFocus = null;
     }
 
     function recoverSavedMatch() {
@@ -2453,7 +2456,7 @@
 
       const savedMatch = pendingRecovery;
       pendingRecovery = null;
-      closeRecoveryModal();
+      closeRecoveryModal({ restoreFocus: false });
 
       history = savedMatch.history;
       populatePlayers(
@@ -2474,7 +2477,7 @@
 
       const savedState = pendingRecovery.savedState;
       pendingRecovery = null;
-      closeRecoveryModal();
+      closeRecoveryModal({ restoreFocus: false });
       clearSavedMatch();
       releaseWakeLock();
 
@@ -2950,7 +2953,7 @@
 
     function generateShareText(state) {
       if (state.matchWinner === null) return "";
-      return `🎾 Open Tennis Huechuraba 2026\nCategoría ${state.category}\n${generateResultText(state)}`;
+      return `🎾 Open Tennis Huechuraba ${window.OPEN_TENNIS_CONFIG.SEASON}\nCategoría ${state.category}\n${generateResultText(state)}`;
     }
 
     function escapeHtml(text) {
@@ -3404,6 +3407,7 @@
       const labelA = getPlayerLabel(state, 0);
       const labelB = getPlayerLabel(state, 1);
       const correctionError = document.getElementById("correctionError");
+      correctionReturnFocus = document.activeElement;
 
       correctionError.textContent = "";
       correctionError.hidden = true;
@@ -3427,11 +3431,20 @@
 
       document.getElementById("correctionModal").classList.add("visible");
       document.getElementById("correctionModal").setAttribute("aria-hidden", "false");
+      requestAnimationFrame(() => document.getElementById("corrS1A").focus());
     }
 
-    function closeCorrectionModal() {
-      document.getElementById("correctionModal").classList.remove("visible");
-      document.getElementById("correctionModal").setAttribute("aria-hidden", "true");
+    function closeCorrectionModal(options = {}) {
+      const { restoreFocus = true } = options;
+      const modal = document.getElementById("correctionModal");
+      const wasVisible = modal.classList.contains("visible");
+      modal.classList.remove("visible");
+      modal.setAttribute("aria-hidden", "true");
+
+      if (wasVisible && restoreFocus && correctionReturnFocus?.isConnected) {
+        correctionReturnFocus.focus();
+      }
+      correctionReturnFocus = null;
     }
 
     function readNumberInput(id) {
@@ -3571,6 +3584,8 @@
 
       document.getElementById("pointA").textContent = "Punto";
       document.getElementById("pointB").textContent = "Punto";
+      document.getElementById("pointA").setAttribute("aria-label", `Punto para ${labelA}`);
+      document.getElementById("pointB").setAttribute("aria-label", `Punto para ${labelB}`);
 
       for (let i = 0; i < 3; i++) {
         const box = document.getElementById(`setBox${i + 1}`);
@@ -3667,6 +3682,7 @@
     }
 
     function setupEvents() {
+      document.addEventListener("keydown", handleModalKeyboard);
       document.getElementById("categorySelect").addEventListener("change", () => handleSetupChange("category"));
       document.getElementById("playerASelect").addEventListener("change", () => handleSetupChange("playerA"));
       document.getElementById("playerBSelect").addEventListener("change", () => handleSetupChange("playerB"));
@@ -3739,6 +3755,10 @@
         const icon = document.getElementById("historyIcon");
 
         card.classList.toggle("open");
+        document.getElementById("historyToggle").setAttribute(
+          "aria-expanded",
+          String(card.classList.contains("open"))
+        );
         icon.textContent = card.classList.contains("open") ? "–" : "+";
       });
     }
