@@ -3,12 +3,15 @@
 
   const APP_CONFIG = window.OPEN_TENNIS_CONFIG;
   const DATA_CLIENT = window.OPEN_TENNIS_DATA;
+  const PLAYER_PREFERENCE = window.OPEN_TENNIS_PLAYER;
   const RANKINGS_URL = APP_CONFIG.RANKINGS_URL;
   const REGISTRO_URL = APP_CONFIG.REGISTRO_URL;
   const FIXTURE_URL = APP_CONFIG.FIXTURE_URL;
 
   const contenedor = document.getElementById("rankingsContenedor");
   const dataStatus = document.getElementById("dataStatus");
+  const requestedPlayer = new URLSearchParams(window.location.search).get("jugador") || "";
+  const highlightedPlayer = PLAYER_PREFERENCE?.canonicalName(requestedPlayer) || requestedPlayer || PLAYER_PREFERENCE?.get() || "";
 
   const normalizarCache = new Map();
   const nombreCortoCache = new Map();
@@ -611,18 +614,27 @@
       const medallaJugador = medalla(j.posicion);
       const detalleId = `detalle-${categoriaSlug}-${index}`;
 
-      return { ...j, index, stats, zona, medallaJugador, detalleId };
+      return {
+        ...j,
+        index,
+        stats,
+        zona,
+        medallaJugador,
+        detalleId,
+        playerKey: normalizar(j.jugador),
+        isPreferred: Boolean(highlightedPlayer && normalizar(j.jugador) === normalizar(highlightedPlayer))
+      };
     });
 
     const filasDesktop = jugadores.map(j => `
-      <tr class="fila-jugador">
+      <tr class="fila-jugador${j.isPreferred ? " is-preferred-player" : ""}" data-player-key="${escaparHTML(j.playerKey)}">
         <td class="posicion">${escaparHTML(j.posicion)}</td>
         <td>
           <button class="jugador-detalle-btn" type="button"
             data-detalle="${escaparHTML(j.detalleId)}"
             aria-expanded="false"
             aria-controls="${escaparHTML(j.detalleId)}">
-            ${escaparHTML(j.jugador)}
+            ${escaparHTML(j.jugador)}${j.isPreferred ? '<span class="preferred-player-badge">Tu perfil</span>' : ""}
           </button>
         </td>
         <td class="puntos">${escaparHTML(j.puntos)}</td>
@@ -638,14 +650,14 @@
     `).join("");
 
     const cardsMobile = jugadores.map(j => `
-      <div class="card-jugador">
+      <div class="card-jugador${j.isPreferred ? " is-preferred-player" : ""}" data-player-key="${escaparHTML(j.playerKey)}">
         <button class="card-jugador-main" type="button"
           aria-expanded="false"
           aria-controls="card-${escaparHTML(j.detalleId)}">
           <span class="card-posicion">${escaparHTML(j.posicion)}</span>
 
           <span class="card-info">
-            <span class="card-nombre">${escaparHTML(j.jugador)}</span>
+            <span class="card-nombre">${escaparHTML(j.jugador)}${j.isPreferred ? '<span class="preferred-player-badge">Tu perfil</span>' : ""}</span>
             ${j.zona ? `<span class="card-zona">${zonaHTML(j.zona)}</span>` : ""}
           </span>
 
@@ -707,6 +719,25 @@
         </div>
       </section>
     `;
+  }
+
+  function mostrarJugadorSolicitado() {
+    if (!requestedPlayer) return;
+    const key = normalizar(requestedPlayer);
+    const selector = window.matchMedia("(max-width: 700px)").matches
+      ? ".card-jugador[data-player-key]"
+      : ".fila-jugador[data-player-key]";
+    const target = Array.from(contenedor.querySelectorAll(selector))
+      .find(element => element.dataset.playerKey === key);
+    if (!target) return;
+
+    const category = target.closest(".categoria-ranking");
+    const title = category?.querySelector(".categoria-titulo");
+    category?.classList.add("abierta");
+    title?.setAttribute("aria-expanded", "true");
+    const icon = title?.querySelector(".categoria-icon");
+    if (icon) icon.textContent = "–";
+    requestAnimationFrame(() => target.scrollIntoView({ behavior: "smooth", block: "center" }));
   }
 
   function instalarEventos() {
@@ -836,6 +867,7 @@
       contenedor.innerHTML = categorias
         .map(categoria => crearTablaCategoria(categoria, registros, fixture))
         .join("");
+      mostrarJugadorSolicitado();
       DATA_CLIENT.updateStatus(
         dataStatus,
         [rankingData, registroData, fixtureData],

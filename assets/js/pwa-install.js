@@ -1,88 +1,104 @@
 (() => {
-  'use strict';
+  "use strict";
 
+  const VISIT_KEY = "openTennisHomeVisitsV1";
   let deferredPrompt = null;
 
-  const actionBtn = document.getElementById('installActionBtn');
-  const helpText = document.getElementById('installHelpText');
-  const promptCard = document.getElementById('installPromptCard');
+  const actionButton = document.getElementById("installActionBtn");
+  const helpText = document.getElementById("installHelpText");
+  const title = document.getElementById("installCardTitle");
+  const promptCard = document.getElementById("installPromptCard");
+
+  if (!promptCard) return;
 
   const isStandalone = () =>
-    window.matchMedia('(display-mode: standalone)').matches ||
-    window.navigator.standalone === true;
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true ||
+    document.referrer.startsWith("android-app://");
 
-  const isIOS = () => /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-  const isAndroid = () => /android/i.test(window.navigator.userAgent);
+  const isIOS = () => {
+    const userAgent = window.navigator.userAgent || "";
+    return /iphone|ipad|ipod/i.test(userAgent) ||
+      (window.navigator.platform === "MacIntel" && window.navigator.maxTouchPoints > 1);
+  };
+  const isAndroid = () => /android/i.test(window.navigator.userAgent || "");
 
-  function setInstalledState() {
-    if (!promptCard || !isStandalone()) return;
+  function visitCount() {
+    try {
+      const next = Math.min(Number(window.localStorage.getItem(VISIT_KEY) || 0) + 1, 99);
+      window.localStorage.setItem(VISIT_KEY, String(next));
+      return next;
+    } catch (_) {
+      return 1;
+    }
+  }
+
+  const currentVisit = visitCount();
+
+  function hideCard() {
     promptCard.hidden = true;
+    if (actionButton) actionButton.hidden = true;
   }
 
-  function setDefaultCopy() {
-    if (!helpText) return;
-
+  function showInstallPrompt() {
     if (isStandalone()) {
-      helpText.textContent = 'La app ya está instalada en este dispositivo.';
+      hideCard();
       return;
     }
-
-    if (deferredPrompt) {
-      helpText.textContent = 'Android: toca Instalar para agregarla a la pantalla de inicio.';
-      if (actionBtn) {
-        actionBtn.hidden = false;
-        actionBtn.textContent = 'Instalar';
-      }
-      return;
+    promptCard.hidden = false;
+    if (title) title.textContent = "Instalar Open Tennis";
+    if (helpText) helpText.textContent = "Agrégala a tu pantalla de inicio para abrir tu torneo más rápido.";
+    if (actionButton) {
+      actionButton.hidden = false;
+      actionButton.textContent = "Instalar";
     }
-
-    if (isIOS()) {
-      helpText.textContent = 'iPhone: toca Compartir en Safari y luego Agregar a pantalla de inicio.';
-      if (actionBtn) {
-        actionBtn.hidden = true;
-      }
-      return;
-    }
-
-    if (isAndroid()) {
-      helpText.textContent = 'Android: abre el menú de Chrome y elige Instalar app o Agregar a pantalla principal.';
-      if (actionBtn) {
-        actionBtn.hidden = true;
-      }
-      return;
-    }
-
-    helpText.textContent = 'Desde el celular puedes agregar esta web al inicio para abrirla como app.';
-    if (actionBtn) actionBtn.hidden = true;
   }
 
-  window.addEventListener('beforeinstallprompt', event => {
+  function showManualHelp() {
+    if (isStandalone() || currentVisit < 2) {
+      hideCard();
+      return;
+    }
+    if (!isIOS() && !isAndroid()) {
+      hideCard();
+      return;
+    }
+
+    promptCard.hidden = false;
+    if (actionButton) actionButton.hidden = true;
+    if (isIOS()) {
+      if (title) title.textContent = "Agregar al inicio";
+      if (helpText) helpText.textContent = "En Safari, toca Compartir y luego Agregar a pantalla de inicio.";
+    } else {
+      if (title) title.textContent = "Agregar al inicio";
+      if (helpText) helpText.textContent = "En Chrome, abre el menú y elige Instalar app o Agregar a pantalla principal.";
+    }
+  }
+
+  window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     deferredPrompt = event;
-    if (promptCard && !isStandalone()) promptCard.hidden = false;
-    setDefaultCopy();
+    showInstallPrompt();
   });
 
-  window.addEventListener('appinstalled', () => {
+  window.addEventListener("appinstalled", () => {
     deferredPrompt = null;
-    if (promptCard) promptCard.hidden = true;
+    hideCard();
   });
 
-  if (actionBtn) {
-    actionBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) {
-        setDefaultCopy();
-        return;
-      }
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice.catch(() => null);
-      deferredPrompt = null;
-      setDefaultCopy();
-    });
-  }
+  actionButton?.addEventListener("click", async () => {
+    if (!deferredPrompt) {
+      showManualHelp();
+      return;
+    }
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice.catch(() => null);
+    deferredPrompt = null;
+    hideCard();
+  });
 
-  window.addEventListener('load', () => {
-    setInstalledState();
-    setDefaultCopy();
+  window.addEventListener("load", () => {
+    if (deferredPrompt) showInstallPrompt();
+    else showManualHelp();
   });
 })();

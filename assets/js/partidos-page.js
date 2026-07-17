@@ -1,5 +1,6 @@
 const APP_CONFIG = window.OPEN_TENNIS_CONFIG;
 const DATA_CLIENT = window.OPEN_TENNIS_DATA;
+const PLAYER_PREFERENCE = window.OPEN_TENNIS_PLAYER;
 const FIXTURE_URL = APP_CONFIG.FIXTURE_URL;
 const REGISTRO_URL = APP_CONFIG.REGISTRO_URL;
 
@@ -16,6 +17,8 @@ const encabezados = [
 
 const buscador = document.getElementById("buscador");
 const dataStatus = document.getElementById("dataStatus");
+const preferredPlayerShortcut = document.getElementById("preferredPlayerShortcut");
+const showPreferredPlayer = document.getElementById("showPreferredPlayer");
 
 const tablaBusquedaHead = document.querySelector("#tablaBusqueda thead");
 const tablaBusquedaBody = document.querySelector("#tablaBusqueda tbody");
@@ -1047,6 +1050,35 @@ function activarBuscador(filas, mapaSemanas) {
   });
 }
 
+function jugadorSolicitado() {
+  const query = new URLSearchParams(window.location.search).get("jugador");
+  return PLAYER_PREFERENCE?.canonicalName(query) || query?.trim() || "";
+}
+
+function aplicarFiltroJugador(nombre) {
+  if (!nombre) return;
+  buscador.value = nombre;
+  renderBusqueda(busquedaActual.filas, busquedaActual.mapaSemanas, nombre);
+}
+
+function prepararAccesoJugador() {
+  const solicitado = jugadorSolicitado();
+  const guardado = PLAYER_PREFERENCE?.get() || "";
+  if (solicitado) {
+    aplicarFiltroJugador(solicitado);
+    return;
+  }
+  if (!guardado || !preferredPlayerShortcut || !showPreferredPlayer) return;
+  preferredPlayerShortcut.hidden = false;
+  showPreferredPlayer.textContent = `Ver partidos de ${guardado}`;
+}
+
+showPreferredPlayer?.addEventListener("click", () => {
+  const guardado = PLAYER_PREFERENCE?.get() || "";
+  aplicarFiltroJugador(guardado);
+  preferredPlayerShortcut.hidden = true;
+});
+
 async function iniciar() {
   crearEncabezado(tablaPendientesHead);
   crearEncabezado(tablaCompletaHead);
@@ -1097,6 +1129,7 @@ async function iniciar() {
     activarAccordionMobile(accordionPendientes);
     activarAccordionMobile(accordionSemanas);
     activarBuscador(filas, mapaSemanas);
+    prepararAccesoJugador();
     DATA_CLIENT.updateStatus(dataStatus, [fixtureData, registroData], iniciar);
   } catch (error) {
     console.error("No se pudieron cargar los partidos:", error);
