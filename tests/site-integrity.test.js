@@ -109,6 +109,14 @@ test("el estado de datos aparece al final del contenido", () => {
   }
 });
 
+test("el control para volver a cargar siempre dice Actualizar", () => {
+  const dataClient = read("assets/js/data-client.js");
+  const labels = [...dataClient.matchAll(/addRefreshControl\(element, retry, "([^"]+)"\)/g)]
+    .map(match => match[1]);
+
+  assert.deepEqual(labels, ["Actualizar", "Actualizar"]);
+});
+
 test("la interfaz usa el logo optimizado", () => {
   const optimized = path.join(root, "assets", "img", "logo-open-tennis-256.svg");
   assert.ok(fs.statSync(optimized).size < 50_000, "El logo optimizado debe pesar menos de 50 KB");
