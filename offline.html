@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sin conexión | Open Tennis Huechuraba</title>
+  <meta name="theme-color" content="#0b2f25">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: #f1f6f3;
+      color: #15382e;
+      font-family: Arial, sans-serif;
+    }
+    main {
+      width: min(100%, 520px);
+      padding: 30px;
+      border: 1px solid #cad9d2;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 14px 35px rgba(11, 47, 37, .12);
+      text-align: center;
+    }
+    img { width: 110px; height: 110px; object-fit: contain; }
+    h1 { margin: 16px 0 8px; font-size: 28px; }
+    p { margin: 0 0 22px; color: #51645d; line-height: 1.5; }
+    button, a {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 18px;
+      border-radius: 999px;
+      font: inherit;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    button { border: 0; background: #176b50; color: #fff; }
+    a { color: #176b50; }
+  </style>
+</head>
+<body>
+  <main>
+    <img src="assets/img/logo-open-tennis-256.svg" alt="" width="256" height="256">
+    <h1>Estás sin conexión</h1>
+    <p>Las páginas visitadas y los últimos datos guardados pueden seguir disponibles. Comprueba tu conexión e inténtalo nuevamente.</p>
+    <button type="button" onclick="location.reload()">Reintentar</button>
+    <a href="index.html">Volver al inicio</a>
+  </main>
+</body>
+</html>
