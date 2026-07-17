@@ -20,10 +20,10 @@
   <link rel="stylesheet" href="assets/css/v3.css" />
   <link rel="stylesheet" href="assets/css/v4.css?v=4.1" />
   <link rel="stylesheet" href="assets/css/v5.css?v=5" />
-  <link rel="stylesheet" href="assets/css/p2.css?v=18" />
-  <script src="assets/js/config.js?v=18"></script>
-  <script src="assets/js/data-client.js?v=18"></script>
-  <script defer src="assets/js/app.js?v=18"></script>
+  <link rel="stylesheet" href="assets/css/p2.css?v=19" />
+  <script src="assets/js/config.js?v=19"></script>
+  <script src="assets/js/data-client.js?v=19"></script>
+  <script defer src="assets/js/app.js?v=19"></script>
 </head>
 <body class="partidos-page v5-page">
   <div class="layout app-shell">
@@ -38,7 +38,6 @@
     <h2>Buscar partidos por jugador</h2>
     <label class="field-label" for="buscador">Nombre del jugador</label>
     <input id="buscador" type="text" placeholder="Buscar jugador..." autocomplete="off">
-    <div id="dataStatus" class="data-status" role="status" aria-live="polite"></div>
 
     <div class="desktop-view">
       <table id="tablaBusqueda">
@@ -75,6 +74,8 @@
 
     <div id="accordionSemanas" class="mobile-view"></div>
   </section>
+
+  <div id="dataStatus" class="data-status data-status-footer" role="status" aria-live="polite"></div>
 
 </div>
 
