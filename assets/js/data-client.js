@@ -99,6 +99,17 @@
     return `Datos actualizados: ${formatDateTime(newest)}`;
   }
 
+  function addRefreshControl(element, retry, label) {
+    if (typeof retry !== "function") return;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "data-retry";
+    button.textContent = label;
+    button.addEventListener("click", retry, { once: true });
+    element.appendChild(button);
+  }
+
   function updateStatus(element, results, retry) {
     if (!element) return;
     element.replaceChildren();
@@ -106,15 +117,7 @@
     const text = document.createElement("span");
     text.textContent = describe(results);
     element.appendChild(text);
-
-    if (typeof retry === "function") {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "data-retry";
-      button.textContent = "Reintentar";
-      button.addEventListener("click", retry, { once: true });
-      element.appendChild(button);
-    }
+    addRefreshControl(element, retry, "Actualizar");
   }
 
   function showError(element, message, retry) {
@@ -124,15 +127,7 @@
     const text = document.createElement("span");
     text.textContent = message;
     element.appendChild(text);
-
-    if (typeof retry === "function") {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "data-retry";
-      button.textContent = "Reintentar";
-      button.addEventListener("click", retry, { once: true });
-      element.appendChild(button);
-    }
+    addRefreshControl(element, retry, "Reintentar");
   }
 
   global.OPEN_TENNIS_DATA = Object.freeze({
