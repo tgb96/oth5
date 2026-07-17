@@ -127,7 +127,7 @@
     const text = document.createElement("span");
     text.textContent = message;
     element.appendChild(text);
-    addRefreshControl(element, retry, "Reintentar");
+    addRefreshControl(element, retry, "Actualizar");
   }
 
   global.OPEN_TENNIS_DATA = Object.freeze({
