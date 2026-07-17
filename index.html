@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Open Tennis Huechuraba</title>
   <meta name="description" content="Programación, resultados, tablas, estadísticas, reglamento y marcador de la Escalerilla 2026 del Club Open Tennis Huechuraba.">
   <link rel="canonical" href="https://opentennis.cl/">
@@ -18,40 +18,12 @@
   <meta property="og:image:alt" content="Logo de Open Tennis Huechuraba">
   <meta name="twitter:card" content="summary">
 
-  <script>
-    (function () {
-      function isIOSDevice() {
-        const ua = window.navigator.userAgent || "";
-        const platform = window.navigator.platform || "";
-
-        return (
-          /iPhone|iPad|iPod/i.test(ua) ||
-          (platform === "MacIntel" && window.navigator.maxTouchPoints > 1)
-        );
-      }
-
-      function isStandaloneMode() {
-        return (
-          window.matchMedia("(display-mode: standalone)").matches ||
-          window.navigator.standalone === true ||
-          document.referrer.startsWith("android-app://")
-        );
-      }
-
-      if (isIOSDevice()) {
-        document.documentElement.classList.add("is-ios-device");
-      }
-
-      if (isStandaloneMode()) {
-        document.documentElement.classList.add("is-standalone-app");
-      }
-    })();
-  </script>
-
-  <link rel="stylesheet" href="assets/css/styles.css" />
-  <link rel="stylesheet" href="assets/css/v3.css" />
-  <link rel="stylesheet" href="assets/css/v4.css?v=4.1" />
-  <link rel="stylesheet" href="assets/css/v5.css?v=5.2" />
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/v3.css">
+  <link rel="stylesheet" href="assets/css/v4.css?v=4.1">
+  <link rel="stylesheet" href="assets/css/v5.css?v=5.2">
+  <link rel="stylesheet" href="assets/css/p2.css?v=27">
+  <link rel="stylesheet" href="assets/css/index.css?v=27">
 
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
@@ -64,260 +36,148 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Open Tennis">
 
-  <style>
-    .v5-hero-text {
-      text-align: justify;
-      text-align-last: left;
-    }
-
-    .is-standalone-app #installPromptCard {
-      display: none !important;
-    }
-
-    .is-ios-device:not(.is-standalone-app) #installActionBtn {
-      display: none !important;
-    }
-
-    .is-ios-device:not(.is-standalone-app) .v5-install-card {
-      grid-template-columns: auto 1fr !important;
-    }
-
-    .is-ios-device:not(.is-standalone-app) .v5-install-copy p {
-      line-height: 1.25;
-    }
-
-    .is-standalone-app body.index-page {
-      height: 100dvh;
-      min-height: 100dvh;
-      max-height: 100dvh;
-      overflow: hidden !important;
-    }
-
-    .is-standalone-app .v5-home-main {
-      height: calc(100dvh - 112px);
-      min-height: auto !important;
-      max-height: calc(100dvh - 112px);
-      overflow: hidden !important;
-      padding-top: 8px !important;
-      padding-bottom: 8px !important;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0 !important;
-    }
-
-    .is-standalone-app .v5-hero-card {
-      max-height: 100%;
-      margin: 0 !important;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .is-standalone-app .v5-install-card {
-      display: none !important;
-    }
-
-    .is-standalone-app .app-bottom-nav {
-      position: fixed !important;
-      bottom: max(8px, env(safe-area-inset-bottom)) !important;
-    }
-
-    @media (display-mode: standalone) {
-      #installPromptCard {
-        display: none !important;
-      }
-
-      body.index-page {
-        height: 100dvh;
-        min-height: 100dvh;
-        max-height: 100dvh;
-        overflow: hidden !important;
-      }
-
-      .v5-home-main {
-        height: calc(100dvh - 112px);
-        min-height: auto !important;
-        max-height: calc(100dvh - 112px);
-        overflow: hidden !important;
-        padding-top: 8px !important;
-        padding-bottom: 8px !important;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .v5-hero-card {
-        max-height: 100%;
-        margin: 0 !important;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-    }
-  </style>
-
-  <link rel="stylesheet" href="assets/css/p2.css?v=23" />
-  <script src="assets/js/config.js?v=23"></script>
-  <script defer src="assets/js/app.js?v=23"></script>
-  <script defer src="assets/js/pwa-install.js?v=23"></script>
+  <script src="assets/js/config.js?v=27"></script>
+  <script defer src="assets/js/data-client.js?v=27"></script>
+  <script defer src="assets/js/player-preference.js?v=27"></script>
+  <script defer src="assets/js/index-experience.js?v=27"></script>
+  <script defer src="assets/js/app.js?v=27"></script>
+  <script defer src="assets/js/release-v27.js"></script>
+  <script defer src="assets/js/pwa-install.js?v=27"></script>
+  <script defer src="assets/js/index-page.js?v=27"></script>
 </head>
 
 <body class="index-page v5-page">
-  <main class="v5-home-main" aria-label="Inicio Open Tennis Huechuraba">
-    <section class="v5-hero-card">
-      <div class="v5-hero-logo-wrap" aria-hidden="true">
-        <img class="v5-hero-logo" src="assets/img/logo-open-tennis-256.svg" alt="" width="256" height="256">
+  <main class="experience-home" aria-label="Inicio Open Tennis Huechuraba">
+    <section class="home-hero" aria-labelledby="homeTitle">
+      <div class="home-hero-copy">
+        <div class="home-brand">
+          <img src="assets/img/logo-open-tennis-256.svg" alt="" width="56" height="56">
+          <div class="home-brand-copy">
+            <strong>Open Tennis Huechuraba</strong>
+            <span>Escalerilla 2026</span>
+          </div>
+        </div>
+        <p class="home-eyebrow">Todo tu torneo en un lugar</p>
+        <h1 id="homeTitle">Tu escalerilla, más fácil de seguir</h1>
+        <p class="home-hero-text">Consulta tu próximo partido, tu posición y los últimos resultados sin tener que buscar en distintas páginas.</p>
       </div>
 
-      <p class="v5-eyebrow">Escalerilla 2026</p>
+      <article class="home-jornada" aria-labelledby="jornadaTitle">
+        <div>
+          <p class="home-card-kicker">Ahora en el torneo</p>
+          <h2 id="jornadaTitle">Próxima jornada</h2>
+          <p id="jornadaDate" class="jornada-date home-loading">Cargando programación…</p>
+          <p id="jornadaSummary" class="jornada-summary">Buscando los partidos publicados.</p>
+        </div>
+        <div>
+          <div class="jornada-progress" aria-label="Resumen de la jornada">
+            <div class="jornada-stat"><strong id="jornadaPlayed">—</strong><span>jugados</span></div>
+            <div class="jornada-stat"><strong id="jornadaPending">—</strong><span>por jugar</span></div>
+          </div>
+          <a class="home-link" href="partidos.html">Ver programación completa</a>
+        </div>
+      </article>
+    </section>
 
-      <h1>Open Tennis<br>Huechuraba</h1>
+    <section class="player-experience" aria-labelledby="playerExperienceTitle">
+      <header class="player-section-header">
+        <div>
+          <p class="home-card-kicker">Personaliza tu inicio</p>
+          <h2 id="playerExperienceTitle">Tu escalerilla</h2>
+          <p>Elige tu nombre una vez y esta portada te mostrará directamente lo que te importa.</p>
+        </div>
+      </header>
 
-      <p class="v5-hero-text">
-        Sitio oficial para consultar programación, resultados, tablas, estadísticas, reglamento y marcador de la escalerilla 2026.
-      </p>
+      <div id="playerPicker" class="player-picker">
+        <div class="player-picker-field">
+          <label for="preferredPlayerSelect">¿Quién eres?</label>
+          <select id="preferredPlayerSelect">
+            <option value="">Selecciona tu nombre</option>
+          </select>
+        </div>
+        <button id="savePreferredPlayer" class="home-primary-action" type="button">Guardar mi jugador</button>
+        <p class="player-privacy">Tu selección solo se guarda en este dispositivo. No cambia la planilla ni se envía información personal.</p>
+      </div>
 
-      <div class="v5-hero-actions" aria-label="Accesos principales">
-        <a class="v5-btn v5-btn-clay" href="partidos.html">Ver programación y resultados</a>
-        <a class="v5-btn v5-btn-green" href="tablas.html">Ver tablas y estadísticas</a>
+      <div id="playerDashboard" class="player-dashboard" hidden>
+        <div class="player-welcome">
+          <p id="playerWelcomeText">Hola</p>
+          <button id="changePreferredPlayer" class="player-change-button" type="button">Cambiar jugador</button>
+        </div>
+
+        <article class="next-match-card" aria-labelledby="nextMatchOpponent">
+          <span id="nextMatchStatus" class="match-status">Buscando próximo partido…</span>
+          <p class="match-opponent-label">Tu rival</p>
+          <h3 id="nextMatchOpponent" class="match-opponent">Cargando…</h3>
+          <ul id="nextMatchMeta" class="match-meta" aria-label="Detalles del partido"></ul>
+          <div class="match-actions">
+            <a id="myMatchesLink" class="home-secondary-action" href="partidos.html">Ver mis partidos</a>
+            <button id="shareMatchButton" class="home-secondary-action" type="button" hidden>Compartir por WhatsApp</button>
+          </div>
+        </article>
+
+        <article class="player-ranking-card" aria-labelledby="rankingCategory">
+          <p class="home-card-kicker">Tu posición</p>
+          <strong id="rankingNumber" class="ranking-number">—</strong>
+          <h3 id="rankingCategory" class="ranking-category">Cargando tabla…</h3>
+          <p id="rankingDetail" class="ranking-detail">Buscando tu posición actual.</p>
+          <a id="myRankingLink" class="home-secondary-action is-light" href="tablas.html">Ver mi tabla</a>
+        </article>
       </div>
     </section>
 
-    <section id="installPromptCard" class="v5-install-card" aria-label="Agregar al inicio">
-      <img src="assets/img/logo-open-tennis-256.svg" alt="Open Tennis Huechuraba" width="256" height="256">
+    <section class="home-grid" aria-label="Resultados y accesos rápidos">
+      <article class="home-card">
+        <p class="home-card-kicker">Lo último</p>
+        <h2>Resultados recientes</h2>
+        <ul id="recentResultsList" class="recent-results-list" aria-live="polite">
+          <li class="empty-detail">Cargando resultados…</li>
+        </ul>
+      </article>
 
-      <div class="v5-install-copy">
-        <h2 id="installCardTitle">Agregar al inicio</h2>
-        <p id="installHelpText">Android: toca Instalar para agregar la app a tu pantalla de inicio.</p>
-      </div>
-
-      <button id="installActionBtn" class="v5-install-action" type="button">Instalar</button>
+      <article class="home-card">
+        <p class="home-card-kicker">Accesos rápidos</p>
+        <h2>¿Qué quieres revisar?</h2>
+        <div class="quick-links">
+          <a class="quick-link" href="partidos.html">
+            <span class="quick-link-icon" aria-hidden="true">🎾</span>
+            <span><strong>Partidos</strong><small>Programación y resultados</small></span>
+            <span class="quick-link-arrow" aria-hidden="true">›</span>
+          </a>
+          <a class="quick-link" href="tablas.html">
+            <span class="quick-link-icon" aria-hidden="true">📊</span>
+            <span><strong>Tablas</strong><small>Posiciones y estadísticas</small></span>
+            <span class="quick-link-arrow" aria-hidden="true">›</span>
+          </a>
+          <a class="quick-link" href="marcador.html">
+            <span class="quick-link-icon" aria-hidden="true">🔢</span>
+            <span><strong>Marcador</strong><small>Lleva el resultado en cancha</small></span>
+            <span class="quick-link-arrow" aria-hidden="true">›</span>
+          </a>
+        </div>
+      </article>
     </section>
+
+    <section id="installPromptCard" class="install-card-compact" aria-labelledby="installCardTitle" hidden>
+      <img src="assets/img/logo-open-tennis-256.svg" alt="" width="44" height="44">
+      <div>
+        <h2 id="installCardTitle">Instalar Open Tennis</h2>
+        <p id="installHelpText">Agrega la web a tu pantalla de inicio para abrirla más rápido.</p>
+      </div>
+      <button id="installActionBtn" class="install-action" type="button" hidden>Instalar</button>
+    </section>
+
+    <div id="indexDataStatus" class="data-status index-data-status" role="status" aria-live="polite">
+      <span>Cargando información del torneo…</span>
+    </div>
   </main>
 
   <nav id="appBottomNav" class="app-bottom-nav" aria-label="Navegación principal">
-    <a href="index.html" data-page="index.html">
-      <span class="nav-icon" aria-hidden="true">🏠</span>
-      <span class="nav-label">Inicio</span>
-    </a>
-
-    <a href="partidos.html" data-page="partidos.html">
-      <span class="nav-icon" aria-hidden="true">🎾</span>
-      <span class="nav-label">Partidos</span>
-    </a>
-
-    <a href="tablas.html" data-page="tablas.html">
-      <span class="nav-icon" aria-hidden="true">📊</span>
-      <span class="nav-label">Tablas</span>
-    </a>
-
-    <a href="reglas.html" data-page="reglas.html">
-      <span class="nav-icon" aria-hidden="true">📘</span>
-      <span class="nav-label">Reglas</span>
-    </a>
-
-    <a href="marcador.html" data-page="marcador.html">
-      <span class="nav-icon" aria-hidden="true">🔢</span>
-      <span class="nav-label">Marcador</span>
-    </a>
+    <a href="index.html" data-page="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span class="nav-label">Inicio</span></a>
+    <a href="partidos.html" data-page="partidos.html"><span class="nav-icon" aria-hidden="true">🎾</span><span class="nav-label">Partidos</span></a>
+    <a href="tablas.html" data-page="tablas.html"><span class="nav-icon" aria-hidden="true">📊</span><span class="nav-label">Tablas</span></a>
+    <a href="reglas.html" data-page="reglas.html"><span class="nav-icon" aria-hidden="true">📘</span><span class="nav-label">Reglas</span></a>
+    <a href="marcador.html" data-page="marcador.html"><span class="nav-icon" aria-hidden="true">🔢</span><span class="nav-label">Marcador</span></a>
   </nav>
-
-  <script>
-    (function () {
-      function isIOSDevice() {
-        const ua = window.navigator.userAgent || "";
-        const platform = window.navigator.platform || "";
-
-        return (
-          /iPhone|iPad|iPod/i.test(ua) ||
-          (platform === "MacIntel" && window.navigator.maxTouchPoints > 1)
-        );
-      }
-
-      function isStandaloneMode() {
-        return (
-          window.matchMedia("(display-mode: standalone)").matches ||
-          window.navigator.standalone === true ||
-          document.referrer.startsWith("android-app://")
-        );
-      }
-
-      function configureInstallCard() {
-        const installCard = document.getElementById("installPromptCard");
-        const installTitle = document.getElementById("installCardTitle");
-        const installText = document.getElementById("installHelpText");
-        const installButton = document.getElementById("installActionBtn");
-
-        if (isIOSDevice()) {
-          document.documentElement.classList.add("is-ios-device");
-        }
-
-        if (isStandaloneMode()) {
-          document.documentElement.classList.add("is-standalone-app");
-
-          if (installCard) {
-            installCard.hidden = true;
-            installCard.style.display = "none";
-            installCard.setAttribute("aria-hidden", "true");
-          }
-
-          document.body.style.overflow = "hidden";
-          document.body.style.height = "100dvh";
-          document.body.style.minHeight = "100dvh";
-          document.body.style.maxHeight = "100dvh";
-
-          return;
-        }
-
-        if (isIOSDevice()) {
-          if (installTitle) {
-            installTitle.textContent = "Agregar en iPhone";
-          }
-
-          if (installText) {
-            installText.textContent = "Toca Compartir y elige Agregar a pantalla de inicio.";
-          }
-
-          if (installButton) {
-            installButton.hidden = true;
-            installButton.style.display = "none";
-            installButton.setAttribute("aria-hidden", "true");
-          }
-
-          return;
-        }
-
-        if (installTitle) {
-          installTitle.textContent = "Agregar al inicio";
-        }
-
-        if (installText) {
-          installText.textContent = "Android: toca Instalar para agregar la app a tu pantalla de inicio.";
-        }
-
-        if (installButton) {
-          installButton.hidden = false;
-          installButton.style.display = "";
-          installButton.removeAttribute("aria-hidden");
-          installButton.textContent = "Instalar";
-        }
-      }
-
-      configureInstallCard();
-
-      document.addEventListener("DOMContentLoaded", configureInstallCard);
-      window.addEventListener("load", configureInstallCard);
-      window.addEventListener("resize", configureInstallCard);
-
-      setTimeout(configureInstallCard, 300);
-      setTimeout(configureInstallCard, 1000);
-      setTimeout(configureInstallCard, 2000);
-    })();
-  </script>
 </body>
 </html>

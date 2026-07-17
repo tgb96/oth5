@@ -1,4 +1,4 @@
-const APP_VERSION = '23';
+const APP_VERSION = '27';
 const SHELL_CACHE = `open-tennis-v${APP_VERSION}-shell`;
 const DATA_CACHE = `open-tennis-v${APP_VERSION}-data`;
 
@@ -17,15 +17,20 @@ const CORE_ASSETS = [
   './assets/css/v4.css',
   './assets/css/v5.css',
   './assets/css/p2.css',
+  './assets/css/index.css',
   './assets/css/partidos.css',
   './assets/css/tablas.css',
   './assets/css/resultados-2025.css',
   './assets/css/marcador.css',
   './assets/js/partidos-page.js',
+  './assets/js/index-page.js',
+  './assets/js/index-experience.js',
+  './assets/js/player-preference.js',
   './assets/js/tablas-page.js',
   './assets/js/resultados-2025-page.js',
   './assets/js/marcador-page.js',
   './assets/js/app.js',
+  './assets/js/release-v27.js',
   './assets/js/config.js',
   './assets/js/data-client.js',
   './assets/js/pwa-install.js',
@@ -66,11 +71,21 @@ async function networkFirst(request, cacheName, fallbackUrl = null) {
 }
 
 async function cacheFirst(request) {
-  const cached = await caches.match(request, { ignoreSearch: true });
+  const cached = await caches.match(request);
   if (cached) return cached;
 
-  const response = await fetch(request);
-  return putIfValid(SHELL_CACHE, request, response);
+  const url = new URL(request.url);
+  const bundledFallback = url.search
+    ? await caches.match(`${url.origin}${url.pathname}`)
+    : null;
+
+  try {
+    const response = await fetch(request);
+    return putIfValid(SHELL_CACHE, request, response);
+  } catch (error) {
+    if (bundledFallback) return bundledFallback;
+    throw error;
+  }
 }
 
 async function staleWhileRevalidate(request) {
