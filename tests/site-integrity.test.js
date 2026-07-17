@@ -90,6 +90,25 @@ test("los controles críticos tienen nombres accesibles", () => {
   assert.match(marcador, /Punto para \$\{labelA\}/);
 });
 
+test("el estado de datos aparece al final del contenido", () => {
+  const locations = [
+    ["partidos.html", "accordionSemanas"],
+    ["tablas.html", "criterios-box"],
+    ["resultados-2025.html", "criterios-box"]
+  ];
+
+  for (const [page, previousContent] of locations) {
+    const html = read(page);
+    const statusMatches = html.match(/id="dataStatus"/g) || [];
+    assert.equal(statusMatches.length, 1, `${page} debe tener un solo estado de datos`);
+    assert.ok(
+      html.indexOf('id="dataStatus"') > html.indexOf(previousContent),
+      `${page} debe mostrar el estado después del contenido principal`
+    );
+    assert.match(html, /id="dataStatus" class="data-status data-status-footer"/);
+  }
+});
+
 test("la interfaz usa el logo optimizado", () => {
   const optimized = path.join(root, "assets", "img", "logo-open-tennis-256.svg");
   assert.ok(fs.statSync(optimized).size < 50_000, "El logo optimizado debe pesar menos de 50 KB");
