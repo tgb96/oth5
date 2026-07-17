@@ -20,12 +20,15 @@
   <link rel="stylesheet" href="assets/css/v3.css" />
   <link rel="stylesheet" href="assets/css/v4.css?v=4.1" />
   <link rel="stylesheet" href="assets/css/v5.css?v=5" />
-  <script defer src="assets/js/app.js?v=5"></script>
+  <link rel="stylesheet" href="assets/css/p2.css?v=18" />
+  <script src="assets/js/config.js?v=18"></script>
+  <script src="assets/js/data-client.js?v=18"></script>
+  <script defer src="assets/js/app.js?v=18"></script>
 </head>
 <body class="partidos-page v5-page">
   <div class="layout app-shell">
     <aside class="sidebar app-topbar">
-      <a class="brand" href="index.html" aria-label="Open Tennis Huechuraba inicio"><img class="brand-logo" src="assets/img/logo-open-tennis.png" alt="" aria-hidden="true"><span class="brand-text"><span class="brand-main">Open Tennis</span><span class="brand-sub">Huechuraba · 2026</span></span></a>
+      <a class="brand" href="index.html" aria-label="Open Tennis Huechuraba inicio"><img class="brand-logo" src="assets/img/logo-open-tennis-256.svg" alt="" aria-hidden="true" width="256" height="256"><span class="brand-text"><span class="brand-main">Open Tennis</span><span class="brand-sub">Huechuraba · 2026</span></span></a>
     </aside>
     <main class="main app-main">
       <h1 class="page-title">Partidos y resultados</h1>
@@ -33,7 +36,9 @@
 
   <section class="bloque">
     <h2>Buscar partidos por jugador</h2>
+    <label class="field-label" for="buscador">Nombre del jugador</label>
     <input id="buscador" type="text" placeholder="Buscar jugador..." autocomplete="off">
+    <div id="dataStatus" class="data-status" role="status" aria-live="polite"></div>
 
     <div class="desktop-view">
       <table id="tablaBusqueda">
@@ -561,11 +566,10 @@ td:first-child {
 </style>
 
 <script>
-const FIXTURE_URL =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vR4Uc2YiXkim8OTwSbwK4AYfC1oWWNTX1TCE4RXFyzaK5azjuaHx4nWT1v6Ubiq2Lm9kpYFTJmY6C1d/pub?gid=0&single=true&output=csv";
-
-const REGISTRO_URL =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vR4Uc2YiXkim8OTwSbwK4AYfC1oWWNTX1TCE4RXFyzaK5azjuaHx4nWT1v6Ubiq2Lm9kpYFTJmY6C1d/pub?gid=1046180821&single=true&output=csv";
+const APP_CONFIG = window.OPEN_TENNIS_CONFIG;
+const DATA_CLIENT = window.OPEN_TENNIS_DATA;
+const FIXTURE_URL = APP_CONFIG.FIXTURE_URL;
+const REGISTRO_URL = APP_CONFIG.REGISTRO_URL;
 
 const encabezados = [
   "Semana",
@@ -579,6 +583,7 @@ const encabezados = [
 ];
 
 const buscador = document.getElementById("buscador");
+const dataStatus = document.getElementById("dataStatus");
 
 const tablaBusquedaHead = document.querySelector("#tablaBusqueda thead");
 const tablaBusquedaBody = document.querySelector("#tablaBusqueda tbody");
@@ -597,8 +602,6 @@ const RE_NBSP = /\u00a0/g;
 const RE_ZERO_WIDTH = /[\u200B-\u200D\uFEFF]/g;
 const RE_ESPACIOS = /\s+/g;
 const RE_MARCADOR = /(\d+\s*-\s*\d+(?:\s+\d+\s*-\s*\d+)*)/;
-const SANTIAGO_OFFSET_MINUTOS = -4 * 60;
-const MS_MINUTO = 60 * 1000;
 const normalizarCache = new Map();
 const limpiarCache = new Map();
 const abreviarCache = new Map();
@@ -852,18 +855,24 @@ function parseFechaProgramacionSantiago(fechaTexto) {
   return Date.UTC(anio, mes - 1, dia);
 }
 
-function inicioDiaActualSantiagoGMT4() {
-  const ahoraSantiago = new Date(Date.now() + SANTIAGO_OFFSET_MINUTOS * MS_MINUTO);
+function inicioDiaActualSantiago() {
+  const partes = new Intl.DateTimeFormat("en-CA", {
+    timeZone: APP_CONFIG.TIME_ZONE,
+    year: "numeric",
+    month: "numeric",
+    day: "numeric"
+  }).formatToParts(new Date());
+  const valores = Object.fromEntries(partes.map(parte => [parte.type, parte.value]));
 
   return Date.UTC(
-    ahoraSantiago.getUTCFullYear(),
-    ahoraSantiago.getUTCMonth(),
-    ahoraSantiago.getUTCDate()
+    Number(valores.year),
+    Number(valores.month) - 1,
+    Number(valores.day)
   );
 }
 
 function obtenerSemanaProxima(filas) {
-  const hoySantiago = inicioDiaActualSantiagoGMT4();
+  const hoySantiago = inicioDiaActualSantiago();
   const fechasPorSemana = new Map();
 
   for (let i = 0; i < filas.length; i++) {
@@ -1577,7 +1586,14 @@ function activarAccordionMobile(contenedor = accordionSemanas) {
   });
 }
 
+let buscadorActivado = false;
+let busquedaActual = { filas: [], mapaSemanas: new Map() };
+
 function activarBuscador(filas, mapaSemanas) {
+  busquedaActual = { filas, mapaSemanas };
+  if (buscadorActivado) return;
+  buscadorActivado = true;
+
   let rafId = 0;
   let ultimoValor = "";
 
@@ -1589,20 +1605,14 @@ function activarBuscador(filas, mapaSemanas) {
     }
 
     rafId = requestAnimationFrame(() => {
-      renderBusqueda(filas, mapaSemanas, ultimoValor);
+      renderBusqueda(
+        busquedaActual.filas,
+        busquedaActual.mapaSemanas,
+        ultimoValor
+      );
       rafId = 0;
     });
   });
-}
-
-async function textoFetch(url) {
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error("No se pudo cargar: " + url);
-  }
-
-  return response.text();
 }
 
 async function iniciar() {
@@ -1628,10 +1638,17 @@ async function iniciar() {
   accordionSemanas.innerHTML = `<div class="mensaje">Cargando programación completa...</div>`;
 
   try {
-    const [fixtureCSV, registroCSV] = await Promise.all([
-      textoFetch(FIXTURE_URL),
-      textoFetch(REGISTRO_URL)
+    const [fixtureData, registroData] = await Promise.all([
+      DATA_CLIENT.loadText("fixture", {
+        url: FIXTURE_URL
+      }),
+      DATA_CLIENT.loadText("registro", {
+        url: REGISTRO_URL
+      })
     ]);
+
+    const fixtureCSV = fixtureData.text;
+    const registroCSV = registroData.text;
 
     const { filas, mapaSemanas } = leerFixture(fixtureCSV);
     const registros = leerRegistro(registroCSV);
@@ -1648,7 +1665,10 @@ async function iniciar() {
     activarAccordionMobile(accordionPendientes);
     activarAccordionMobile(accordionSemanas);
     activarBuscador(filas, mapaSemanas);
+    DATA_CLIENT.updateStatus(dataStatus, [fixtureData, registroData], iniciar);
   } catch (error) {
+    console.error("No se pudieron cargar los partidos:", error);
+    DATA_CLIENT.showError(dataStatus, "No se pudieron actualizar los datos.", iniciar);
     mensajeTabla(
       "No se pudo cargar la programación.",
       tablaBusquedaBody,
