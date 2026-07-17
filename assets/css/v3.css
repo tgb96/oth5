@@ -4,6 +4,8 @@
    Etapa 1 + 2 refinadas: app shell, bottom menu y mobile-first.
    ========================================================= */
 :root {
+  --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Arial Narrow", "Segoe UI", sans-serif;
   --green-900: #0b2f25;
   --green-800: #123d31;
   --green-700: #1e5b45;
@@ -105,7 +107,7 @@ a { -webkit-tap-highlight-color: transparent; }
 .brand {
   margin: 0 !important;
   color: var(--cream) !important;
-  font-family: Oswald, Inter, Arial, sans-serif !important;
+  font-family: var(--font-display) !important;
   font-size: clamp(22px, 4vw, 30px) !important;
   line-height: .95 !important;
   letter-spacing: .4px !important;
@@ -119,7 +121,7 @@ a { -webkit-tap-highlight-color: transparent; }
   display: block;
   margin-top: 4px;
   color: #f0b376;
-  font-family: Inter, Arial, sans-serif;
+  font-family: var(--font-ui);
   font-size: 10px;
   line-height: 1;
   letter-spacing: 1.7px;
@@ -196,7 +198,7 @@ a { -webkit-tap-highlight-color: transparent; }
 
 .page-title {
   color: var(--green-900) !important;
-  font-family: Oswald, Inter, Arial, sans-serif !important;
+  font-family: var(--font-display) !important;
   font-size: clamp(32px, 7vw, 56px) !important;
   line-height: .98 !important;
   letter-spacing: .3px !important;
@@ -221,7 +223,7 @@ a { -webkit-tap-highlight-color: transparent; }
 
 .hero h1,
 .hero h2 {
-  font-family: Oswald, Inter, Arial, sans-serif !important;
+  font-family: var(--font-display) !important;
   text-transform: uppercase !important;
   letter-spacing: .4px !important;
 }
@@ -280,7 +282,7 @@ button:not(.semana-btn):not(.categoria-titulo):not(.history-toggle),
 /* ---------- Partidos ---------- */
 .programacion-app,
 .rankings-app {
-  font-family: Inter, Arial, sans-serif !important;
+  font-family: var(--font-ui) !important;
   color: var(--text) !important;
 }
 
@@ -296,7 +298,7 @@ button:not(.semana-btn):not(.categoria-titulo):not(.history-toggle),
 .status-title,
 .side-title {
   color: var(--green-900) !important;
-  font-family: Oswald, Inter, Arial, sans-serif !important;
+  font-family: var(--font-display) !important;
   text-transform: uppercase !important;
   letter-spacing: .2px !important;
 }
@@ -412,7 +414,7 @@ th,
   max-width: 1040px !important;
   padding: clamp(12px, 3vw, 24px) !important;
 }
-.header h1 { color: var(--green-900) !important; font-family: Oswald, Inter, Arial, sans-serif !important; text-transform: uppercase !important; }
+.header h1 { color: var(--green-900) !important; font-family: var(--font-display) !important; text-transform: uppercase !important; }
 .match-banner { background: linear-gradient(135deg, var(--green-800), var(--green-900)) !important; }
 .player-control.serving { border-color: var(--clay-600) !important; background: #fff0e4 !important; }
 .player-control.serving .point-btn { background: linear-gradient(180deg, var(--clay-600), var(--clay-800)) !important; }
@@ -560,7 +562,7 @@ th,
 .rules-hero h1 {
   position: relative;
   z-index: 2;
-  font-family: Oswald, Inter, Arial, sans-serif;
+  font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: .6px;
   font-size: clamp(46px, 12vw, 96px);
@@ -574,7 +576,7 @@ th,
   margin: 12px 0 0;
   color: #f7c08b;
   text-transform: uppercase;
-  font-family: Oswald, Inter, Arial, sans-serif;
+  font-family: var(--font-display);
   letter-spacing: 1.8px;
   font-size: clamp(18px, 4vw, 30px);
 }
@@ -600,7 +602,7 @@ th,
   color: #fffaf1;
   border: 3px solid rgba(255,247,233,.86);
   box-shadow: 0 13px 25px rgba(11,47,37,.22);
-  font-family: Oswald, Inter, Arial, sans-serif;
+  font-family: var(--font-display);
   font-size: 32px;
   font-weight: 900;
 }
@@ -616,7 +618,7 @@ th,
 
 .section-content h2 {
   margin: 0 0 14px;
-  font-family: Oswald, Inter, Arial, sans-serif;
+  font-family: var(--font-display);
   color: var(--green-900);
   text-transform: uppercase;
   letter-spacing: .3px;
@@ -660,7 +662,7 @@ th,
   justify-content: center;
   background: linear-gradient(180deg, var(--clay-600), var(--clay-800));
   color: white;
-  font-family: Oswald, Inter, Arial, sans-serif;
+  font-family: var(--font-display);
   font-weight: 900;
   font-size: 19px;
   box-shadow: 0 8px 18px rgba(189,91,49,.24);
@@ -668,7 +670,7 @@ th,
 
 .rule-card h3 {
   margin: 1px 0 8px;
-  font-family: Oswald, Inter, Arial, sans-serif;
+  font-family: var(--font-display);
   color: var(--green-900);
   text-transform: uppercase;
   letter-spacing: .15px;

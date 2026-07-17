@@ -30,7 +30,7 @@ body {
   width: 100%;
   min-width: 0;
   overflow-x: hidden !important;
-  font-family: Inter, Arial, sans-serif !important;
+  font-family: var(--font-ui) !important;
   color: var(--v4-text) !important;
   background:
     radial-gradient(circle at 12% 0%, rgba(196, 96, 50, .18), transparent 28%),
@@ -84,7 +84,7 @@ a { color: inherit; }
   text-decoration: none !important;
   color: var(--v4-cream) !important;
   text-align: left !important;
-  font-family: Oswald, Inter, Arial, sans-serif !important;
+  font-family: var(--font-display) !important;
   line-height: 1 !important;
   text-transform: uppercase !important;
   letter-spacing: .3px !important;
@@ -100,7 +100,7 @@ a { color: inherit; }
 
 .brand-text { display: grid; gap: 1px; min-width: 0; }
 .brand-main { font-size: clamp(22px, 3.4vw, 30px); font-weight: 900; }
-.brand-sub { font-family: Inter, Arial, sans-serif; font-size: 10px; letter-spacing: 1.4px; color: #e9ac73; font-weight: 900; }
+.brand-sub { font-family: var(--font-ui); font-size: 10px; letter-spacing: 1.4px; color: #e9ac73; font-weight: 900; }
 .brand::after { content: none !important; }
 
 .nav,
@@ -173,7 +173,7 @@ a { color: inherit; }
   align-items: center;
   gap: 12px;
   color: var(--v4-green-950) !important;
-  font-family: Oswald, Inter, Arial, sans-serif !important;
+  font-family: var(--font-display) !important;
   font-size: clamp(34px, 5vw, 58px) !important;
   line-height: .96 !important;
   text-transform: uppercase !important;
@@ -234,7 +234,7 @@ a { color: inherit; }
 .hero h2 {
   margin: 0 0 12px !important;
   color: #fffaf2 !important;
-  font-family: Oswald, Inter, Arial, sans-serif !important;
+  font-family: var(--font-display) !important;
   text-transform: uppercase !important;
   font-size: clamp(42px, 7vw, 84px) !important;
   line-height: .92 !important;
@@ -296,7 +296,7 @@ button.install-btn {
 
 .card,
 .home-card { padding: clamp(18px, 3vw, 28px) !important; }
-.card h2, .home-card h2 { margin-top: 0; color: var(--v4-green-950); font-family: Oswald, Inter, Arial, sans-serif; text-transform: uppercase; }
+.card h2, .home-card h2 { margin-top: 0; color: var(--v4-green-950); font-family: var(--font-display); text-transform: uppercase; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .feature-card { padding: 18px; border-radius: 22px; background: #fff8ee; border: 1px solid var(--v4-line); }
 .feature-card h3 { margin-top: 0; }
@@ -311,7 +311,7 @@ button.install-btn {
   background: linear-gradient(135deg, #fffaf2, #f6e6cc) !important;
 }
 .install-prompt-card img { width: 58px !important; height: 58px !important; object-fit: contain; }
-.install-prompt-card h3 { margin: 0 0 3px; color: var(--v4-green-950); font-family: Oswald, Inter, Arial, sans-serif; text-transform: uppercase; }
+.install-prompt-card h3 { margin: 0 0 3px; color: var(--v4-green-950); font-family: var(--font-display); text-transform: uppercase; }
 .install-prompt-card p { margin: 0; color: var(--v4-muted); }
 
 /* ---------- Modal instalación ---------- */
@@ -346,7 +346,7 @@ button.install-btn {
   color: white;
 }
 .install-modal-head img { width: 68px !important; height: 68px !important; object-fit: contain; filter: drop-shadow(0 12px 18px rgba(0,0,0,.25)); }
-.install-modal-head h2 { margin: 0 0 2px; font-family: Oswald, Inter, Arial, sans-serif; text-transform: uppercase; font-size: 30px; line-height: .98; }
+.install-modal-head h2 { margin: 0 0 2px; font-family: var(--font-display); text-transform: uppercase; font-size: 30px; line-height: .98; }
 .install-modal-head p { margin: 0; color: rgba(255,247,233,.82); font-size: 13px; }
 .install-close {
   width: 38px;
@@ -404,7 +404,7 @@ th,
 .rules-hero::after { content:""; position:absolute; right:-90px; bottom:-130px; width:320px; height:320px; border:36px solid rgba(255,247,233,.08); border-radius:50%; }
 .rules-hero .hero-logo-mini { width: 84px !important; margin-bottom: 14px; filter: drop-shadow(0 16px 20px rgba(0,0,0,.22)); }
 .rules-eyebrow { color: #eeb278; font-weight: 900; letter-spacing: 1.8px; text-transform: uppercase; font-size: 12px; }
-.rules-hero h1 { margin: 4px 0 4px; font-family: Oswald, Inter, Arial, sans-serif; font-size: clamp(46px, 7vw, 84px); text-transform: uppercase; line-height: .9; }
+.rules-hero h1 { margin: 4px 0 4px; font-family: var(--font-display); font-size: clamp(46px, 7vw, 84px); text-transform: uppercase; line-height: .9; }
 .rules-hero p { margin: 0; color: rgba(255,247,233,.84); font-weight: 900; letter-spacing: 1px; }
 
 .reglamento-section {
@@ -425,13 +425,13 @@ th,
   justify-content:center;
   background: linear-gradient(180deg, var(--v4-green-800), var(--v4-green-950));
   color: #fff7e9;
-  font-family: Oswald, Inter, Arial, sans-serif;
+  font-family: var(--font-display);
   font-size: 34px;
   font-weight: 900;
   box-shadow: 0 18px 34px rgba(6,35,27,.22);
 }
 .section-content { padding: clamp(18px, 3vw, 28px); }
-.section-content > h2 { margin: 0 0 16px; color: var(--v4-green-950); font-family: Oswald, Inter, Arial, sans-serif; font-size: clamp(28px, 4vw, 46px); text-transform: uppercase; }
+.section-content > h2 { margin: 0 0 16px; color: var(--v4-green-950); font-family: var(--font-display); font-size: clamp(28px, 4vw, 46px); text-transform: uppercase; }
 .reglamento-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
 .rule-card { box-shadow: 0 10px 28px rgba(44,23,9,.08) !important; }
 .rule-card p, .rule-card li { overflow-wrap: normal !important; word-break: normal !important; }
