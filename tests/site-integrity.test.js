@@ -12,6 +12,7 @@ const pages = [
   "resultados-2025.html",
   "reglas.html",
   "marcador.html",
+  "404.html",
   "offline.html"
 ];
 
@@ -49,6 +50,7 @@ test("el precaché del service worker solo contiene archivos existentes", () => 
     .map(match => match[1]);
 
   assert.ok(assets.includes("./offline.html"), "Debe existir una pantalla offline real");
+  assert.ok(assets.includes("./404.html"), "Debe precargar la página 404 personalizada");
 
   for (const asset of assets) {
     if (asset === "./") continue;
@@ -128,6 +130,56 @@ test("la interfaz usa el logo optimizado", () => {
   for (const page of pages) {
     assert.doesNotMatch(read(page), /assets\/img\/logo-open-tennis\.png/);
   }
+});
+
+test("las páginas públicas tienen metadatos para buscadores y WhatsApp", () => {
+  const publicPages = {
+    "index.html": "https://opentennis.cl/",
+    "partidos.html": "https://opentennis.cl/partidos.html",
+    "tablas.html": "https://opentennis.cl/tablas.html",
+    "resultados-2025.html": "https://opentennis.cl/resultados-2025.html",
+    "reglas.html": "https://opentennis.cl/reglas.html",
+    "marcador.html": "https://opentennis.cl/marcador.html"
+  };
+
+  for (const [page, canonical] of Object.entries(publicPages)) {
+    const html = read(page);
+    assert.match(html, /<meta name="description" content="[^"]+">/);
+    assert.ok(html.includes(`<link rel="canonical" href="${canonical}">`), `${page} debe tener canonical`);
+    assert.ok(html.includes(`<meta property="og:url" content="${canonical}">`), `${page} debe declarar og:url`);
+    assert.match(html, /<meta property="og:title" content="[^"]+">/);
+    assert.match(html, /<meta property="og:description" content="[^"]+">/);
+    assert.ok(
+      html.includes('<meta property="og:image" content="https://opentennis.cl/assets/icons/icon-512.png">'),
+      `${page} debe usar una imagen absoluta para compartir`
+    );
+    assert.ok(html.includes('<meta name="twitter:card" content="summary">'));
+  }
+});
+
+test("el reglamento tiene un índice accesible con destinos válidos", () => {
+  const reglas = read("reglas.html");
+  const anchors = ["definiciones", "organizacion", "normas-juego", "reprogramacion", "lesiones", "conducta"];
+
+  assert.match(reglas, /<nav class="rules-index" aria-labelledby="rules-index-title">/);
+  for (const anchor of anchors) {
+    assert.ok(reglas.includes(`href="#${anchor}"`), `Falta el enlace a ${anchor}`);
+    assert.ok(reglas.includes(`id="${anchor}"`), `Falta el destino ${anchor}`);
+  }
+});
+
+test("la página 404 ayuda a volver al sitio", () => {
+  const notFound = read("404.html");
+  assert.match(notFound, /<meta name="robots" content="noindex,follow">/);
+  assert.match(notFound, /<h1 id="error-title">Página no encontrada<\/h1>/);
+  assert.match(notFound, /href="index.html">Volver al inicio<\/a>/);
+  assert.match(notFound, /href="partidos.html">Ver partidos<\/a>/);
+});
+
+test("Resultados 2025 mantiene activa la navegación de Tablas", () => {
+  const app = read("assets/js/app.js");
+  assert.match(app, /current === 'resultados-2025\.html' \? 'tablas\.html' : current/);
+  assert.match(app, /href === activeNavigationPage/);
 });
 
 test("las páginas grandes mantienen su código separado", () => {
