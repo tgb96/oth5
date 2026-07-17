@@ -1,0 +1,599 @@
+@view-transition { navigation: auto; }
+
+.rankings-app,
+.rankings-app * ,
+.rankings-app *::before,
+.rankings-app *::after {
+  box-sizing: border-box;
+}
+
+.rankings-app {
+  font-family: Arial, sans-serif;
+  width: 100%;
+  max-width: 100%;
+  color: #222;
+}
+
+.season-selector {
+  width: 100%;
+  margin: 0 0 18px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: minmax(90px, auto) minmax(220px, 360px);
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid #d9e2df;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(11, 47, 37, 0.10);
+  view-transition-name: season-selector;
+}
+
+.season-selector-title {
+  color: #173f39;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.season-selector-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.season-option {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border: 1px solid #8aa9a3;
+  border-radius: 11px;
+  background: #f8fbfa;
+  color: #174f49;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.season-option:hover,
+.season-option:focus-visible {
+  background: #edf5f3;
+  box-shadow: 0 3px 10px rgba(11, 47, 37, 0.12);
+}
+
+.season-option:focus-visible {
+  outline: 3px solid rgba(53, 119, 111, 0.28);
+  outline-offset: 2px;
+}
+
+.season-option.is-active {
+  border-color: #174f49;
+  background: linear-gradient(180deg, #35776f 0%, #174f49 100%);
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 4px 10px rgba(23, 79, 73, 0.22);
+}
+
+.rankings-header {
+  margin-bottom: 22px;
+}
+
+.rankings-header h2 {
+  margin: 0 0 6px;
+  font-size: 24px;
+  color: #333;
+}
+
+.rankings-header p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.categoria-ranking {
+  margin-bottom: 16px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  content-visibility: auto;
+  contain-intrinsic-size: 90px 720px;
+}
+
+.categoria-titulo {
+  padding: 14px 16px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.categoria-titulo .categoria-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.categoria-a .categoria-titulo,
+.categoria-c .categoria-titulo {
+  background: #6aa84f;
+}
+
+.categoria-b .categoria-titulo,
+.categoria-d .categoria-titulo {
+  background: #ff9900;
+}
+
+.categoria-contenido {
+  display: none;
+}
+
+.categoria-ranking.abierta .categoria-contenido {
+  display: block;
+}
+
+.tabla-ranking {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 14px;
+}
+
+.tabla-ranking th {
+  background: #6aa84f;
+  color: white;
+  padding: 8px;
+  border: 1px solid #5b9446;
+  font-weight: bold;
+}
+
+.categoria-b .tabla-ranking th,
+.categoria-d .tabla-ranking th {
+  background: #ff9900;
+  border-color: #e68a00;
+}
+
+.tabla-ranking td {
+  padding: 7px 8px;
+  border: 1px solid #ddd;
+}
+
+.tabla-ranking td:nth-child(2) {
+  text-align: left;
+  font-weight: bold;
+}
+
+.fila-jugador {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.fila-jugador:hover {
+  background: #f6f6f6;
+}
+
+.posicion {
+  font-weight: bold;
+  width: 42px;
+  background: white;
+  color: #222;
+}
+
+.medalla {
+  font-size: 18px;
+}
+
+.puntos {
+  font-weight: bold;
+}
+
+.jugados {
+  color: #555;
+}
+
+.etiqueta-zona {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.zona-campeon {
+  background: #fff2cc;
+  color: #8a5a00;
+  border: 1px solid #f1c232;
+}
+
+.zona-ascenso {
+  background: #d9ead3;
+  color: #38761d;
+  border: 1px solid #93c47d;
+}
+
+.zona-repechaje {
+  background: #d9eaf7;
+  color: #1155cc;
+  border: 1px solid #9fc5e8;
+}
+
+.zona-descenso {
+  background: #f4cccc;
+  color: #990000;
+  border: 1px solid #ea9999;
+}
+
+.detalle-row td {
+  background: #fafafa;
+  padding: 0;
+}
+
+.detalle-box {
+  padding: 14px;
+  text-align: left;
+  border-left: 5px solid #6aa84f;
+}
+
+.categoria-b .detalle-box,
+.categoria-d .detalle-box {
+  border-left-color: #ff9900;
+}
+
+.detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.detalle-item {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.detalle-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.detalle-valor {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.detalle-extra {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.detalle-extra strong {
+  color: #333;
+}
+
+.cards-ranking {
+  display: none;
+  padding: 9px;
+  background: #fafafa;
+}
+
+.card-jugador {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 11px;
+  margin-bottom: 7px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.card-jugador.abierto {
+  border-color: #6aa84f;
+  box-shadow: 0 2px 8px rgba(106,168,79,0.20);
+  background: #fbfff8;
+}
+
+.categoria-b .card-jugador.abierto,
+.categoria-d .card-jugador.abierto {
+  border-color: #ff9900;
+  box-shadow: 0 2px 8px rgba(255,153,0,0.20);
+  background: #fffaf2;
+}
+
+.mobile-ranking-header {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 34px 28px 58px;
+  gap: 4px;
+  align-items: center;
+  margin: 0 6px 7px;
+  padding: 7px;
+  font-size: 11.5px;
+  font-weight: 900;
+  color: #333;
+  text-align: center;
+  background: #eeeeee;
+  border: 1px solid #d6d6d6;
+  border-radius: 9px;
+  letter-spacing: 0.2px;
+}
+
+.mobile-ranking-header .header-jugador {
+  text-align: left;
+}
+
+.card-jugador-main {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 34px 28px 58px;
+  gap: 4px;
+  align-items: center;
+  padding: 7px;
+  cursor: pointer;
+}
+
+.card-posicion {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  background: #f1f1f1;
+  color: #222;
+  font-size: 14px;
+}
+
+.card-info {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.card-nombre {
+  font-weight: 800;
+  font-size: 14.3px;
+  margin-bottom: 0;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+
+.card-zona {
+  margin-top: 3px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.card-zona .etiqueta-zona {
+  max-width: 100%;
+  font-size: 10.8px;
+  padding: 2px 6px;
+  gap: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  font-weight: 900;
+  font-size: 15px;
+  white-space: nowrap;
+  color: #222;
+  min-width: 0;
+}
+
+.medalla-mobile {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.card-accion {
+  background: #eef7ea;
+  border: 1px solid #b6d7a8;
+  color: #38761d;
+  border-radius: 8px;
+  padding: 6px 4px;
+  font-size: 10.2px;
+  font-weight: 900;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 1;
+}
+
+.categoria-b .card-accion,
+.categoria-d .card-accion {
+  background: #fff3df;
+  border-color: #f6b26b;
+  color: #9a5b00;
+}
+
+.card-desplegable {
+  display: none;
+  padding: 9px;
+  border-top: 1px solid #e6e6e6;
+  background: #fafafa;
+}
+
+.card-jugador.abierto .card-desplegable {
+  display: block;
+}
+
+.mobile-detalle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.mobile-detalle-item {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 9px;
+  padding: 8px;
+}
+
+.mobile-detalle-label {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 3px;
+}
+
+.mobile-detalle-valor {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.mobile-detalle-extra {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 11px;
+  padding: 9px;
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.25;
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 9px;
+  align-items: center;
+}
+
+.mobile-detalle-extra strong {
+  color: #222;
+}
+
+.mobile-detalle-extra-linea {
+  display: block;
+  margin-top: 2px;
+  color: #444;
+}
+
+.historial-lista {
+  margin-top: 5px;
+  display: grid;
+  gap: 4px;
+}
+
+.historial-item {
+  display: block;
+  font-size: 12.7px;
+  line-height: 1.22;
+  color: #444;
+}
+
+.historial-vacio {
+  display: block;
+  margin-top: 2px;
+  color: #777;
+  font-size: 12.7px;
+}
+
+.detalle-icono {
+  width: 31px;
+  height: 31px;
+  border-radius: 999px;
+  background: #ff9900;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.ranking-vacio {
+  padding: 16px;
+  text-align: center;
+  color: #777;
+  background: #fafafa;
+}
+
+.criterios-box {
+  margin-top: 25px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  background: #fafafa;
+  font-size: 14px;
+  color: #444;
+}
+
+.criterios-box h2 {
+  margin: 0 0 8px;
+  color: #333;
+}
+
+.criterios-box ul {
+  margin-top: 0;
+  padding-left: 20px;
+}
+
+@media (max-width: 700px) {
+  .season-selector {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .season-selector-title {
+    font-size: 14px;
+  }
+
+  .season-selector-options {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .season-option {
+    min-height: 40px;
+    font-size: 14px;
+  }
+
+  .rankings-header h2 {
+    font-size: 21px;
+  }
+
+  .rankings-header p {
+    font-size: 13px;
+    line-height: 1.3;
+  }
+
+  .desktop-ranking {
+    display: none;
+  }
+
+  .cards-ranking {
+    display: block;
+  }
+
+  .categoria-ranking {
+    margin-bottom: 12px;
+    contain-intrinsic-size: 90px 980px;
+  }
+
+  .categoria-titulo {
+    font-size: 17px;
+    padding: 13px 14px;
+  }
+
+  .detalle-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

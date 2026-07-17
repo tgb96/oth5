@@ -1,0 +1,484 @@
+.programacion-app {
+  font-family: Arial, sans-serif;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  color: #222;
+}
+
+.programacion-app *,
+.programacion-app *::before,
+.programacion-app *::after {
+  box-sizing: border-box;
+}
+
+.bloque {
+  margin-bottom: 38px;
+  content-visibility: auto;
+  contain-intrinsic-size: 520px;
+}
+
+.bloque h2 {
+  margin: 0 0 14px;
+  font-size: 22px;
+  color: #333;
+  font-weight: 800;
+}
+
+.bloque-pendientes h2 {
+  color: #7d2c24;
+}
+
+#buscador {
+  width: 300px;
+  max-width: 100%;
+  padding: 11px 12px;
+  font-size: 16px;
+  border: 2px solid #333;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 14px;
+}
+
+th {
+  background: #6aa84f;
+  color: white;
+  padding: 8px;
+  border: 1px solid #5b9446;
+  font-weight: bold;
+}
+
+td {
+  padding: 6px 8px;
+  border: 1px solid #d9d9d9;
+}
+
+td:first-child {
+  font-weight: bold;
+}
+
+.jugador-nombre {
+  font-weight: 800;
+}
+
+.separador-naranja td {
+  background: #ff9900;
+  height: 22px;
+  padding: 2px 8px !important;
+  color: white;
+  font-weight: bold;
+  text-align: left;
+}
+
+.separador-verde td {
+  background: #6aa84f;
+  height: 22px;
+  padding: 2px 8px !important;
+  color: white;
+  font-weight: bold;
+  text-align: left;
+}
+
+.separador-semana-proxima td {
+  background: #ff9900 !important;
+  color: white;
+  border-color: #e68a00;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.24);
+  letter-spacing: 0.01em;
+}
+
+.semana-label-destacada {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(11, 47, 37, 0.88);
+  color: #fffaf0;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
+.fila-semana-proxima td {
+  background: #fff3df;
+}
+
+.fila-semana-proxima td:first-child {
+  border-left: 5px solid #ff9900;
+  color: #7d2c24;
+}
+
+.estado {
+  display: inline-block;
+  min-width: auto;
+  padding: 4px 15px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.estado-jugado {
+  background: #d9ead3;
+  color: #21833a;
+}
+
+.estado-pendiente {
+  background: #d00000;
+  color: white;
+}
+
+.estado-programado {
+  background: #e9ecef;
+  color: #333;
+}
+
+.estado-libre {
+  background: white;
+  color: black;
+}
+
+.resultado-box {
+  margin-top: 8px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: #f1f8e9;
+  border: 1px solid #b6d7a8;
+  color: #2e7d32;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.resultado-tabla {
+  font-size: 13px;
+  color: #2e7d32;
+  font-weight: bold;
+  display: block;
+  margin-top: 4px;
+}
+
+.fecha-box {
+  margin-top: 7px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: #f5f5f5;
+  color: #666;
+  font-size: 12.5px;
+  line-height: 1.25;
+}
+
+.fecha-tabla {
+  font-size: 12px;
+  color: #555;
+  display: block;
+  margin-top: 4px;
+}
+
+.observacion-box {
+  margin-top: 8px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: #fff7e6;
+  border: 1px solid #ffd88a;
+  color: #5f4200;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.observacion-tabla {
+  font-size: 12px;
+  color: #5f4200;
+  display: block;
+  margin-top: 4px;
+}
+
+.mensaje {
+  padding: 14px;
+  color: #777;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.mobile-view {
+  display: none;
+}
+
+.card-partido {
+  border: 1px solid #ddd;
+  border-left: 5px solid #6aa84f;
+  border-radius: 13px;
+  padding: 11px;
+  margin-bottom: 11px;
+  background: white;
+  box-shadow: 0 2px 7px rgba(0,0,0,0.08);
+}
+
+.card-partido.semana-proxima-card {
+  border-color: #ff9900;
+  border-left-color: #ff9900;
+  background: #fff7ea;
+  box-shadow: 0 4px 13px rgba(255, 153, 0, 0.22);
+}
+
+.card-partido.semana-proxima-card::before {
+  content: "Este sábado";
+  display: inline-block;
+  margin-bottom: 7px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #0b2f25;
+  color: #fffaf0;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.card-top {
+  font-weight: 800;
+  color: #333;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.card-meta {
+  font-size: 12.5px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.card-jugadores {
+  font-size: 15px;
+  margin-bottom: 7px;
+  line-height: 1.3;
+}
+
+.semana-box {
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 3px 9px rgba(0,0,0,0.07);
+}
+
+.semana-box.semana-proxima-box {
+  border-color: #ff9900;
+  box-shadow: 0 6px 17px rgba(255, 153, 0, 0.28);
+}
+
+.semana-box.semana-proxima-box .semana-btn {
+  background: #ff9900;
+  color: white;
+}
+
+.semana-box.semana-proxima-box .semana-contenido {
+  background: #fff7ea;
+}
+
+.semana-box.pendientes-box {
+  border-color: #b85a43;
+  box-shadow: 0 4px 12px rgba(111, 46, 38, 0.16);
+}
+
+.semana-box.pendientes-box .semana-btn {
+  background: linear-gradient(135deg, #9f3a2f 0%, #b85a43 52%, #7d2c24 100%);
+  color: #fffaf0;
+}
+
+.semana-box.pendientes-box .semana-contenido {
+  background: #fff7f1;
+}
+
+.semana-box.pendientes-box .partido-linea {
+  margin-bottom: 10px;
+  border: 1px solid #e2b4a4;
+  border-radius: 14px;
+  background: #fffaf5;
+  box-shadow: 0 2px 8px rgba(111, 46, 38, 0.08);
+}
+
+.semana-box.pendientes-box .partido-linea:last-child {
+  margin-bottom: 0;
+}
+
+.pendientes-lista-card {
+  border-color: #e2b4a4;
+}
+
+.pendientes-titulo-interno {
+  background: #9f3a2f;
+  color: #fffaf0;
+}
+
+.pendiente-meta {
+  color: #7d2c24;
+  font-weight: 800;
+}
+
+.pendientes-vacio {
+  padding: 14px;
+  border: 1px solid #e2b4a4;
+  border-radius: 12px;
+  background: #fff7f1;
+  color: #7d2c24;
+  text-align: center;
+  font-weight: 800;
+}
+
+.separador-pendientes td {
+  background: #9f3a2f;
+  height: 24px;
+  padding: 4px 8px !important;
+  color: #fffaf0;
+  font-weight: 900;
+  text-align: left;
+  letter-spacing: 0.02em;
+}
+
+.semana-btn {
+  width: 100%;
+  border: none;
+  background: #6aa84f;
+  color: white;
+  padding: 13px 14px;
+  font-size: 17px;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.semana-btn-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.semana-toggle {
+  float: none;
+  flex-shrink: 0;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.semana-pill {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(11, 47, 37, 0.9);
+  color: #fffaf0;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.semana-contenido {
+  display: none;
+  padding: 11px;
+  background: #fafafa;
+}
+
+.semana-box.activa .semana-contenido {
+  display: block;
+}
+
+.cancha-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  margin-bottom: 15px;
+  overflow: hidden;
+  box-shadow: 0 3px 9px rgba(0,0,0,0.08);
+}
+
+.cancha-titulo {
+  background: #ff9900;
+  color: white;
+  font-weight: 900;
+  padding: 11px 13px;
+  font-size: 17px;
+}
+
+.partido-linea {
+  padding: 13px 14px;
+  border-bottom: 1px solid #e5e5e5;
+  background: white;
+}
+
+.partido-linea.semana-proxima-linea {
+  border-left: 5px solid #ff9900;
+  background: #fff7ea;
+}
+
+.partido-linea:last-child {
+  border-bottom: none;
+}
+
+.partido-linea:nth-child(even) {
+  background: #fdfdfd;
+}
+
+.partido-turno {
+  font-size: 13px;
+  color: #5f5f5f;
+  margin-bottom: 6px;
+  line-height: 1.25;
+}
+
+.partido-jugadores {
+  font-size: 16px;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  color: #050505;
+}
+
+.info-icon {
+  display: inline-block;
+  width: 22px;
+  text-align: center;
+  margin-right: 5px;
+}
+
+@media (max-width: 700px) {
+  .desktop-view {
+    display: none;
+  }
+
+  .mobile-view {
+    display: block;
+  }
+
+  .bloque h2 {
+    font-size: 20px;
+  }
+
+  #buscador {
+    width: 100%;
+  }
+
+  .estado {
+    font-size: 13px;
+    padding: 4px 15px;
+  }
+
+  .resultado-box,
+  .fecha-box,
+  .observacion-box {
+    width: 100%;
+  }
+}
