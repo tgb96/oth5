@@ -1,43 +1,39 @@
-# Open Tennis Huechuraba · V5
+# Open Tennis Huechuraba
 
-Versión tipo app para GitHub Pages.
+Sitio oficial de la escalerilla del Club Open Tennis Huechuraba, publicado con GitHub Pages en [opentennis.cl](https://opentennis.cl/).
 
-## Cambios V5
+## Páginas
 
-- Pantalla de inicio simplificada: solo banner principal + banner para agregar la app al inicio.
-- Se eliminó el popup de instalación.
-- Menú principal corregido como barra inferior fija en todas las páginas.
-- Ajustes de móvil para evitar scroll horizontal y mantener la experiencia tipo app.
-- Tema visual elegante inspirado en tenis sobre arcilla: verde profundo, terracota y crema.
-- Reglamento en texto HTML, sin imágenes.
-- Mejor adaptación de escritorio con ancho máximo, tarjetas y espaciado consistente.
-- Cache PWA actualizado a `open-tennis-v12-shell`.
+- `index.html`: inicio e instalación de la PWA.
+- `partidos.html`: programación, pendientes y resultados.
+- `tablas.html`: posiciones y estadísticas 2026.
+- `resultados-2025.html`: cierre histórico de 2025.
+- `reglas.html`: reglamento.
+- `marcador.html`: marcador de partidos con recuperación local.
+- `offline.html`: aviso cuando una página no está disponible sin conexión.
 
-## Archivos principales
+## Datos y configuración
 
-- `index.html`: inicio compacto.
-- `partidos.html`: programación y resultados desde Google Sheets.
-- `tablas.html`: tablas de posiciones desde Google Sheets.
-- `reglas.html`: reglamento en texto.
-- `marcador.html`: marcador interactivo.
-- `assets/css/v5.css`: ajustes principales de la V5.
-- `assets/js/pwa-install.js`: instalación sin popup.
-- `manifest.webmanifest` y `sw.js`: soporte PWA.
+Las URLs públicas de Google Sheets, la temporada, la zona horaria, la versión y la lista de jugadores están centralizadas en `assets/js/config.js`.
 
-## Recomendación al subir a GitHub
+Los últimos CSV obtenidos correctamente se guardan en el dispositivo. Si se pierde la conexión, `partidos.html` y `tablas.html` intentan usar esa copia y muestran su fecha. Los resultados 2025 se leen desde `data/resultados-2025.json`.
 
-Reemplaza todos los archivos del repositorio por los de este ZIP.
-Luego abre la URL con `?v=5` para evitar caché temporal, por ejemplo:
+Antes de publicar columnas nuevas desde Google Sheets, confirma que sean datos destinados al público. No publiques claves internas, notas médicas ni comentarios administrativos.
 
-```txt
-https://tgb96.github.io/oth4/?v=5
-```
+## Publicación segura
 
-Si el celular todavía muestra una versión anterior, borra los datos del sitio o abre en incógnito para limpiar el service worker antiguo.
+1. Crear una rama desde `main`.
+2. Hacer los cambios en esa rama, sin reemplazar el repositorio completo.
+3. Ejecutar `node --test` y comprobar que todas las pruebas pasan.
+4. Revisar la rama y crear un pull request.
+5. Combinarla con `main` solamente después de probarla.
 
+GitHub Actions ejecuta las mismas pruebas automáticamente en ramas `codex/**`, pull requests y cambios de `main`.
 
-## Resultados históricos 2025
+Si una publicación falla, vuelve a seleccionar el commit estable anterior o revierte el pull request; no borres el historial del repositorio.
 
-- Página: `resultados-2025.html`
-- Datos locales: `data/resultados-2025.json`
-- Contiene las categorías A, B, C y D con sus partidos, posiciones finales, estadísticas, historiales y observaciones de cierre de temporada.
+## PWA y caché
+
+La versión actual de la aplicación es la definida en `assets/js/config.js`. El service worker usa esa misma versión, guarda solo respuestas válidas y presenta una pantalla offline real para navegaciones que no estén disponibles.
+
+El logo visible usa WebP optimizado; los PNG se conservan para los iconos instalables de la PWA.
