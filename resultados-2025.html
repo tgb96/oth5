@@ -20,13 +20,16 @@
   <link rel="stylesheet" href="assets/css/v3.css" />
   <link rel="stylesheet" href="assets/css/v4.css?v=4.1" />
   <link rel="stylesheet" href="assets/css/v5.css?v=5.2" />
+  <link rel="stylesheet" href="assets/css/p2.css?v=18" />
   <link rel="prefetch" href="tablas.html" as="document" />
-  <script defer src="assets/js/app.js?v=12"></script>
+  <script src="assets/js/config.js?v=18"></script>
+  <script src="assets/js/data-client.js?v=18"></script>
+  <script defer src="assets/js/app.js?v=18"></script>
 </head>
 <body class="tablas-page v5-page">
   <div class="layout app-shell">
     <aside class="sidebar app-topbar">
-      <a class="brand" href="index.html" aria-label="Open Tennis Huechuraba inicio"><img class="brand-logo" src="assets/img/logo-open-tennis.png" alt="" aria-hidden="true"><span class="brand-text"><span class="brand-main">Open Tennis</span><span class="brand-sub">Huechuraba · 2025</span></span></a>
+      <a class="brand" href="index.html" aria-label="Open Tennis Huechuraba inicio"><img class="brand-logo" src="assets/img/logo-open-tennis-256.svg" alt="" aria-hidden="true" width="256" height="256"><span class="brand-text"><span class="brand-main">Open Tennis</span><span class="brand-sub">Huechuraba · 2025</span></span></a>
     </aside>
     <main class="main app-main">
       <h1 class="page-title">Resultados 2025</h1>
@@ -45,17 +48,19 @@
     <p>Toca una categoría y luego un jugador para ver sus resultados y estadísticas de 2025.</p>
   </section>
 
+  <div id="dataStatus" class="data-status" role="status" aria-live="polite"></div>
+
   <div id="rankingsContenedor"></div>
 
   <section class="criterios-box">
-    <h3>Criterios de clasificación</h3>
+    <h2>Criterios de clasificación</h2>
     <ul>
       <li><strong>Mayor puntaje</strong></li>
       <li><strong>Enfrentamiento directo</strong> entre los jugadores empatados en puntos.</li>
       <li>Las posiciones mostradas corresponden al cierre oficial de la temporada 2025.</li>
     </ul>
 
-    <h3>Sistema de puntuación 2025</h3>
+    <h2>Sistema de puntuación 2025</h2>
     <ul>
       <li><strong>3 puntos:</strong> victoria por 2 sets a 0.</li>
       <li><strong>2 puntos:</strong> victoria por 2 sets a 1.</li>
@@ -186,7 +191,7 @@
   user-select: none;
 }
 
-.categoria-titulo span {
+.categoria-titulo .categoria-icon {
   font-size: 22px;
   line-height: 1;
 }
@@ -632,7 +637,7 @@
   color: #444;
 }
 
-.criterios-box h3 {
+.criterios-box h2 {
   margin: 0 0 8px;
   color: #333;
 }
@@ -701,9 +706,12 @@
 (() => {
   "use strict";
 
-  const DATOS_URL = "data/resultados-2025.json";
+  const APP_CONFIG = window.OPEN_TENNIS_CONFIG;
+  const DATA_CLIENT = window.OPEN_TENNIS_DATA;
+  const DATOS_URL = APP_CONFIG.LOCAL_DATA.RESULTADOS_2025;
   const ORDEN_CATEGORIAS = ["A", "B", "C", "D"];
   const contenedor = document.getElementById("rankingsContenedor");
+  const dataStatus = document.getElementById("dataStatus");
 
   const normalizarCache = new Map();
   const nombreCortoCache = new Map();
@@ -1113,14 +1121,17 @@
   }
 
   function crearCategoriaVacia(letra) {
+    const categoriaSlug = slug(`categoria-${letra}`);
     return `
       <section class="categoria-ranking ${claseCategoria(letra)}">
-        <div class="categoria-titulo">
-          <div>CATEGORIA ${escaparHTML(letra)}</div>
-          <span>+</span>
-        </div>
+        <button class="categoria-titulo" type="button"
+          aria-expanded="false"
+          aria-controls="contenido-${escaparHTML(categoriaSlug)}">
+          <span>CATEGORIA ${escaparHTML(letra)}</span>
+          <span class="categoria-icon" aria-hidden="true">+</span>
+        </button>
 
-        <div class="categoria-contenido">
+        <div class="categoria-contenido" id="contenido-${escaparHTML(categoriaSlug)}">
           <div class="ranking-vacio">Todavía no se han cargado los resultados 2025 de esta categoría.</div>
         </div>
       </section>
@@ -1137,9 +1148,16 @@
       const detalleId = `detalle-${categoriaSlug}-${index}`;
 
       return `
-        <tr class="fila-jugador" data-detalle="${escaparHTML(detalleId)}">
+        <tr class="fila-jugador">
           <td class="posicion">${escaparHTML(j.posicion)}</td>
-          <td>${escaparHTML(j.jugador)}</td>
+          <td>
+            <button class="jugador-detalle-btn" type="button"
+              data-detalle="${escaparHTML(detalleId)}"
+              aria-expanded="false"
+              aria-controls="${escaparHTML(detalleId)}">
+              ${escaparHTML(j.jugador)}
+            </button>
+          </td>
           <td class="puntos">${escaparHTML(j.puntos)}</td>
           <td class="jugados">${escaparHTML(j.jugados)}</td>
           <td>${zonaHTML(j.zona)}</td>
@@ -1151,37 +1169,41 @@
       `;
     }).join("");
 
-    const cardsMobile = jugadores.map(j => `
+    const cardsMobile = jugadores.map((j, index) => `
       <div class="card-jugador">
-        <div class="card-jugador-main">
-          <div class="card-posicion">${escaparHTML(j.posicion)}</div>
+        <button class="card-jugador-main" type="button"
+          aria-expanded="false"
+          aria-controls="card-${escaparHTML(categoriaSlug)}-${index}">
+          <span class="card-posicion">${escaparHTML(j.posicion)}</span>
 
-          <div class="card-info">
-            <div class="card-nombre">${escaparHTML(j.jugador)}</div>
-            ${j.zona ? `<div class="card-zona">${zonaHTML(j.zona)}</div>` : ""}
-          </div>
+          <span class="card-info">
+            <span class="card-nombre">${escaparHTML(j.jugador)}</span>
+            ${j.zona ? `<span class="card-zona">${zonaHTML(j.zona)}</span>` : ""}
+          </span>
 
-          <div class="card-num">
+          <span class="card-num">
             ${escaparHTML(j.puntos)}
             ${j.medalla ? `<span class="medalla-mobile">${escaparHTML(j.medalla)}</span>` : ""}
-          </div>
+          </span>
 
-          <div class="card-num">${escaparHTML(j.jugados)}</div>
-          <div class="card-accion">Detalle</div>
-        </div>
+          <span class="card-num">${escaparHTML(j.jugados)}</span>
+          <span class="card-accion">Detalle</span>
+        </button>
 
-        <div class="card-desplegable">${detalleMobileHTML(j)}</div>
+        <div class="card-desplegable" id="card-${escaparHTML(categoriaSlug)}-${index}">${detalleMobileHTML(j)}</div>
       </div>
     `).join("");
 
     return `
       <section class="categoria-ranking ${claseCategoria(letra)}">
-        <div class="categoria-titulo">
-          <div>CATEGORIA ${escaparHTML(letra)}</div>
-          <span>+</span>
-        </div>
+        <button class="categoria-titulo" type="button"
+          aria-expanded="false"
+          aria-controls="contenido-${escaparHTML(categoriaSlug)}">
+          <span>CATEGORIA ${escaparHTML(letra)}</span>
+          <span class="categoria-icon" aria-hidden="true">+</span>
+        </button>
 
-        <div class="categoria-contenido">
+        <div class="categoria-contenido" id="contenido-${escaparHTML(categoriaSlug)}">
           <div class="desktop-ranking">
             <table class="tabla-ranking">
               <thead>
@@ -1222,27 +1244,35 @@
       const titulo = event.target.closest(".categoria-titulo");
       if (titulo && contenedor.contains(titulo)) {
         const categoriaBox = titulo.closest(".categoria-ranking");
-        const icono = titulo.querySelector("span");
+        const icono = titulo.querySelector(".categoria-icon");
         const estabaAbierta = categoriaBox.classList.contains("abierta");
 
         contenedor.querySelectorAll(".categoria-ranking").forEach(box => {
           box.classList.remove("abierta");
-          const span = box.querySelector(".categoria-titulo span");
+          const control = box.querySelector(".categoria-titulo");
+          if (control) control.setAttribute("aria-expanded", "false");
+          const span = control?.querySelector(".categoria-icon");
           if (span) span.textContent = "+";
         });
 
         contenedor.querySelectorAll(".detalle-row").forEach(detalle => {
           detalle.hidden = true;
         });
+        contenedor.querySelectorAll(".jugador-detalle-btn").forEach(button => {
+          button.setAttribute("aria-expanded", "false");
+        });
 
         contenedor.querySelectorAll(".card-jugador").forEach(card => {
           card.classList.remove("abierto");
+          const control = card.querySelector(".card-jugador-main");
+          if (control) control.setAttribute("aria-expanded", "false");
           const accion = card.querySelector(".card-accion");
           if (accion) accion.textContent = "Detalle";
         });
 
         if (!estabaAbierta) {
           categoriaBox.classList.add("abierta");
+          titulo.setAttribute("aria-expanded", "true");
           if (icono) icono.textContent = "–";
 
           requestAnimationFrame(() => {
@@ -1254,9 +1284,9 @@
         return;
       }
 
-      const fila = event.target.closest(".fila-jugador");
-      if (fila && contenedor.contains(fila)) {
-        const id = fila.getAttribute("data-detalle");
+      const jugadorControl = event.target.closest(".jugador-detalle-btn");
+      if (jugadorControl && contenedor.contains(jugadorControl)) {
+        const id = jugadorControl.getAttribute("data-detalle");
         const detalle = id ? document.getElementById(id) : null;
         if (!detalle) return;
 
@@ -1264,7 +1294,11 @@
         contenedor.querySelectorAll(".detalle-row").forEach(item => {
           item.hidden = true;
         });
+        contenedor.querySelectorAll(".jugador-detalle-btn").forEach(button => {
+          button.setAttribute("aria-expanded", "false");
+        });
         detalle.hidden = visible;
+        jugadorControl.setAttribute("aria-expanded", String(!visible));
         return;
       }
 
@@ -1275,12 +1309,15 @@
 
         contenedor.querySelectorAll(".card-jugador").forEach(item => {
           item.classList.remove("abierto");
+          const control = item.querySelector(".card-jugador-main");
+          if (control) control.setAttribute("aria-expanded", "false");
           const accion = item.querySelector(".card-accion");
           if (accion) accion.textContent = "Detalle";
         });
 
         if (!estabaAbierto) {
           contenedorCard.classList.add("abierto");
+          card.setAttribute("aria-expanded", "true");
           const accion = contenedorCard.querySelector(".card-accion");
           if (accion) accion.textContent = "Cerrar";
         }
@@ -1313,8 +1350,10 @@
           }
         ))
         .join("");
+      dataStatus.textContent = "Resultados oficiales de la temporada 2025.";
     } catch (error) {
       console.error("No se pudieron cargar los resultados 2025:", error);
+      DATA_CLIENT.showError(dataStatus, "No se pudieron cargar los resultados 2025.", cargarResultados);
       contenedor.innerHTML = `
         <div class="ranking-vacio">
           No se pudieron cargar los resultados 2025.
