@@ -1,4 +1,4 @@
-const APP_VERSION = '21';
+const APP_VERSION = '22';
 const SHELL_CACHE = `open-tennis-v${APP_VERSION}-shell`;
 const DATA_CACHE = `open-tennis-v${APP_VERSION}-data`;
 
@@ -10,6 +10,7 @@ const CORE_ASSETS = [
   './resultados-2025.html',
   './reglas.html',
   './marcador.html',
+  './404.html',
   './offline.html',
   './assets/css/styles.css',
   './assets/css/v3.css',
