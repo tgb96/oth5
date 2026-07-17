@@ -214,6 +214,36 @@ body.index-page {
   padding: clamp(22px, 4vw, 34px);
 }
 
+.tournament-day-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 22px;
+  padding: 20px 24px;
+  border: 1px solid rgba(255, 247, 234, 0.2);
+  border-radius: 22px;
+  background: linear-gradient(135deg, #ad4722, #d66c38);
+  color: #ffffff;
+  box-shadow: 0 16px 36px rgba(126, 44, 17, 0.22);
+}
+
+.tournament-day-banner .home-card-kicker { color: #fff2e7; }
+.tournament-day-banner h2 { margin: 0; font-size: clamp(24px, 4vw, 36px); }
+.tournament-day-banner p:last-child { margin: 6px 0 0; color: rgba(255, 255, 255, 0.86); }
+.tournament-day-banner a {
+  display: inline-flex;
+  min-height: 46px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 17px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #8a3318;
+  font-weight: 900;
+}
+
 .player-section-header {
   display: flex;
   align-items: flex-start;
@@ -378,6 +408,15 @@ body.index-page {
   gap: 9px;
   margin-top: 18px;
 }
+
+.ranking-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.ranking-actions .home-secondary-action { margin-top: 0; }
 
 .home-secondary-action {
   padding: 9px 14px;
@@ -657,9 +696,18 @@ body.index-page {
   }
 
   .player-experience,
+  .tournament-day-banner,
   .home-grid {
     margin-top: 10px;
   }
+
+  .tournament-day-banner {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 18px;
+  }
+
+  .tournament-day-banner a { width: 100%; }
 
   .home-grid {
     gap: 10px;
@@ -691,6 +739,11 @@ body.index-page {
 
   .match-actions .home-secondary-action {
     width: 100%;
+  }
+
+  .ranking-actions {
+    display: grid;
+    grid-template-columns: 1fr;
   }
 
   .install-card-compact {
