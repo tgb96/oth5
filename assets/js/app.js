@@ -9,7 +9,7 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      const version = window.OPEN_TENNIS_CONFIG?.APP_VERSION || '18';
+      const version = window.OPEN_TENNIS_CONFIG?.APP_VERSION || '19';
       navigator.serviceWorker.register(`./sw.js?v=${version}`).catch(() => {});
     });
   }
