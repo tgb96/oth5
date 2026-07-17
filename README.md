@@ -16,6 +16,8 @@ Sitio oficial de la escalerilla del Club Open Tennis Huechuraba, publicado con G
 
 Las URLs públicas de Google Sheets, la temporada, la zona horaria, la versión y la lista de jugadores están centralizadas en `assets/js/config.js`.
 
+El diseño y el comportamiento propios de Partidos, Tablas, Resultados 2025 y Marcador están separados en archivos con el nombre de cada página dentro de `assets/css` y `assets/js`. Los HTML conservan solamente la estructura, lo que facilita hacer cambios sin mezclar todo el código.
+
 Los últimos CSV obtenidos correctamente se guardan en el dispositivo. Si se pierde la conexión, `partidos.html` y `tablas.html` intentan usar esa copia y muestran su fecha. Los resultados 2025 se leen desde `data/resultados-2025.json`.
 
 Antes de publicar columnas nuevas desde Google Sheets, confirma que sean datos destinados al público. No publiques claves internas, notas médicas ni comentarios administrativos.
@@ -36,4 +38,4 @@ Si una publicación falla, vuelve a seleccionar el commit estable anterior o rev
 
 La versión actual de la aplicación es la definida en `assets/js/config.js`. El service worker usa esa misma versión, guarda solo respuestas válidas y presenta una pantalla offline real para navegaciones que no estén disponibles.
 
-El logo visible usa WebP optimizado; los PNG se conservan para los iconos instalables de la PWA.
+El logo visible usa un SVG optimizado; los PNG se conservan para los iconos instalables de la PWA.

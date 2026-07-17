@@ -1,4 +1,4 @@
-const APP_VERSION = '19';
+const APP_VERSION = '21';
 const SHELL_CACHE = `open-tennis-v${APP_VERSION}-shell`;
 const DATA_CACHE = `open-tennis-v${APP_VERSION}-data`;
 
@@ -16,6 +16,14 @@ const CORE_ASSETS = [
   './assets/css/v4.css',
   './assets/css/v5.css',
   './assets/css/p2.css',
+  './assets/css/partidos.css',
+  './assets/css/tablas.css',
+  './assets/css/resultados-2025.css',
+  './assets/css/marcador.css',
+  './assets/js/partidos-page.js',
+  './assets/js/tablas-page.js',
+  './assets/js/resultados-2025-page.js',
+  './assets/js/marcador-page.js',
   './assets/js/app.js',
   './assets/js/config.js',
   './assets/js/data-client.js',
