@@ -9,17 +9,18 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      const version = window.OPEN_TENNIS_CONFIG?.APP_VERSION || '21';
+      const version = window.OPEN_TENNIS_CONFIG?.APP_VERSION || '22';
       navigator.serviceWorker.register(`./sw.js?v=${version}`).catch(() => {});
     });
   }
 
   const current = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  const activeNavigationPage = current === 'resultados-2025.html' ? 'tablas.html' : current;
 
   document.querySelectorAll('#appBottomNav a, .app-bottom-nav a, .app-nav a, .nav a').forEach(link => {
     const href = (link.getAttribute('href') || '').split('/').pop().toLowerCase() || 'index.html';
 
-    if (href === current) {
+    if (href === activeNavigationPage) {
       link.classList.add('active');
       link.setAttribute('aria-current', 'page');
     } else {
