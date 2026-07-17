@@ -8,6 +8,7 @@ const root = path.resolve(__dirname, "..");
 const pages = [
   "index.html",
   "partidos.html",
+  "jugadores.html",
   "tablas.html",
   "resultados-2025.html",
   "reglas.html",
@@ -79,6 +80,7 @@ test("las URLs de Google Sheets están centralizadas", () => {
 
 test("los controles críticos tienen nombres accesibles", () => {
   const partidos = read("partidos.html");
+  const jugadores = read("jugadores.html");
   const tablas = read("tablas.html");
   const historico = read("resultados-2025.html");
   const marcador = read("marcador.html");
@@ -87,6 +89,10 @@ test("los controles críticos tienen nombres accesibles", () => {
   const marcadorRuntime = read("assets/js/marcador-page.js");
 
   assert.match(partidos, /<label[^>]+for="buscador"/);
+  assert.match(jugadores, /<label for="playerSearch">/);
+  assert.match(jugadores, /<label for="comparePlayerOne">/);
+  assert.match(jugadores, /<label for="comparePlayerTwo">/);
+  assert.match(jugadores, /aria-label="Resumen estadístico"/);
   assert.match(tablasRuntime, /<button class="categoria-titulo"/);
   assert.match(tablasRuntime, /class="jugador-detalle-btn"/);
   assert.match(historicoRuntime, /<button class="categoria-titulo"/);
@@ -94,6 +100,32 @@ test("los controles críticos tienen nombres accesibles", () => {
   assert.match(marcador, /<label class="label" for="categorySelect"/);
   assert.match(marcador, /aria-labelledby="corrS1Label corrNameAHead"/);
   assert.match(marcadorRuntime, /Punto para \$\{labelA\}/);
+});
+
+test("la ficha reúne las nuevas funciones sin escribir en Google Sheets", () => {
+  const html = read("jugadores.html");
+  const runtime = read("assets/js/jugadores-page.js");
+  const insights = read("assets/js/player-insights.js");
+  const shareTools = read("assets/js/share-tools.js");
+
+  assert.match(html, /id="playerSearch"/);
+  assert.match(html, /id="comparePlayers"/);
+  assert.match(html, /Crear tarjeta del partido/);
+  assert.match(html, /Informar un problema/);
+  assert.match(runtime, /downloadCalendar/);
+  assert.match(runtime, /shareMatchCard/);
+  assert.match(insights, /getHeadToHead/);
+  assert.match(insights, /getGapToAbove/);
+  assert.doesNotMatch(`${runtime}\n${insights}\n${shareTools}`, /spreadsheets\/.*:append|method:\s*["']POST["']/i);
+});
+
+test("todas las páginas públicas permiten cambiar entre modo claro y oscuro", () => {
+  const publicPages = pages.filter(page => page !== "offline.html");
+  for (const page of publicPages) {
+    assert.match(read(page), /assets\/js\/theme\.js\?v=28/, `${page} debe cargar el selector de apariencia`);
+  }
+  assert.match(read("assets/css/p2.css"), /data-theme="dark"/);
+  assert.match(read("assets/js/theme.js"), /openTennisThemeV1/);
 });
 
 test("el estado de datos aparece al final del contenido", () => {
@@ -136,6 +168,7 @@ test("las páginas públicas tienen metadatos para buscadores y WhatsApp", () =>
   const publicPages = {
     "index.html": "https://opentennis.cl/",
     "partidos.html": "https://opentennis.cl/partidos.html",
+    "jugadores.html": "https://opentennis.cl/jugadores.html",
     "tablas.html": "https://opentennis.cl/tablas.html",
     "resultados-2025.html": "https://opentennis.cl/resultados-2025.html",
     "reglas.html": "https://opentennis.cl/reglas.html",
@@ -231,25 +264,26 @@ test("los recursos estáticos usan una estrategia offline estable", () => {
   assert.match(serviceWorker, /networkFirst\(request, SHELL_CACHE, '\.\/offline\.html'\)/);
 });
 
-test("la versión 27 reemplaza cachés antiguos sin obligar a borrar datos", () => {
+test("la versión 28 reemplaza cachés antiguos sin obligar a borrar datos", () => {
   const serviceWorker = read("sw.js");
-  const releaseBridge = read("assets/js/release-v27.js");
+  const releaseBridge = read("assets/js/release-v28.js");
   const cacheFirstBlock = serviceWorker.match(/async function cacheFirst\(request\) \{([\s\S]*?)\n\}/)?.[1] || "";
 
-  assert.match(releaseBridge, /register\("\.\/sw\.js\?v=27"\)/);
+  assert.match(releaseBridge, /register\("\.\/sw\.js\?v=28"\)/);
   assert.match(releaseBridge, /Hay una nueva versión disponible\./);
   assert.match(releaseBridge, /SKIP_WAITING/);
   assert.doesNotMatch(cacheFirstBlock, /ignoreSearch:\s*true/);
   assert.match(cacheFirstBlock, /bundledFallback/);
 
   for (const page of pages.filter(page => page !== "offline.html")) {
-    assert.match(read(page), /assets\/js\/release-v27\.js/);
+    assert.match(read(page), /assets\/js\/release-v28\.js/);
   }
 });
 
 test("las páginas grandes mantienen su código separado", () => {
   const separatedPages = [
     "partidos",
+    "jugadores",
     "tablas",
     "resultados-2025",
     "marcador"
@@ -295,7 +329,7 @@ test("la versión de la aplicación es consistente", () => {
 
   for (const page of pages.filter(page => page !== "offline.html")) {
     const html = read(page);
-    for (const match of html.matchAll(/assets\/(?:css\/(?:p2|index|partidos|tablas|resultados-2025|marcador)|js\/(?:config|app|data-client|pwa-install|player-preference|index-experience|index-page|marcador-rules|partidos-page|tablas-page|resultados-2025-page|marcador-page))\.[a-z]+\?v=(\d+)/g)) {
+    for (const match of html.matchAll(/assets\/(?:css\/(?:p2|index|partidos|jugadores|tablas|resultados-2025|marcador)|js\/(?:config|app|data-client|pwa-install|player-preference|index-experience|player-insights|share-tools|theme|index-page|jugadores-page|marcador-rules|partidos-page|tablas-page|resultados-2025-page|marcador-page))\.[a-z]+\?v=(\d+)/g)) {
       assert.equal(match[1], configVersion, `${page} carga una versión antigua: ${match[0]}`);
     }
   }

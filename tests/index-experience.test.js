@@ -67,6 +67,10 @@ test("la nueva portada es personalizable, adaptable y no duplica la instalación
   assert.match(html, /id="rankingNumber"/);
   assert.match(html, /id="recentResultsList"/);
   assert.match(html, /Compartir por WhatsApp/);
+  assert.match(html, /Agregar al calendario/);
+  assert.match(html, /Crear tarjeta/);
+  assert.match(html, /Ver mi ficha/);
+  assert.match(html, /id="tournamentDayBanner"/);
   assert.doesNotMatch(html, /<style[\s>]/i);
   assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/i);
   assert.match(css, /orientation:\s*landscape/);
@@ -82,10 +86,23 @@ test("Partidos y Tablas reutilizan el jugador guardado", () => {
   const tablasJs = read("assets/js/tablas-page.js");
 
   assert.match(partidosHtml, /id="preferredPlayerShortcut"/);
-  assert.match(partidosHtml, /player-preference\.js\?v=27/);
+  assert.match(partidosHtml, /player-preference\.js\?v=28/);
   assert.match(partidosJs, /new URLSearchParams\(window\.location\.search\)\.get\("jugador"\)/);
   assert.match(partidosJs, /aplicarFiltroJugador/);
-  assert.match(tablasHtml, /player-preference\.js\?v=27/);
+  assert.match(tablasHtml, /player-preference\.js\?v=28/);
   assert.match(tablasJs, /is-preferred-player/);
   assert.match(tablasJs, /mostrarJugadorSolicitado/);
+});
+
+test("reconoce cuándo hoy es día de torneo", () => {
+  const matches = [
+    { date: new Date(2026, 6, 25, 12), week: "Semana 9", court: "Cancha 1", status: "programado", isFree: false },
+    { date: new Date(2026, 6, 25, 12), week: "Semana 9", court: "Cancha 2", status: "jugado", isFree: false }
+  ];
+  const tournamentDay = dashboard.getTournamentDay(matches, new Date(2026, 6, 25, 9));
+
+  assert.equal(tournamentDay.matches.length, 2);
+  assert.equal(tournamentDay.courts, 2);
+  assert.equal(tournamentDay.played, 1);
+  assert.equal(dashboard.getTournamentDay(matches, new Date(2026, 6, 24, 9)), null);
 });
