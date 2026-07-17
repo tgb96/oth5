@@ -22,8 +22,8 @@
   <link rel="stylesheet" href="assets/css/v3.css">
   <link rel="stylesheet" href="assets/css/v4.css?v=4.1">
   <link rel="stylesheet" href="assets/css/v5.css?v=5.2">
-  <link rel="stylesheet" href="assets/css/p2.css?v=27">
-  <link rel="stylesheet" href="assets/css/index.css?v=27">
+  <link rel="stylesheet" href="assets/css/p2.css?v=28">
+  <link rel="stylesheet" href="assets/css/index.css?v=28">
 
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
@@ -36,14 +36,16 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Open Tennis">
 
-  <script src="assets/js/config.js?v=27"></script>
-  <script defer src="assets/js/data-client.js?v=27"></script>
-  <script defer src="assets/js/player-preference.js?v=27"></script>
-  <script defer src="assets/js/index-experience.js?v=27"></script>
-  <script defer src="assets/js/app.js?v=27"></script>
-  <script defer src="assets/js/release-v27.js"></script>
-  <script defer src="assets/js/pwa-install.js?v=27"></script>
-  <script defer src="assets/js/index-page.js?v=27"></script>
+  <script src="assets/js/config.js?v=28"></script>
+  <script defer src="assets/js/data-client.js?v=28"></script>
+  <script defer src="assets/js/player-preference.js?v=28"></script>
+  <script defer src="assets/js/index-experience.js?v=28"></script>
+  <script defer src="assets/js/share-tools.js?v=28"></script>
+  <script defer src="assets/js/theme.js?v=28"></script>
+  <script defer src="assets/js/app.js?v=28"></script>
+  <script defer src="assets/js/release-v28.js"></script>
+  <script defer src="assets/js/pwa-install.js?v=28"></script>
+  <script defer src="assets/js/index-page.js?v=28"></script>
 </head>
 
 <body class="index-page v5-page">
@@ -77,6 +79,15 @@
           <a class="home-link" href="partidos.html">Ver programación completa</a>
         </div>
       </article>
+    </section>
+
+    <section id="tournamentDayBanner" class="tournament-day-banner" aria-labelledby="tournamentDayTitle" hidden>
+      <div>
+        <p class="home-card-kicker">Hoy se juega</p>
+        <h2 id="tournamentDayTitle">Jornada en curso</h2>
+        <p id="tournamentDaySummary">Revisa los partidos programados para hoy.</p>
+      </div>
+      <a href="partidos.html">Ver partidos de hoy</a>
     </section>
 
     <section class="player-experience" aria-labelledby="playerExperienceTitle">
@@ -113,6 +124,8 @@
           <div class="match-actions">
             <a id="myMatchesLink" class="home-secondary-action" href="partidos.html">Ver mis partidos</a>
             <button id="shareMatchButton" class="home-secondary-action" type="button" hidden>Compartir por WhatsApp</button>
+            <button id="calendarMatchButton" class="home-secondary-action" type="button" hidden>Agregar al calendario</button>
+            <button id="matchCardButton" class="home-secondary-action" type="button" hidden>Crear tarjeta</button>
           </div>
         </article>
 
@@ -121,7 +134,10 @@
           <strong id="rankingNumber" class="ranking-number">—</strong>
           <h3 id="rankingCategory" class="ranking-category">Cargando tabla…</h3>
           <p id="rankingDetail" class="ranking-detail">Buscando tu posición actual.</p>
-          <a id="myRankingLink" class="home-secondary-action is-light" href="tablas.html">Ver mi tabla</a>
+          <div class="ranking-actions">
+            <a id="myRankingLink" class="home-secondary-action is-light" href="tablas.html">Ver mi tabla</a>
+            <a id="myProfileLink" class="home-secondary-action is-light" href="jugadores.html">Ver mi ficha</a>
+          </div>
         </article>
       </div>
     </section>
@@ -147,6 +163,11 @@
           <a class="quick-link" href="tablas.html">
             <span class="quick-link-icon" aria-hidden="true">📊</span>
             <span><strong>Tablas</strong><small>Posiciones y estadísticas</small></span>
+            <span class="quick-link-arrow" aria-hidden="true">›</span>
+          </a>
+          <a class="quick-link" href="jugadores.html">
+            <span class="quick-link-icon" aria-hidden="true">👤</span>
+            <span><strong>Jugadores</strong><small>Fichas, estadísticas y comparación</small></span>
             <span class="quick-link-arrow" aria-hidden="true">›</span>
           </a>
           <a class="quick-link" href="marcador.html">

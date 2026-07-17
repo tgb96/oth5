@@ -1,4 +1,4 @@
-const APP_VERSION = '27';
+const APP_VERSION = '28';
 const SHELL_CACHE = `open-tennis-v${APP_VERSION}-shell`;
 const DATA_CACHE = `open-tennis-v${APP_VERSION}-data`;
 
@@ -6,6 +6,7 @@ const CORE_ASSETS = [
   './',
   './index.html',
   './partidos.html',
+  './jugadores.html',
   './tablas.html',
   './resultados-2025.html',
   './reglas.html',
@@ -19,18 +20,24 @@ const CORE_ASSETS = [
   './assets/css/p2.css',
   './assets/css/index.css',
   './assets/css/partidos.css',
+  './assets/css/jugadores.css',
   './assets/css/tablas.css',
   './assets/css/resultados-2025.css',
   './assets/css/marcador.css',
   './assets/js/partidos-page.js',
+  './assets/js/jugadores-page.js',
   './assets/js/index-page.js',
   './assets/js/index-experience.js',
+  './assets/js/player-insights.js',
+  './assets/js/share-tools.js',
+  './assets/js/theme.js',
   './assets/js/player-preference.js',
   './assets/js/tablas-page.js',
   './assets/js/resultados-2025-page.js',
   './assets/js/marcador-page.js',
   './assets/js/app.js',
   './assets/js/release-v27.js',
+  './assets/js/release-v28.js',
   './assets/js/config.js',
   './assets/js/data-client.js',
   './assets/js/pwa-install.js',

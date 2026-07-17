@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Jugadores y estadísticas | Open Tennis Huechuraba</title>
+  <meta name="description" content="Consulta la ficha, estadísticas, próximos partidos e historial de los jugadores de la Escalerilla 2026 de Open Tennis Huechuraba.">
+  <link rel="canonical" href="https://opentennis.cl/jugadores.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_CL">
+  <meta property="og:site_name" content="Open Tennis Huechuraba">
+  <meta property="og:title" content="Jugadores y estadísticas | Open Tennis Huechuraba">
+  <meta property="og:description" content="Fichas, estadísticas, comparaciones y próximos partidos de la Escalerilla 2026.">
+  <meta property="og:url" content="https://opentennis.cl/jugadores.html">
+  <meta property="og:image" content="https://opentennis.cl/assets/icons/icon-512.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:image:alt" content="Logo de Open Tennis Huechuraba">
+  <meta name="twitter:card" content="summary">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/v3.css">
+  <link rel="stylesheet" href="assets/css/v4.css?v=4.1">
+  <link rel="stylesheet" href="assets/css/v5.css?v=5.2">
+  <link rel="stylesheet" href="assets/css/p2.css?v=28">
+  <link rel="stylesheet" href="assets/css/jugadores.css?v=28">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#0b2f25">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Open Tennis">
+  <script src="assets/js/config.js?v=28"></script>
+  <script defer src="assets/js/data-client.js?v=28"></script>
+  <script defer src="assets/js/player-preference.js?v=28"></script>
+  <script defer src="assets/js/index-experience.js?v=28"></script>
+  <script defer src="assets/js/player-insights.js?v=28"></script>
+  <script defer src="assets/js/share-tools.js?v=28"></script>
+  <script defer src="assets/js/theme.js?v=28"></script>
+  <script defer src="assets/js/app.js?v=28"></script>
+  <script defer src="assets/js/release-v28.js"></script>
+  <script defer src="assets/js/jugadores-page.js?v=28"></script>
+</head>
+<body class="players-page v5-page">
+  <div class="layout app-shell">
+    <aside class="sidebar app-topbar">
+      <a class="brand" href="index.html" aria-label="Open Tennis Huechuraba inicio">
+        <img class="brand-logo" src="assets/img/logo-open-tennis-256.svg" alt="" aria-hidden="true" width="256" height="256">
+        <span class="brand-text"><span class="brand-main">Open Tennis</span><span class="brand-sub">Huechuraba · 2026</span></span>
+      </a>
+    </aside>
+
+    <main class="main app-main players-main">
+      <section class="players-hero" aria-labelledby="playersTitle">
+        <div>
+          <p class="players-eyebrow">Conoce tu temporada</p>
+          <h1 id="playersTitle">Ficha de jugadores</h1>
+          <p>Revisa estadísticas, próximos partidos, historial y compara a dos jugadores utilizando los resultados ya publicados.</p>
+        </div>
+        <div class="players-search-card">
+          <label for="playerSearch">Buscar un jugador</label>
+          <div class="players-search-row">
+            <input id="playerSearch" list="playersList" type="search" autocomplete="off" placeholder="Escribe un nombre">
+            <button id="showPlayerProfile" class="players-primary-button" type="button">Ver ficha</button>
+          </div>
+          <datalist id="playersList"></datalist>
+          <button id="showSavedPlayer" class="saved-player-button" type="button" hidden>Ver mi ficha guardada</button>
+          <p id="playerSearchError" class="field-error" role="alert" hidden>Selecciona un jugador de la escalerilla.</p>
+        </div>
+      </section>
+
+      <section id="profileEmpty" class="profile-empty" aria-labelledby="profileEmptyTitle">
+        <span aria-hidden="true">🎾</span>
+        <div>
+          <h2 id="profileEmptyTitle">Busca a un jugador para comenzar</h2>
+          <p>Puedes revisar tu propia ficha o conocer el rendimiento de cualquier participante.</p>
+        </div>
+      </section>
+
+      <section id="playerProfile" class="player-profile" aria-labelledby="profileName" hidden>
+        <header class="profile-heading">
+          <div>
+            <p id="profileCategory" class="profile-category">Categoría</p>
+            <h2 id="profileName">Jugador</h2>
+            <p id="profilePosition" class="profile-position">Posición por confirmar</p>
+          </div>
+          <span id="profileZone" class="profile-zone" data-tone="neutral">Sin clasificación</span>
+        </header>
+
+        <div class="profile-stat-grid" aria-label="Resumen estadístico">
+          <article><span>Partidos</span><strong id="statPlayed">0</strong></article>
+          <article><span>Victorias</span><strong id="statWins">0</strong></article>
+          <article><span>Derrotas</span><strong id="statLosses">0</strong></article>
+          <article><span>Rendimiento</span><strong id="statRate">0%</strong></article>
+        </div>
+
+        <div class="profile-layout">
+          <article class="profile-panel season-panel">
+            <div class="panel-heading">
+              <div><p class="panel-kicker">Temporada</p><h3>Tu rendimiento</h3></div>
+            </div>
+            <dl class="score-summary">
+              <div><dt>Sets</dt><dd><strong id="statSetsWon">0</strong> ganados · <span id="statSetsLost">0</span> perdidos</dd></div>
+              <div><dt>Games</dt><dd><strong id="statGamesWon">0</strong> ganados · <span id="statGamesLost">0</span> perdidos</dd></div>
+            </dl>
+            <div class="form-block">
+              <span>Últimos partidos</span>
+              <div id="recentForm" class="form-chips" aria-label="Forma reciente"></div>
+            </div>
+            <div id="rankingProgress" class="ranking-progress"></div>
+          </article>
+
+          <article class="profile-panel upcoming-panel">
+            <div class="panel-heading">
+              <div><p class="panel-kicker">Agenda</p><h3>Próximos partidos</h3></div>
+              <button id="addNextCalendar" class="panel-action" type="button" hidden>Agregar el próximo</button>
+            </div>
+            <ul id="upcomingMatches" class="profile-list"></ul>
+          </article>
+
+          <article class="profile-panel results-panel">
+            <div class="panel-heading">
+              <div><p class="panel-kicker">Resultados</p><h3>Últimos cinco</h3></div>
+            </div>
+            <ul id="profileResults" class="profile-list"></ul>
+          </article>
+
+          <article class="profile-panel rivalry-panel">
+            <div class="panel-heading">
+              <div><p class="panel-kicker">Rivales</p><h3>Historial directo</h3></div>
+            </div>
+            <ul id="headToHead" class="rivalry-list"></ul>
+          </article>
+        </div>
+
+        <div class="profile-actions" aria-label="Acciones de la ficha">
+          <button id="shareProfile" type="button">Compartir ficha</button>
+          <button id="createMatchCard" type="button" hidden>Crear tarjeta del partido</button>
+          <a id="profileMatchesLink" href="partidos.html">Ver todos sus partidos</a>
+          <button id="reportProblem" class="report-action" type="button">Informar un problema</button>
+        </div>
+      </section>
+
+      <section class="compare-section" aria-labelledby="compareTitle">
+        <div class="compare-intro">
+          <p class="players-eyebrow">Comparador</p>
+          <h2 id="compareTitle">Compara dos jugadores</h2>
+          <p>Contrasta su posición, puntos y rendimiento actual. No predice resultados: solo resume los datos publicados.</p>
+        </div>
+        <div class="compare-controls">
+          <div><label for="comparePlayerOne">Jugador 1</label><select id="comparePlayerOne"><option value="">Seleccionar</option></select></div>
+          <span aria-hidden="true">VS</span>
+          <div><label for="comparePlayerTwo">Jugador 2</label><select id="comparePlayerTwo"><option value="">Seleccionar</option></select></div>
+          <button id="comparePlayers" class="players-primary-button" type="button">Comparar</button>
+        </div>
+        <p id="compareError" class="field-error" role="alert" hidden>Selecciona dos jugadores distintos.</p>
+        <div id="compareResult" class="compare-result" hidden>
+          <article id="compareLeft" class="compare-player-card"></article>
+          <div id="compareSummary" class="compare-summary"></div>
+          <article id="compareRight" class="compare-player-card"></article>
+        </div>
+      </section>
+
+      <div id="playersNotice" class="players-notice" role="status" aria-live="polite"></div>
+      <div id="playersDataStatus" class="data-status data-status-footer" role="status" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <nav id="appBottomNav" class="app-bottom-nav" aria-label="Navegación principal">
+    <a href="index.html" data-page="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span class="nav-label">Inicio</span></a>
+    <a href="partidos.html" data-page="partidos.html"><span class="nav-icon" aria-hidden="true">🎾</span><span class="nav-label">Partidos</span></a>
+    <a href="tablas.html" data-page="tablas.html"><span class="nav-icon" aria-hidden="true">📊</span><span class="nav-label">Tablas</span></a>
+    <a href="reglas.html" data-page="reglas.html"><span class="nav-icon" aria-hidden="true">📘</span><span class="nav-label">Reglas</span></a>
+    <a href="marcador.html" data-page="marcador.html"><span class="nav-icon" aria-hidden="true">🔢</span><span class="nav-label">Marcador</span></a>
+  </nav>
+</body>
+</html>

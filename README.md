@@ -6,6 +6,7 @@ Sitio oficial de la escalerilla del Club Open Tennis Huechuraba, publicado con G
 
 - `index.html`: inicio e instalación de la PWA.
 - `partidos.html`: programación, pendientes y resultados.
+- `jugadores.html`: fichas, estadísticas, próximos partidos y comparación de jugadores.
 - `tablas.html`: posiciones y estadísticas 2026.
 - `resultados-2025.html`: cierre histórico de 2025.
 - `reglas.html`: reglamento.
