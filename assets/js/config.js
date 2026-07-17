@@ -4,7 +4,7 @@
   const SHEET_BASE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR4Uc2YiXkim8OTwSbwK4AYfC1oWWNTX1TCE4RXFyzaK5azjuaHx4nWT1v6Ubiq2Lm9kpYFTJmY6C1d/pub";
 
   global.OPEN_TENNIS_CONFIG = Object.freeze({
-    APP_VERSION: "18",
+    APP_VERSION: "19",
     SEASON: 2026,
     TIME_ZONE: "America/Santiago",
     FIXTURE_URL: `${SHEET_BASE}?gid=0&single=true&output=csv`,
