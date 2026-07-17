@@ -182,6 +182,55 @@ test("Resultados 2025 mantiene activa la navegación de Tablas", () => {
   assert.match(app, /href === activeNavigationPage/);
 });
 
+test("la aplicación no depende de Google Fonts", () => {
+  const files = [
+    ...pages,
+    ...fs.readdirSync(path.join(root, "assets", "css"))
+      .filter(file => file.endsWith(".css"))
+      .map(file => path.join("assets", "css", file))
+  ];
+
+  for (const file of files) {
+    const content = read(file);
+    assert.doesNotMatch(content, /fonts\.(?:googleapis|gstatic)\.com/i, `${file} no debe pedir fuentes externas`);
+    assert.doesNotMatch(content, /font-family:\s*(?:Inter|Oswald)\b/i, `${file} debe usar las fuentes del dispositivo`);
+  }
+});
+
+test("las actualizaciones esperan la confirmación de la persona", () => {
+  const serviceWorker = read("sw.js");
+  const installStart = serviceWorker.indexOf("self.addEventListener('install'");
+  const messageStart = serviceWorker.indexOf("self.addEventListener('message'");
+  const installBlock = serviceWorker.slice(installStart, messageStart);
+
+  assert.ok(installStart >= 0 && messageStart > installStart, "Debe controlar la instalación y los mensajes");
+  assert.doesNotMatch(installBlock, /skipWaiting/, "No debe actualizarse sin permiso");
+  assert.match(serviceWorker, /event\.data\?\.type === 'SKIP_WAITING'/);
+  assert.match(serviceWorker, /event\.waitUntil\(self\.skipWaiting\(\)\)/);
+});
+
+test("la interfaz avisa cuando hay una versión nueva o cambia la conexión", () => {
+  const app = read("assets/js/app.js");
+  const p2 = read("assets/css/p2.css");
+
+  assert.match(app, /Hay una nueva versión disponible\./);
+  assert.match(app, /Actualizar ahora/);
+  assert.match(app, /controllerchange/);
+  assert.match(app, /Sin conexión: usando datos guardados\./);
+  assert.match(app, /Conexión recuperada\./);
+  assert.match(p2, /\.app-update-banner/);
+  assert.match(p2, /\.connection-status/);
+});
+
+test("los recursos estáticos usan una estrategia offline estable", () => {
+  const serviceWorker = read("sw.js");
+
+  assert.match(serviceWorker, /async function cacheFirst\(request\)/);
+  assert.match(serviceWorker, /const staticDestinations = new Set\(\['style', 'script', 'image', 'font'\]\)/);
+  assert.match(serviceWorker, /event\.respondWith\(cacheFirst\(request\)\)/);
+  assert.match(serviceWorker, /networkFirst\(request, SHELL_CACHE, '\.\/offline\.html'\)/);
+});
+
 test("las páginas grandes mantienen su código separado", () => {
   const separatedPages = [
     "partidos",
