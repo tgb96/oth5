@@ -231,6 +231,22 @@ test("los recursos estáticos usan una estrategia offline estable", () => {
   assert.match(serviceWorker, /networkFirst\(request, SHELL_CACHE, '\.\/offline\.html'\)/);
 });
 
+test("la versión 27 reemplaza cachés antiguos sin obligar a borrar datos", () => {
+  const serviceWorker = read("sw.js");
+  const releaseBridge = read("assets/js/release-v27.js");
+  const cacheFirstBlock = serviceWorker.match(/async function cacheFirst\(request\) \{([\s\S]*?)\n\}/)?.[1] || "";
+
+  assert.match(releaseBridge, /register\("\.\/sw\.js\?v=27"\)/);
+  assert.match(releaseBridge, /Hay una nueva versión disponible\./);
+  assert.match(releaseBridge, /SKIP_WAITING/);
+  assert.doesNotMatch(cacheFirstBlock, /ignoreSearch:\s*true/);
+  assert.match(cacheFirstBlock, /bundledFallback/);
+
+  for (const page of pages.filter(page => page !== "offline.html")) {
+    assert.match(read(page), /assets\/js\/release-v27\.js/);
+  }
+});
+
 test("las páginas grandes mantienen su código separado", () => {
   const separatedPages = [
     "partidos",
@@ -279,7 +295,7 @@ test("la versión de la aplicación es consistente", () => {
 
   for (const page of pages.filter(page => page !== "offline.html")) {
     const html = read(page);
-    for (const match of html.matchAll(/assets\/(?:css\/(?:p2|partidos|tablas|resultados-2025|marcador)|js\/(?:config|app|data-client|pwa-install|marcador-rules|partidos-page|tablas-page|resultados-2025-page|marcador-page))\.[a-z]+\?v=(\d+)/g)) {
+    for (const match of html.matchAll(/assets\/(?:css\/(?:p2|index|partidos|tablas|resultados-2025|marcador)|js\/(?:config|app|data-client|pwa-install|player-preference|index-experience|index-page|marcador-rules|partidos-page|tablas-page|resultados-2025-page|marcador-page))\.[a-z]+\?v=(\d+)/g)) {
       assert.equal(match[1], configVersion, `${page} carga una versión antigua: ${match[0]}`);
     }
   }
