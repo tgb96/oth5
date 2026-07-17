@@ -1,0 +1,85 @@
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.field-label {
+  display: block;
+  margin: 8px 0 6px;
+  color: #33413b;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.data-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  margin: 10px 0 4px;
+  color: #52615b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.data-retry {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid #176b50;
+  border-radius: 999px;
+  background: #fff;
+  color: #176b50;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+button.categoria-titulo {
+  width: 100%;
+  border: 0;
+  font-family: inherit;
+}
+
+.jugador-detalle-btn {
+  min-height: 44px;
+  padding: 6px 2px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+button.card-jugador-main {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+}
+
+button.card-jugador-main :where(.card-info, .card-nombre, .card-zona) {
+  display: block;
+}
+
+:where(a, button, input, select, [tabindex]):focus-visible {
+  outline: 3px solid #155eef;
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .data-status {
+    align-items: flex-start;
+  }
+}
